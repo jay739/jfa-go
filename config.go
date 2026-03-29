@@ -35,11 +35,36 @@ var matrixEnabled = false
 // IMPORTANT: When linking straight to a page, rather than appending further to the URL (like accessing an API route), append a /.
 var PAGES = PagePaths{}
 
+// dockerConfigMountPrefix is where the optional "config" volume is mounted in the official Docker image.
+const dockerConfigMountPrefix = "/jfa-go/config/"
+
+// resolveFilesystemTemplatePath maps container paths in config.ini to the host when running outside Docker.
+// Set JFA_GO_CONFIG_HOST to the host directory that corresponds to /jfa-go/config (e.g. .../docker_services/jfa-go/config).
+func resolveFilesystemTemplatePath(val string) string {
+	if val == "" || strings.HasPrefix(val, "jfa-go:") {
+		return val
+	}
+	if _, err := os.Stat(val); err == nil {
+		return val
+	}
+	host := strings.TrimSpace(os.Getenv("JFA_GO_CONFIG_HOST"))
+	if host == "" || !strings.HasPrefix(val, dockerConfigMountPrefix) {
+		return val
+	}
+	rest := strings.TrimPrefix(val, dockerConfigMountPrefix)
+	candidate := filepath.Join(host, rest)
+	if _, err := os.Stat(candidate); err == nil {
+		return filepath.Clean(candidate)
+	}
+	return val
+}
+
 func (config *Config) GetPath(sect, key string) (fs.FS, string) {
 	val := config.Section(sect).Key(key).MustString("")
 	if strings.HasPrefix(val, "jfa-go:") {
 		return localFS, strings.TrimPrefix(val, "jfa-go:")
 	}
+	val = resolveFilesystemTemplatePath(val)
 	dir, file := filepath.Split(val)
 	return os.DirFS(dir), file
 }

@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io/fs"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/gin-contrib/pprof"
@@ -20,6 +22,22 @@ var (
 	NO_API_AUTH_DO_NOT_USE = false
 	NO_API_AUTH_FORCE_JFID = ""
 )
+
+// templateDict builds a map for html/template pipelines (e.g. {{ template "x" (dict "a" 1 "b" "two") }}).
+func templateDict(pairs ...any) (map[string]any, error) {
+	if len(pairs)%2 != 0 {
+		return nil, fmt.Errorf("dict: expected even number of arguments, got %d", len(pairs))
+	}
+	m := make(map[string]any, len(pairs)/2)
+	for i := 0; i < len(pairs); i += 2 {
+		k, ok := pairs[i].(string)
+		if !ok {
+			return nil, fmt.Errorf("dict: key at index %d must be a string", i)
+		}
+		m[k] = pairs[i+1]
+	}
+	return m, nil
+}
 
 // loads HTML templates. If [files]/html_templates is set, alternative files inside the directory are loaded in place of the internal templates.
 func (app *appContext) loadHTML(router *gin.Engine) {
@@ -43,7 +61,10 @@ func (app *appContext) loadHTML(router *gin.Engine) {
 	}
 	var tmpl *template.Template
 	if len(loadInternal) != 0 {
-		tmpl, err = template.ParseFS(localFS, loadInternal...)
+		tmpl = template.New("").Funcs(template.FuncMap{
+			"dict": templateDict,
+		})
+		tmpl, err = tmpl.ParseFS(localFS, loadInternal...)
 		if err != nil {
 			app.err.Fatalf(lm.FailedLoadTemplates, lm.Internal, err)
 		}
@@ -97,7 +118,22 @@ func (app *appContext) loadRouter(address string, debug bool) *gin.Engine {
 
 	setGinLogger(router, debug)
 
-	router.Use(gin.Recovery())
+	router.Use(gin.CustomRecovery(func(c *gin.Context, recovered any) {
+		if strings.TrimSpace(c.Request.Header.Get("Authorization")) != "" {
+			hint := fmt.Sprint(recovered)
+			if len(hint) > 500 {
+				hint = hint[:500] + "…"
+			}
+			c.AbortWithStatusJSON(http.StatusInternalServerError, apiErrorBody{
+				Error: "errorInternalServer",
+				Code:  "PANIC",
+				Hint:  hint,
+			})
+			return
+		}
+		c.String(http.StatusInternalServerError, "Internal Server Error")
+		c.Abort()
+	}))
 	app.loadHTML(router)
 	router.Use(serveTaggedStatic("/", app.webFS))
 	router.NoRoute(app.NoRouteHandler)

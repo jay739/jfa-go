@@ -1,0 +1,12 @@
+{{ define "adminListSearchRow" }}
+<input type="search" class="field ~neutral @low input search" id="{{ .prefix }}-search" placeholder="{{ .strings.search }}">
+<span class="button ~neutral @low center inside-input rounded-s-none {{ .prefix }}-search-clear" aria-label="{{ .strings.clearSearch }}" text="{{ .strings.clearSearch }}"><i class="ri-close-line"></i></span>
+<tool-tip class="below">
+    <button class="button ~info @low center h-full {{ .prefix }}-search-server gap-1" aria-label="{{ .strings.searchAllRecords }}" text="{{ .strings.searchAllRecords }}">
+        <i class="ri-search-line"></i>
+        <span>{{ .strings.searchAll }}</span>
+    </button>
+    <span class="content sm">{{ .strings.searchAllRecords }}</span>
+</tool-tip>
+<button class="button ~info @low" id="{{ .prefix }}-refresh" aria-label="{{ .strings.refresh }}" disabled><i class="ri-refresh-line"></i></button>
+{{ end }}

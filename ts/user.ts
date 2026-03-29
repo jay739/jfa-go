@@ -11,6 +11,7 @@ import {
     addLoader,
     removeLoader,
     toClipboard,
+    formatApiFailure,
 } from "./modules/common.js";
 import { Login } from "./modules/login.js";
 import { Discord, Telegram, Matrix, ServiceConfiguration, MatrixConfiguration } from "./modules/account-linking.js";
@@ -126,14 +127,17 @@ if (window.pwrEnabled && window.linkResetEnabled) {
             if (req.readyState != 4) return;
             removeLoader(submitButton);
             if (req.status != 204) {
-                window.notifications.customError("unkownError", window.lang.notif("errorUnknown"));
+                window.notifications.customError(
+                    "unkownError",
+                    formatApiFailure(req, window.lang.notif("errorUnknown")),
+                );
                 window.modals.pwr.close();
                 return;
             }
             window.modals.pwr.modal.querySelector(".heading").textContent = window.lang.strings("resetSent");
             window.modals.pwr.modal.querySelector(".content").textContent = window.lang.strings("resetSentDescription");
-            submitButton.classList.add("unfocused");
-            input.classList.add("unfocused");
+            submitButton.classList.add("ui-hidden");
+            input.classList.add("ui-hidden");
         });
     };
 }
@@ -285,6 +289,13 @@ class ContactMethods {
             deleteButton.onclick = () =>
                 _delete("/my/" + name, null, (req: XMLHttpRequest) => {
                     if (req.readyState != 4) return;
+                    if (req.status != 200 && req.status != 204) {
+                        window.notifications.customError(
+                            "contactDeleteError",
+                            formatApiFailure(req, window.lang.notif("errorUnknown")),
+                        );
+                        return;
+                    }
                     document.dispatchEvent(new CustomEvent("details-reload"));
                 });
         }
@@ -301,7 +312,10 @@ class ContactMethods {
         _post("/my/contact", data, (req: XMLHttpRequest) => {
             if (req.readyState == 4) {
                 if (req.status != 200) {
-                    window.notifications.customError("errorSetNotify", window.lang.notif("errorSaveSettings"));
+                    window.notifications.customError(
+                        "errorSetNotify",
+                        formatApiFailure(req, window.lang.notif("errorSaveSettings")),
+                    );
                     document.dispatchEvent(new CustomEvent("details-reload"));
                 }
             }
@@ -422,14 +436,14 @@ class ReferralCard {
         });
     }
 
-    hide = () => this._card.classList.add("unfocused");
+    hide = () => this._card.classList.add("ui-hidden");
 
     update = (referral: MyReferral) => {
         this.code = referral.code;
         this.remaining_uses = referral.remaining_uses;
         this.no_limit = referral.no_limit;
         this.expiry = referral.expiry;
-        this._card.classList.remove("unfocused");
+        this._card.classList.remove("ui-hidden");
         this.use_expiry = referral.use_expiry;
     };
 }
@@ -503,14 +517,14 @@ class ExpiryCard {
         }
         this._expiryUnix = expiryUnix;
         if (expiryUnix == 0) {
-            this._card.classList.add("unfocused");
+            this._card.classList.add("ui-hidden");
             return;
         }
         this._expiry = new Date(expiryUnix * 1000);
         this._aside.textContent = window.lang
             .strings("yourAccountIsValidUntil")
             .replace("{date}", toDateString(this._expiry));
-        this._card.classList.remove("unfocused");
+        this._card.classList.remove("ui-hidden");
 
         this._interval = window.setInterval(this._drawCountdown, 60 * 1000);
         this._drawCountdown();
@@ -532,10 +546,10 @@ const addEditEmail = (add: boolean): void => {
     const input = document.getElementById("modal-email-input") as HTMLInputElement;
     input.value = "";
     const confirmationRequired = window.modals.email.modal.querySelector(".confirmation-required");
-    confirmationRequired.classList.add("unfocused");
+    confirmationRequired.classList.add("ui-hidden");
 
     const content = window.modals.email.modal.querySelector(".modal-email-content");
-    content.classList.remove("unfocused");
+    content.classList.remove("ui-hidden");
 
     const submit = window.modals.email.modal.querySelector(".card").children[0] as HTMLButtonElement;
     submit.onclick = () => {
@@ -549,6 +563,11 @@ const addEditEmail = (add: boolean): void => {
                 if (req.status == 303 || req.status == 200) {
                     document.dispatchEvent(new CustomEvent("details-reload"));
                     window.modals.email.close();
+                } else if (req.status != 401) {
+                    window.notifications.customError(
+                        "errorSaveEmail",
+                        formatApiFailure(req, window.lang.notif("errorSaveEmail")),
+                    );
                 }
             },
             true,
@@ -556,8 +575,8 @@ const addEditEmail = (add: boolean): void => {
                 if (req.readyState != 4) return;
                 removeLoader(submit);
                 if (req.status == 401) {
-                    content.classList.add("unfocused");
-                    confirmationRequired.classList.remove("unfocused");
+                    content.classList.add("ui-hidden");
+                    confirmationRequired.classList.remove("ui-hidden");
                 }
             },
         );
@@ -645,9 +664,15 @@ changePasswordButton.addEventListener("click", () => {
             if (req.readyState != 4) return;
             removeLoader(changePasswordButton);
             if (req.status == 400) {
-                window.notifications.customError("errorPassword", window.lang.notif("errorPassword"));
+                window.notifications.customError(
+                    "errorPassword",
+                    formatApiFailure(req, window.lang.notif("errorPassword")),
+                );
             } else if (req.status == 500) {
-                window.notifications.customError("errorUnknown", window.lang.notif("errorUnknown"));
+                window.notifications.customError(
+                    "errorUnknown",
+                    formatApiFailure(req, window.lang.notif("errorUnknown")),
+                );
             } else if (req.status == 204) {
                 window.notifications.customSuccess("passwordChanged", window.lang.notif("passwordChanged"));
                 setTimeout(() => {
@@ -671,7 +696,10 @@ document.addEventListener("details-reload", () => {
     _get("/my/details", null, (req: XMLHttpRequest) => {
         if (req.readyState == 4) {
             if (req.status != 200) {
-                window.notifications.customError("myDetailsError", req.response["error"]);
+                window.notifications.customError(
+                    "myDetailsError",
+                    formatApiFailure(req, window.lang.notif("errorLoadMyDetails")),
+                );
                 return;
             }
             const details: MyDetails = req.response as MyDetails;
@@ -751,7 +779,7 @@ document.addEventListener("details-reload", () => {
 
             let messageCard = document.getElementById("card-message");
             if (details.accounts_admin) {
-                adminBackButton.classList.remove("unfocused");
+                adminBackButton.classList.remove("ui-hidden");
                 if (typeof messageCard == "undefined" || messageCard == null) {
                     messageCard = document.createElement("div");
                     messageCard.classList.add("card", "@low", "dark:~d_neutral", "content");
@@ -770,14 +798,21 @@ document.addEventListener("details-reload", () => {
                 messageCard.innerHTML = messageCard.innerHTML.replace(new RegExp("{username}", "g"), details.username);
                 // setBestRowSpan(messageCard, false);
                 // contactCard.querySelector(".content").classList.add("h-100");
-            } else if (!statusCard.classList.contains("unfocused")) {
+            } else if (!statusCard.classList.contains("ui-hidden")) {
                 // setBestRowSpan(passwordCard, true);
             }
 
             if (window.referralsEnabled) {
                 if (details.has_referrals) {
                     _get("/my/referral", null, (req: XMLHttpRequest) => {
-                        if (req.readyState != 4 || req.status != 200) return;
+                        if (req.readyState != 4) return;
+                        if (req.status != 200) {
+                            window.notifications.customError(
+                                "referralLoadError",
+                                formatApiFailure(req, window.lang.notif("errorUnknown")),
+                            );
+                            return;
+                        }
                         const referral: MyReferral = req.response as MyReferral;
                         referralCard.update(referral);
                         setCardOrder(messageCard);
@@ -840,13 +875,11 @@ const setCardOrder = (messageCard: HTMLElement) => {
         // addValue += side.length;
     }
 
-    console.debug("Shortest order:", minHeightPerm);
 };
 
 const login = new Login(window.modals.login as Modal, "/my/", "opaque");
 login.onLogin = () => {
-    console.log("Logged in.");
-    document.querySelector(".page-container").classList.remove("unfocused");
+    document.querySelector(".page-container").classList.remove("ui-hidden");
     document.dispatchEvent(new CustomEvent("details-reload"));
 };
 

@@ -22,7 +22,7 @@
                     <span class="button ~urge @low next">{{ .lang.StartPage.start }}</span>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.Language.title }}</span>
                     <p class="content" id="language-description"></p>
@@ -53,7 +53,7 @@
                     <span class="button ~urge @low next">{{ .lang.Strings.next }}</span>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.General.title }}</span>
                     <div class="flex flex-row gap-2 justify-between">
@@ -153,7 +153,7 @@
                     <span class="button ~urge @low next">{{ .lang.Strings.next }}</span>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.Login.title }}</span>
                     <p class="content">{{ .lang.Login.description }}</p>
@@ -198,7 +198,7 @@
                     <span class="button ~urge @low next">{{ .lang.Strings.next }}</span>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.JellyfinEmby.title }}</span>
                     <p class="content">{{ .lang.JellyfinEmby.description }}</p>
@@ -249,7 +249,7 @@
                     </div>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.Ombi.title }}</span>
                     <p class="content">{{ .lang.Ombi.description }}</p>
@@ -291,7 +291,7 @@
                     </div>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.UserPage.title }}</span>
                     <p class="content">{{ .lang.UserPage.description }}</p>
@@ -308,7 +308,7 @@
                     </div>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.Messages.title }}</span>
                     <p class="content" id="messages-description"></p>
@@ -403,7 +403,7 @@
                     </div>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused related-to-email">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden related-to-email">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.Notifications.title }}</span>
                     <p class="content">{{ .lang.Notifications.description }}</p>
@@ -427,7 +427,7 @@
                     </div>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused related-to-email">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden related-to-email">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.InviteEmails.title }}</span>
                     <p class="content">{{ .lang.InviteEmails.description }}</p>
@@ -446,7 +446,7 @@
                     </div>
                 </section>
             </div>
-            <div id="password-resets" class="card lg:container sectioned ~neutral @low unfocused related-to-email">
+            <div id="password-resets" class="card lg:container sectioned ~neutral @low ui-hidden related-to-email">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.PasswordResets.title }}</span>
                     <p class="content">{{ .lang.PasswordResets.description }}</p>
@@ -486,7 +486,7 @@
                     </div>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.PasswordValidation.title }}</span>
                     <p class="content">{{ .lang.PasswordValidation.description }}</p>
@@ -521,7 +521,7 @@
                     </div>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-between">
                     <span class="heading">{{ .lang.HelpMessages.title }}</span>
                     <p class="content">{{ .lang.HelpMessages.description }}</p>
@@ -554,7 +554,7 @@
                     </div>
                 </section>
             </div>
-            <div class="card lg:container sectioned ~neutral @low unfocused">
+            <div class="card lg:container sectioned ~neutral @low ui-hidden">
                 <section class="section flex flex-col gap-2 justify-center items-center">
                     <span class="heading">{{ .lang.EndPage.finished }}</span>
                     <p class="content text-center">{{ .lang.EndPage.moreFeatures }} {{ .lang.EndPage.restartReload }} {{ .lang.EndPage.ifFailedLoad }}</p>
@@ -562,8 +562,8 @@
                 <section class="section w-full ~neutral footer flex flex-row justify-center items-center gap-2">
                     <span class="button ~neutral @low back">{{ .lang.Strings.back }}</span>
                     <span class="button ~urge @low" id="restart">{{ .lang.Strings.submit }}</span>
-                    <a class="button ~urge @low flex flex-col gap-0.5 unfocused" id="refresh-internal"></a>
-                    <a class="button ~urge @low flex flex-col gap-0.5 unfocused" id="refresh-external"></a>
+                    <a class="button ~urge @low flex flex-col gap-0.5 ui-hidden" id="refresh-internal"></a>
+                    <a class="button ~urge @low flex flex-col gap-0.5 ui-hidden" id="refresh-external"></a>
                 </div>
             </div>
         </div>

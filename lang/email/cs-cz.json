@@ -52,7 +52,8 @@
         "youHaveBeenInvited": "Byli jste pozváni do Jellyfinu.",
         "toJoin": "Chcete-li se připojit, postupujte podle níže uvedeného odkazu.",
         "inviteExpiry": "Platnost této pozvánky vyprší {date} v {time}, což je za {expiresInMinutes}, proto jednejte rychle.",
-        "linkButton": "Nastavte si účet"
+        "linkButton": "Nastavte si účet",
+        "linkFallbackHint": "If the button does not work, copy and paste this link into your browser."
     },
     "welcomeEmail": {
         "name": "Vítejte",

@@ -1,4 +1,4 @@
-import { _get, _post, toggleLoader, notificationBox } from "./modules/common.js";
+import { _get, _post, toggleLoader, notificationBox, formatApiFailure } from "./modules/common.js";
 import { lang, LangFile, loadLangSelector } from "./modules/lang.js";
 import { ThemeManager } from "./modules/theme.js";
 import { PageManager } from "./modules/pages.js";
@@ -61,9 +61,9 @@ class Input {
                     el = el.parentElement;
                 }
                 if (event.detail !== dependsTrue) {
-                    el.classList.add("unfocused");
+                    el.classList.add("ui-hidden");
                 } else {
-                    el.classList.remove("unfocused");
+                    el.classList.remove("ui-hidden");
                 }
             });
         }
@@ -84,7 +84,7 @@ class Checkbox {
     private _setting: string;
     broadcast = () => {
         let state = this._el.checked;
-        if (this._hideEl.classList.contains("unfocused")) {
+        if (this._hideEl.classList.contains("ui-hidden")) {
             state = false;
         }
         if (this._section && this._setting) {
@@ -116,10 +116,10 @@ class Checkbox {
         if (depends) {
             document.addEventListener(`settings-${section}-${depends}`, (event: boolEvent) => {
                 if (event.detail !== dependsTrue) {
-                    this._hideEl.classList.add("unfocused");
+                    this._hideEl.classList.add("ui-hidden");
                     this.broadcast();
                 } else {
-                    this._hideEl.classList.remove("unfocused");
+                    this._hideEl.classList.remove("ui-hidden");
                     this.broadcast();
                 }
             });
@@ -165,17 +165,17 @@ class BoolRadios {
             document.addEventListener(`settings-${section}-${depends}`, (event: boolEvent) => {
                 if (event.detail !== dependsTrue) {
                     if (this._els[0].parentElement.tagName == "LABEL") {
-                        this._els[0].parentElement.classList.add("unfocused");
+                        this._els[0].parentElement.classList.add("ui-hidden");
                     }
                     if (this._els[1].parentElement.tagName == "LABEL") {
-                        this._els[1].parentElement.classList.add("unfocused");
+                        this._els[1].parentElement.classList.add("ui-hidden");
                     }
                 } else {
                     if (this._els[0].parentElement.tagName == "LABEL") {
-                        this._els[0].parentElement.classList.remove("unfocused");
+                        this._els[0].parentElement.classList.remove("ui-hidden");
                     }
                     if (this._els[1].parentElement.tagName == "LABEL") {
-                        this._els[1].parentElement.classList.remove("unfocused");
+                        this._els[1].parentElement.classList.remove("ui-hidden");
                     }
                 }
             });
@@ -194,9 +194,9 @@ class BoolRadios {
 //                 let el = this._el as HTMLElement;
 //                 if (el.parentElement.tagName == "LABEL") { el = el.parentElement; }
 //                 if (event.detail !== dependsTrue) {
-//                     el.classList.add("unfocused");
+//                     el.classList.add("ui-hidden");
 //                 } else {
-//                     el.classList.remove("unfocused");
+//                     el.classList.remove("ui-hidden");
 //                 }
 //             });
 //         }
@@ -245,9 +245,9 @@ class Select {
                     el = el.parentElement;
                 }
                 if (event.detail !== dependsTrue) {
-                    el.classList.add("unfocused");
+                    el.classList.add("ui-hidden");
                 } else {
-                    el.classList.remove("unfocused");
+                    el.classList.remove("ui-hidden");
                 }
             });
         }
@@ -268,12 +268,20 @@ class LangSelect extends Select {
             "/lang/" + page,
             null,
             (req: XMLHttpRequest) => {
-                if (req.readyState == 4 && req.status == 200) {
-                    for (let code in req.response) {
-                        this.add(code, req.response[code]);
+                if (req.readyState != 4) return;
+                if (req.status != 200) {
+                    if (req.status !== 401 && req.status !== 403 && req.status !== 429) {
+                        window.notifications.customError(
+                            "setupLangListError",
+                            formatApiFailure(req, window.lang.strings("errorUnknown")),
+                        );
                     }
-                    this.value = "en-us";
+                    return;
                 }
+                for (let code in req.response) {
+                    this.add(code, req.response[code]);
+                }
+                this.value = "en-us";
             },
             true,
         );
@@ -509,7 +517,7 @@ const serialize = () => {
                         const old = restartButton.textContent;
                         restartButton.classList.add("~critical");
                         restartButton.classList.remove("~urge");
-                        restartButton.textContent = window.lang.strings("errorUnknown");
+                        restartButton.textContent = formatApiFailure(req, window.lang.strings("errorUnknown"));
                         setTimeout(() => {
                             restartButton.classList.add("~urge");
                             restartButton.classList.remove("~critical");
@@ -521,7 +529,7 @@ const serialize = () => {
                         const old = restartButton.textContent;
                         restartButton.classList.add("~critical");
                         restartButton.classList.remove("~urge");
-                        restartButton.textContent = req.response["error"];
+                        restartButton.textContent = formatApiFailure(req, window.lang.strings("errorUnknown"));
                         setTimeout(() => {
                             restartButton.classList.add("~urge");
                             restartButton.classList.remove("~critical");
@@ -530,21 +538,22 @@ const serialize = () => {
                         return;
                     }
                 }
-                restartButton.parentElement.querySelector("span.back").classList.add("unfocused");
-                restartButton.classList.add("unfocused");
+                restartButton.parentElement.querySelector("span.back").classList.add("ui-hidden");
+                restartButton.classList.add("ui-hidden");
                 const refreshURLs = constructNewURLs();
                 const refreshButtons = [
                     document.getElementById("refresh-internal") as HTMLAnchorElement,
                     document.getElementById("refresh-external") as HTMLAnchorElement,
                 ];
-                ["internal", "external"].forEach((urltype, i) => {
+                const urlLabels = ["internal", "external"];
+                for (let i = 0; i < refreshURLs.length; i++) {
                     const button = refreshButtons[i];
-                    button.classList.remove("unfocused");
-                    button.href = refreshURLs[i];
+                    const url = refreshURLs[i];
+                    button.classList.remove("ui-hidden");
+                    button.href = url;
+                    const urltype = urlLabels[i];
                     button.innerHTML = `<span>${urltype.charAt(0).toUpperCase() + urltype.slice(1)}:</span><i class="italic underline">${button.href}</i>`;
-                    // skip external if it isn't set
-                    if (refreshURLs.length == 1) return;
-                });
+                }
             }
         },
         true,
@@ -568,26 +577,26 @@ const emailMethodChange = () => {
         for (let el of relatedToEmail) {
             el.classList.add("hidden");
         }
-        emailSect.classList.add("unfocused");
+        emailSect.classList.add("ui-hidden");
         return;
     } else {
         for (let el of relatedToEmail) {
             el.classList.remove("hidden");
         }
-        emailSect.classList.remove("unfocused");
+        emailSect.classList.remove("ui-hidden");
     }
     if (val == "smtp") {
-        smtp.classList.remove("unfocused");
-        mailgun.classList.add("unfocused");
+        smtp.classList.remove("ui-hidden");
+        mailgun.classList.add("ui-hidden");
     } else if (val == "mailgun") {
-        mailgun.classList.remove("unfocused");
-        smtp.classList.add("unfocused");
+        mailgun.classList.remove("ui-hidden");
+        smtp.classList.add("ui-hidden");
         for (let el of relatedToEmail) {
             el.classList.remove("hidden");
         }
     } else {
-        mailgun.classList.add("unfocused");
-        smtp.classList.add("unfocused");
+        mailgun.classList.add("ui-hidden");
+        smtp.classList.add("ui-hidden");
     }
 };
 settings["email"]["method"].onchange = emailMethodChange;
@@ -674,11 +683,11 @@ const cards = Array.from(
             title: titleEl.textContent + " - jfa-go",
             url: "/" + (!title ? "" : "#") + title,
             show: () => {
-                cards[i].classList.remove("unfocused");
+                cards[i].classList.remove("ui-hidden");
                 return true;
             },
             hide: () => {
-                cards[i].classList.add("unfocused");
+                cards[i].classList.add("ui-hidden");
                 return true;
             },
             shouldSkip: () => {
@@ -700,9 +709,13 @@ const cards = Array.from(
     const nextButton = button.parentElement.querySelector("span.next") as HTMLSpanElement;
     button.onclick = () => {
         toggleLoader(button);
+        const internalServer = (settings["jellyfin"]["server"].value || "").trim();
+        const publicServer = (settings["jellyfin"]["public_server"].value || "").trim();
+        // Test uses the same URL jfa-go uses for API calls: prefer internal, else public (e.g. only a proxy URL filled in).
+        const serverForTest = internalServer || publicServer;
         let send = {
             type: settings["jellyfin"]["type"].value,
-            server: settings["jellyfin"]["server"].value,
+            server: serverForTest,
             username: settings["jellyfin"]["username"].value,
             password: settings["jellyfin"]["password"].value,
             proxy: settings["advanced"]["proxy"].value == "true",
@@ -726,12 +739,7 @@ const cards = Array.from(
                             button.classList.add("~urge");
                             button.classList.remove("~critical");
                         }, 5000);
-                        const errorMsg = req.response["error"] as string;
-                        if (!errorMsg) {
-                            button.textContent = window.lang.strings("error");
-                        } else {
-                            button.textContent = window.lang.strings(errorMsg);
-                        }
+                        button.textContent = formatApiFailure(req, window.lang.strings("error"));
                         return;
                     }
                     nextButton.removeAttribute("disabled");

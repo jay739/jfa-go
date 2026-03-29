@@ -1,0 +1,8 @@
+# Local image after `make all`: matches hrfee/jfa-go layout (/opt/jfa-go) + curl for compose healthcheck.
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+COPY build/jfa-go /opt/jfa-go/jfa-go
+COPY build/data /opt/jfa-go/data
+EXPOSE 8056 8057
+CMD ["/opt/jfa-go/jfa-go", "-data", "/data"]

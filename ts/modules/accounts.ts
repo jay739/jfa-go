@@ -8,6 +8,7 @@ import {
     toDateString,
     insertText,
     toClipboard,
+    formatApiFailure,
 } from "../modules/common";
 import { templateEmail } from "../modules/settings";
 import { Marked } from "@ts-stack/markdown";
@@ -22,6 +23,16 @@ declare var window: GlobalWindow;
 
 const USER_DEFAULT_SORT_FIELD = "name";
 const USER_DEFAULT_SORT_ASCENDING = true;
+
+/** True when any channel exists that `sendByID` can use for announcements. */
+function messagingAvailableForAnnounce(): boolean {
+    return !!(
+        window.emailEnabled ||
+        window.telegramEnabled ||
+        window.discordEnabled ||
+        window.matrixEnabled
+    );
+}
 
 const dateParser = require("any-date-parser");
 
@@ -230,9 +241,9 @@ class User extends TableRow implements UserDTO, SearchableItem {
     private _checkUnlinkArea = () => {
         const unlinkHeader = this._notifyDropdown.querySelector(".accounts-unlink-header") as HTMLSpanElement;
         if (this.lastNotifyMethod() == "email" || !this.lastNotifyMethod()) {
-            unlinkHeader.classList.add("unfocused");
+            unlinkHeader.classList.add("ui-hidden");
         } else {
-            unlinkHeader.classList.remove("unfocused");
+            unlinkHeader.classList.remove("ui-hidden");
         }
     };
 
@@ -305,9 +316,9 @@ class User extends TableRow implements UserDTO, SearchableItem {
         this._emailEditor.value = value;
         const lastNotifyMethod = this.lastNotifyMethod() == "email";
         if (!value) {
-            this._notifyDropdown.querySelector(".accounts-area-email").classList.add("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-email").classList.add("ui-hidden");
         } else {
-            this._notifyDropdown.querySelector(".accounts-area-email").classList.remove("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-email").classList.remove("ui-hidden");
             if (lastNotifyMethod) {
                 (this._email.parentElement as HTMLDivElement).appendChild(this._notifyDropdown);
             }
@@ -423,25 +434,25 @@ class User extends TableRow implements UserDTO, SearchableItem {
     }
     set matrix(u: string) {
         if (!window.matrixEnabled) {
-            this._notifyDropdown.querySelector(".accounts-area-matrix").classList.add("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-matrix").classList.add("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-matrix").classList.add("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-matrix").classList.add("ui-hidden");
             return;
         }
         const lastNotifyMethod = this.lastNotifyMethod() == "matrix";
         this._matrixID = u;
         if (!u) {
-            this._notifyDropdown.querySelector(".accounts-area-matrix").classList.add("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-matrix").classList.add("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-matrix").classList.add("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-matrix").classList.add("ui-hidden");
             this._matrix.innerHTML = `
             <div class="table-inline justify-center">
                 <span class="chip btn @low"><i class="ri-link" alt="${window.lang.strings("add")}"></i></span>
-                <input type="text" class="input ~neutral @low stealth-input unfocused" placeholder="@user:riot.im">
+                <input type="text" class="input ~neutral @low stealth-input ui-hidden" placeholder="@user:riot.im">
             </div>
         `;
             (this._matrix.querySelector("span") as HTMLSpanElement).onclick = this._addMatrix;
         } else {
-            this._notifyDropdown.querySelector(".accounts-area-matrix").classList.remove("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-matrix").classList.remove("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-matrix").classList.remove("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-matrix").classList.remove("ui-hidden");
             this._matrix.innerHTML = `
             <div class="accounts-settings-area flex flex-row gap-2 justify-center">
                 ${u}
@@ -461,7 +472,7 @@ class User extends TableRow implements UserDTO, SearchableItem {
         const input = this._matrix.querySelector("input.stealth-input") as HTMLInputElement;
         const addIcon = addButton.querySelector("i");
         if (addButton.classList.contains("chip")) {
-            input.classList.remove("unfocused");
+            input.classList.remove("ui-hidden");
             addIcon.classList.add("ri-check-line");
             addIcon.classList.remove("ri-link");
             addButton.classList.remove("chip");
@@ -489,7 +500,7 @@ class User extends TableRow implements UserDTO, SearchableItem {
                     if (req.status != 200) {
                         window.notifications.customError(
                             "errorConnectMatrix",
-                            window.lang.notif("errorFailureCheckLogs"),
+                            formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                         );
                         return;
                     }
@@ -513,20 +524,20 @@ class User extends TableRow implements UserDTO, SearchableItem {
     }
     set telegram(u: string) {
         if (!window.telegramEnabled) {
-            this._notifyDropdown.querySelector(".accounts-area-telegram").classList.add("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-telegram").classList.add("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-telegram").classList.add("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-telegram").classList.add("ui-hidden");
             return;
         }
         const lastNotifyMethod = this.lastNotifyMethod() == "telegram";
         this._telegramUsername = u;
         if (!u) {
-            this._notifyDropdown.querySelector(".accounts-area-telegram").classList.add("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-telegram").classList.add("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-telegram").classList.add("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-telegram").classList.add("ui-hidden");
             this._telegram.innerHTML = `<div class="table-inline justify-center"><span class="chip btn @low"><i class="ri-link" alt="${window.lang.strings("add")}"></i></span></div>`;
             (this._telegram.querySelector("span") as HTMLSpanElement).onclick = this._addTelegram;
         } else {
-            this._notifyDropdown.querySelector(".accounts-area-telegram").classList.remove("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-telegram").classList.remove("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-telegram").classList.remove("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-telegram").classList.remove("ui-hidden");
             this._telegram.innerHTML = `
             <div class="accounts-settings-area flex flex-row gap-2 justify-center">
                 <a class="force-ltr" href="https://t.me/${u}" target="_blank">@${u}</a>
@@ -574,7 +585,10 @@ class User extends TableRow implements UserDTO, SearchableItem {
             (req: XMLHttpRequest) => {
                 if (req.readyState == 4) {
                     if (req.status != 200) {
-                        window.notifications.customError("errorSetNotify", window.lang.notif("errorSaveSettings"));
+                        window.notifications.customError(
+                            "errorSetNotify",
+                            formatApiFailure(req, window.lang.notif("errorSaveSettings")),
+                        );
                         document.dispatchEvent(new CustomEvent("accounts-reload"));
                         return;
                     }
@@ -599,8 +613,8 @@ class User extends TableRow implements UserDTO, SearchableItem {
     }
     set discord(u: string) {
         if (!window.discordEnabled) {
-            this._notifyDropdown.querySelector(".accounts-area-discord").classList.add("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-discord").classList.add("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-discord").classList.add("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-discord").classList.add("ui-hidden");
             return;
         }
         const lastNotifyMethod = this.lastNotifyMethod() == "discord";
@@ -608,11 +622,11 @@ class User extends TableRow implements UserDTO, SearchableItem {
         if (!u) {
             this._discord.innerHTML = `<div class="table-inline justify-center"><span class="chip btn @low"><i class="ri-link" alt="${window.lang.strings("add")}"></i></span></div>`;
             (this._discord.querySelector("span") as HTMLSpanElement).onclick = () => addDiscord(this.id);
-            this._notifyDropdown.querySelector(".accounts-area-discord").classList.add("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-discord").classList.add("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-discord").classList.add("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-discord").classList.add("ui-hidden");
         } else {
-            this._notifyDropdown.querySelector(".accounts-area-discord").classList.remove("unfocused");
-            this._notifyDropdown.querySelector(".accounts-unlink-discord").classList.remove("unfocused");
+            this._notifyDropdown.querySelector(".accounts-area-discord").classList.remove("ui-hidden");
+            this._notifyDropdown.querySelector(".accounts-unlink-discord").classList.remove("ui-hidden");
             this._discord.innerHTML = `
             <div class="accounts-settings-area flex flex-row gap-2 justify-center">
                 <a href="https://discord.com/users/${this._discordID}" class="discord-link force-ltr" target="_blank">${u}</a>
@@ -790,7 +804,10 @@ class User extends TableRow implements UserDTO, SearchableItem {
                     if (req.readyState == 4) {
                         if (req.status != 204) {
                             this.accounts_admin = !this.accounts_admin;
-                            window.notifications.customError("accountsAdminChanged", window.lang.notif("errorUnknown"));
+                            window.notifications.customError(
+                                "accountsAdminChanged",
+                                formatApiFailure(req, window.lang.notif("errorUnknown")),
+                            );
                         }
                     }
                 });
@@ -818,7 +835,10 @@ class User extends TableRow implements UserDTO, SearchableItem {
             if (req.readyState == 4) {
                 if (req.status != 204) {
                     this.label = this._labelEditor.previous;
-                    window.notifications.customError("labelChanged", window.lang.notif("errorUnknown"));
+                    window.notifications.customError(
+                        "labelChanged",
+                        formatApiFailure(req, window.lang.notif("errorUnknown")),
+                    );
                 }
             }
         });
@@ -838,7 +858,10 @@ class User extends TableRow implements UserDTO, SearchableItem {
                     this.email = this._emailEditor.previous;
                     window.notifications.customError(
                         "emailChanged",
-                        window.lang.var("notifications", "errorChangedEmailAddress", `"${this.name}"`),
+                        formatApiFailure(
+                            req,
+                            window.lang.var("notifications", "errorChangedEmailAddress", `"${this.name}"`),
+                        ),
                     );
                 }
             }
@@ -996,6 +1019,8 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
     private _enableReferralsInvite = document.getElementById("radio-referrals-use-invite") as HTMLInputElement;*/
     private _enableReferralsSource: RadioBasedTabSelector;
     private _sendPWR = document.getElementById("accounts-send-pwr") as HTMLSpanElement;
+    private _copyUserIds = document.getElementById("accounts-copy-ids") as HTMLSpanElement;
+    private _openJellyfin = document.getElementById("accounts-open-jellyfin") as HTMLSpanElement;
     private _profileSelect = document.getElementById("modify-user-profiles") as HTMLSelectElement;
     private _userSelect = document.getElementById("modify-user-users") as HTMLSelectElement;
     private _referralsProfileSelect = document.getElementById("enable-referrals-user-profiles") as HTMLSelectElement;
@@ -1063,7 +1088,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 this._inDetails = true;
                 // To make things look better, run processSelectedAccounts before -actually- unhiding.
                 this.processSelectedAccounts();
-                this._table.classList.add("unfocused");
+                this._table.classList.add("ui-hidden");
                 this._details.hidden = false;
 
                 const url = new URL(window.location.href);
@@ -1079,7 +1104,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         this._inDetails = false;
         this.processSelectedAccounts();
         this._details.hidden = true;
-        this._table.classList.remove("unfocused");
+        this._table.classList.remove("ui-hidden");
         this.bindPageEvents();
 
         const url = new URL(window.location.href);
@@ -1154,8 +1179,12 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             defaultSortAscending: USER_DEFAULT_SORT_ASCENDING,
             pageLoadCallback: (req: XMLHttpRequest) => {
                 if (req.readyState != 4) return;
-                // FIXME: Error message
-                if (req.status != 200) return;
+                if (req.status != 200) {
+                    window.notifications.customError(
+                        "accountsPageLoad",
+                        formatApiFailure(req, window.lang.notif("errorLoadUsers")),
+                    );
+                }
             },
         });
         this._populateNumbers();
@@ -1202,13 +1231,13 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
 
         this._deleteNotify.onchange = () => {
             if (this._deleteNotify.checked) {
-                this._deleteReason.classList.remove("unfocused");
+                this._deleteReason.classList.remove("ui-hidden");
             } else {
-                this._deleteReason.classList.add("unfocused");
+                this._deleteReason.classList.add("ui-hidden");
             }
         };
         this._modifySettings.onclick = this.modifyUsers;
-        this._modifySettings.classList.add("unfocused");
+        this._modifySettings.classList.add("action-unavailable");
 
         this._modifySettingsProfileSource = new RadioBasedTabSelector(
             document.getElementById("modify-user-profile-source"),
@@ -1218,8 +1247,8 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 id: "profile",
                 content: this._profileSelect.parentElement,
                 onShow: () => {
-                    this._applyOmbi?.parentElement.classList.remove("unfocused");
-                    this._applyJellyseerr?.parentElement.classList.remove("unfocused");
+                    this._applyOmbi?.parentElement.classList.remove("ui-hidden");
+                    this._applyJellyseerr?.parentElement.classList.remove("ui-hidden");
                 },
             },
             {
@@ -1227,8 +1256,8 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 id: "user",
                 content: this._userSelect.parentElement,
                 onShow: () => {
-                    this._applyOmbi?.parentElement.classList.add("unfocused");
-                    this._applyJellyseerr?.parentElement.classList.add("unfocused");
+                    this._applyOmbi?.parentElement.classList.add("ui-hidden");
+                    this._applyJellyseerr?.parentElement.classList.add("ui-hidden");
                 },
             },
         );
@@ -1255,10 +1284,13 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         }
 
         this._deleteUser.onclick = this.deleteUsers;
-        this._deleteUser.classList.add("unfocused");
+        this._deleteUser.classList.add("action-unavailable");
+
+        this._copyUserIds.onclick = () => this.copySelectedUserIds();
+        this._openJellyfin.onclick = () => this.openSelectedInJellyfin();
 
         this._announceButton.onclick = this.announce;
-        this._announceButton.parentElement.classList.add("unfocused");
+        this._announceButton.parentElement.classList.add("action-unavailable");
 
         this._extendExpiry.onclick = () => {
             this.extendExpiry();
@@ -1266,8 +1298,8 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         this._removeExpiry.onclick = () => {
             this.removeExpiry();
         };
-        this._expiryDropdown.classList.add("unfocused");
-        this._extendExpiryDate.classList.add("unfocused");
+        this._expiryDropdown.classList.add("action-unavailable");
+        this._extendExpiryDate.classList.add("ui-hidden");
 
         this._extendExpiryTextInput.onkeyup = () => {
             this._extendExpiryTextInput.parentElement.classList.remove("opacity-60");
@@ -1302,31 +1334,31 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         }
 
         this._disableEnable.onclick = this.enableDisableUsers;
-        this._disableEnable.parentElement.classList.add("unfocused");
+        this._disableEnable.parentElement.classList.add("action-unavailable");
 
         this._enableExpiry.onclick = () => {
             this.extendExpiry(true);
         };
         this._enableExpiryNotify.onchange = () => {
             if (this._enableExpiryNotify.checked) {
-                this._enableExpiryReason.classList.remove("unfocused");
+                this._enableExpiryReason.classList.remove("ui-hidden");
             } else {
-                this._enableExpiryReason.classList.add("unfocused");
+                this._enableExpiryReason.classList.add("ui-hidden");
             }
         };
 
         if (!window.usernameEnabled) {
-            this._addUserName.classList.add("unfocused");
+            this._addUserName.classList.add("ui-hidden");
             this._addUserName = this._addUserEmail;
         }
 
         if (!window.linkResetEnabled) {
-            this._sendPWR.classList.add("unfocused");
+            this._sendPWR.classList.add("action-unavailable");
         } else {
             this._sendPWR.onclick = this.sendPWR;
         }
         /*if (!window.emailEnabled) {
-            this._deleteNotify.parentElement.classList.add("unfocused");
+            this._deleteNotify.parentElement.classList.add("ui-hidden");
             this._deleteNotify.checked = false;
         }*/
 
@@ -1342,7 +1374,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                         if (req.status != 200) {
                             window.notifications.customError(
                                 "errorConnectDiscord",
-                                window.lang.notif("errorFailureCheckLogs"),
+                                formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                             );
                             return;
                         }
@@ -1441,12 +1473,47 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             // this.details(ev.detail.id);
         });
 
-        // Get rid of nasty CSS
         window.modals.announce.onclose = () => {
             const preview = document.getElementById("announce-preview") as HTMLDivElement;
-            preview.textContent = ``;
+            preview.replaceChildren();
+            this._previewLoaded = false;
+            const details = document.getElementById("announce-details");
+            details.classList.remove("ui-hidden");
+            this._announceNameLabel.classList.add("ui-hidden");
+            this._announceSaveButton.classList.remove("ui-hidden");
+            const nameInput = this._announceNameLabel.querySelector("input") as HTMLInputElement;
+            if (nameInput) nameInput.value = "";
+            const form = document.getElementById("form-announce") as HTMLFormElement;
+            const submit = form.querySelector("span.submit") as HTMLSpanElement;
+            removeLoader(submit);
+            form.onsubmit = null;
         };
+
+        this._initAnnouncementsNotice();
     }
+
+    /** Explains announcements: who can use them and which contact channels apply. */
+    private _initAnnouncementsNotice = () => {
+        const el = document.getElementById("accounts-announcements-notice");
+        if (!el) return;
+        el.replaceChildren();
+        const box = document.createElement("aside");
+        box.className = "col aside sm ~info mb-2 rounded-lg border border-black/5 bg-slate-50/90 p-3 shadow-sm dark:border-white/10 dark:bg-slate-900/40";
+        const p = document.createElement("p");
+        p.className = "content text-sm support mb-2 last:mb-0";
+        if (messagingAvailableForAnnounce()) {
+            p.textContent = window.lang.strings("announcementsNoticeEnabled");
+            box.appendChild(p);
+            const p2 = document.createElement("p");
+            p2.className = "content text-sm support mb-2 last:mb-0";
+            p2.textContent = window.lang.strings("announcementsNoticeWhoCanAccess");
+            box.appendChild(p2);
+        } else {
+            p.textContent = window.lang.strings("announcementsNoticeNoMessaging");
+            box.appendChild(p);
+        }
+        el.appendChild(box);
+    };
 
     reload = (callback?: (resp: PaginatedDTO) => void) => {
         this._reload(callback);
@@ -1481,7 +1548,6 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         }
 
         this._selectAllState = next;
-        console.debug("New check state:", next);
 
         if (next == SelectAllState.None) {
             // Deselect -all- users, rather than just visible ones, to be safe.
@@ -1501,7 +1567,6 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 this.users.get(id).setSelected(true, false);
                 count++;
             }
-            console.debug("Selected", count);
             this._selectAll.checked = true;
             if (this.lastPage) {
                 this._selectAllState = SelectAllState.All;
@@ -1544,24 +1609,25 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
     };
 
     private processSelectedAccounts = () => {
-        console.debug("processSelectedAccounts");
         const list = this._collectUsers();
         this._counter.selected = list.length;
         if (this._counter.selected == 0) {
             this._selectAll.indeterminate = false;
             this._selectAll.checked = false;
             this._selectAll.title = "";
-            this._modifySettings.classList.add("unfocused");
+            this._modifySettings.classList.add("action-unavailable");
             if (window.referralsEnabled) {
-                this._enableReferrals.classList.add("unfocused");
+                this._enableReferrals.classList.add("action-unavailable");
             }
-            this._deleteUser.classList.add("unfocused");
-            if (window.emailEnabled || window.telegramEnabled) {
-                this._announceButton.parentElement.classList.add("unfocused");
+            this._deleteUser.classList.add("action-unavailable");
+            if (messagingAvailableForAnnounce()) {
+                this._announceButton.parentElement.classList.add("action-unavailable");
             }
-            this._expiryDropdown.classList.add("unfocused");
-            this._disableEnable.parentElement.classList.add("unfocused");
-            this._sendPWR.classList.add("unfocused");
+            this._expiryDropdown.classList.add("action-unavailable");
+            this._disableEnable.parentElement.classList.add("action-unavailable");
+            this._sendPWR.classList.add("action-unavailable");
+            this._copyUserIds.classList.add("action-unavailable");
+            this._openJellyfin.classList.add("action-unavailable");
         } else {
             if (this._counter.selected == this._visible.length) {
                 this._selectAll.checked = true;
@@ -1578,14 +1644,23 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 this._selectAll.checked = false;
                 this._selectAll.indeterminate = true;
             }
-            this._modifySettings.classList.remove("unfocused");
+            this._modifySettings.classList.remove("action-unavailable");
             if (window.referralsEnabled) {
-                this._enableReferrals.classList.remove("unfocused");
+                this._enableReferrals.classList.remove("action-unavailable");
             }
-            this._deleteUser.classList.remove("unfocused");
+            this._deleteUser.classList.remove("action-unavailable");
             this._deleteUser.textContent = window.lang.quantity("deleteUser", list.length);
-            if (window.emailEnabled || window.telegramEnabled) {
-                this._announceButton.parentElement.classList.remove("unfocused");
+            if (messagingAvailableForAnnounce()) {
+                this._announceButton.parentElement.classList.remove("action-unavailable");
+            }
+            this._copyUserIds.classList.remove("action-unavailable");
+            const jfBase =
+                typeof (window as GlobalWindow).jellyfinWebURL === "string" &&
+                (window as GlobalWindow).jellyfinWebURL.length > 0;
+            if (list.length === 1 && jfBase) {
+                this._openJellyfin.classList.remove("action-unavailable");
+            } else {
+                this._openJellyfin.classList.add("action-unavailable");
             }
 
             let anyNonExpiries = list.length == 0 ? true : false;
@@ -1598,14 +1673,14 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             for (let id of list) {
                 if (!anyNonExpiries && !this.users.get(id).expiry) {
                     anyNonExpiries = true;
-                    this._expiryDropdown.classList.add("unfocused");
+                    this._expiryDropdown.classList.add("action-unavailable");
                 }
                 if (this.users.get(id).expiry) {
                     allNonExpiries = false;
                 }
                 if (showDisableEnable && this.users.get(id).disabled != this._shouldEnable) {
                     showDisableEnable = false;
-                    this._disableEnable.parentElement.classList.add("unfocused");
+                    this._disableEnable.parentElement.classList.add("action-unavailable");
                 }
                 if (!showDisableEnable && anyNonExpiries) {
                     break;
@@ -1623,21 +1698,21 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             }
             this._settingExpiry = false;
             if (!anyNonExpiries && !allNonExpiries) {
-                this._expiryDropdown.classList.remove("unfocused");
+                this._expiryDropdown.classList.remove("action-unavailable");
                 this._extendExpiry.textContent = window.lang.strings("extendExpiry");
-                this._removeExpiry.classList.remove("unfocused");
+                this._removeExpiry.classList.remove("ui-hidden");
             }
             if (allNonExpiries) {
-                this._expiryDropdown.classList.remove("unfocused");
+                this._expiryDropdown.classList.remove("action-unavailable");
                 this._extendExpiry.textContent = window.lang.strings("setExpiry");
                 this._settingExpiry = true;
-                this._removeExpiry.classList.add("unfocused");
+                this._removeExpiry.classList.add("ui-hidden");
             }
             // Only show "Send PWR" if a maximum of 1 user selected doesn't have a contact method
             if (noContactCount > 1) {
-                this._sendPWR.classList.add("unfocused");
+                this._sendPWR.classList.add("action-unavailable");
             } else if (window.linkResetEnabled) {
-                this._sendPWR.classList.remove("unfocused");
+                this._sendPWR.classList.remove("action-unavailable");
             }
             if (showDisableEnable) {
                 let message: string;
@@ -1652,14 +1727,14 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                     this._disableEnable.classList.add("~warning");
                     this._disableEnable.classList.remove("~positive");
                 }
-                this._disableEnable.parentElement.classList.remove("unfocused");
+                this._disableEnable.parentElement.classList.remove("action-unavailable");
                 this._disableEnable.textContent = message;
             }
             if (window.referralsEnabled) {
                 if (referralState == -1) {
-                    this._enableReferrals.classList.add("unfocused");
+                    this._enableReferrals.classList.add("action-unavailable");
                 } else {
-                    this._enableReferrals.classList.remove("unfocused");
+                    this._enableReferrals.classList.remove("action-unavailable");
                 }
                 if (referralState == 0) {
                     this._enableReferrals.classList.add("~urge");
@@ -1673,16 +1748,16 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             }
             if (this._details.hidden) {
                 this._c.loadAllButtons.forEach((el) => {
-                    // FIXME: Using hidden here instead of unfocused so that it doesn't interfere with any PaginatedList behaviour. Don't do this.
+                    // FIXME: Using hidden here instead of ui-hidden so that it doesn't interfere with any PaginatedList behaviour. Don't do this.
                     el.classList.add("hidden");
                 });
-                this._addUserButton.classList.remove("unfocused");
+                this._addUserButton.classList.remove("action-unavailable");
             } else {
                 this._c.loadAllButtons.forEach((el) => {
-                    // FIXME: Using hidden here instead of unfocused so that it doesn't interfere with any PaginatedList behaviour. Don't do this.
+                    // FIXME: Using hidden here instead of ui-hidden so that it doesn't interfere with any PaginatedList behaviour. Don't do this.
                     el.classList.add("hidden");
                 });
-                this._addUserButton.classList.add("unfocused");
+                this._addUserButton.classList.add("action-unavailable");
             }
         }
     };
@@ -1696,6 +1771,30 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             }
         }
         return list;
+    };
+
+    private copySelectedUserIds = () => {
+        const ids = this._collectUsers();
+        if (ids.length === 0) {
+            return;
+        }
+        toClipboard(ids.join("\n"));
+        window.notifications.customSuccess("copyUserIds", window.lang.notif("copyIdsSuccess"));
+    };
+
+    private openSelectedInJellyfin = () => {
+        const base = (window as GlobalWindow).jellyfinWebURL;
+        if (typeof base !== "string" || !base.length) {
+            window.notifications.customError("noJfUrl", window.lang.notif("errorJellyfinURLMissing"));
+            return;
+        }
+        const ids = this._collectUsers();
+        if (ids.length !== 1) {
+            window.notifications.customError("jellyfinOneOnly", window.lang.notif("errorJellyfinSelectOneUser"));
+            return;
+        }
+        const url = `${base.replace(/\/$/, "")}/web/#/users/user?userId=${encodeURIComponent(ids[0])}`;
+        window.open(url, "_blank", "noopener,noreferrer");
     };
 
     private _addUser = (event: Event) => {
@@ -1730,12 +1829,13 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                             console.error("User created, but welcome email failed");
                         }
                     } else {
-                        let msg = window.lang.var("notifications", "errorUserCreated", `"${send["username"]}"`);
-                        if ("error" in req.response) {
-                            let realError = window.lang.notif(req.response["error"]);
-                            if (realError) msg = realError;
-                        }
-                        window.notifications.customError("addUser", msg);
+                        window.notifications.customError(
+                            "addUser",
+                            formatApiFailure(
+                                req,
+                                window.lang.var("notifications", "errorUserCreated", `"${send["username"]}"`),
+                            ),
+                        );
                     }
                     if (req.response["error"] as String) {
                         console.error(req.response["error"]);
@@ -1749,6 +1849,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         );
     };
     loadPreview = () => {
+        if (!this._announcePreview) return;
         let content = this._announceTextarea.value;
         if (!this._previewLoaded) {
             content = stripMarkdown(content);
@@ -1762,13 +1863,13 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         event.preventDefault();
         const form = document.getElementById("form-announce") as HTMLFormElement;
         const button = form.querySelector("span.submit") as HTMLSpanElement;
-        if (this._announceNameLabel.classList.contains("unfocused")) {
-            this._announceNameLabel.classList.remove("unfocused");
+        if (this._announceNameLabel.classList.contains("ui-hidden")) {
+            this._announceNameLabel.classList.remove("ui-hidden");
             form.onsubmit = this.saveAnnouncement;
             button.textContent = window.lang.get("strings", "saveAsTemplate");
-            this._announceSaveButton.classList.add("unfocused");
+            this._announceSaveButton.classList.add("ui-hidden");
             const details = document.getElementById("announce-details");
-            details.classList.add("unfocused");
+            details.classList.add("ui-hidden");
             return;
         }
         const name = (this._announceNameLabel.querySelector("input") as HTMLInputElement).value;
@@ -1787,7 +1888,10 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 toggleLoader(button);
                 window.modals.announce.close();
                 if (req.status != 200 && req.status != 204) {
-                    window.notifications.customError("announcementError", window.lang.notif("errorFailureCheckLogs"));
+                    window.notifications.customError(
+                        "announcementError",
+                        formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                    );
                 } else {
                     window.notifications.customSuccess("announcementSuccess", window.lang.notif("savedAnnouncement"));
                 }
@@ -1803,10 +1907,10 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         removeLoader(button);
         button.textContent = window.lang.get("strings", "send");
         const details = document.getElementById("announce-details");
-        details.classList.remove("unfocused");
-        this._announceSaveButton.classList.remove("unfocused");
+        details.classList.remove("ui-hidden");
+        this._announceSaveButton.classList.remove("ui-hidden");
         const subject = document.getElementById("announce-subject") as HTMLInputElement;
-        this._announceNameLabel.classList.add("unfocused");
+        this._announceNameLabel.classList.add("ui-hidden");
         if (template) {
             subject.value = template.subject;
             this._announceTextarea.value = template.message;
@@ -1829,7 +1933,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                     if (req.status != 200 && req.status != 204) {
                         window.notifications.customError(
                             "announcementError",
-                            window.lang.notif("errorFailureCheckLogs"),
+                            formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                         );
                     } else {
                         window.notifications.customSuccess(
@@ -1844,7 +1948,11 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             if (req.readyState == 4) {
                 const preview = document.getElementById("announce-preview") as HTMLDivElement;
                 if (req.status != 200) {
-                    preview.innerHTML = `<pre class="preview-content" class="font-mono bg-inherit"></pre>`;
+                    preview.innerHTML = `<pre class="preview-content font-mono bg-inherit"></pre>`;
+                    window.notifications.customError(
+                        "announceTemplateLoadError",
+                        formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                    );
                     window.modals.announce.show();
                     this._previewLoaded = false;
                     return;
@@ -1852,7 +1960,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
 
                 let templ = req.response as templateEmail;
                 if (!templ.html) {
-                    preview.innerHTML = `<pre class="preview-content" class="font-mono bg-inherit"></pre>`;
+                    preview.innerHTML = `<pre class="preview-content font-mono bg-inherit"></pre>`;
                     this._previewLoaded = false;
                 } else {
                     preview.innerHTML = templ.html;
@@ -1868,13 +1976,17 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         _get("/users/announce", null, (req: XMLHttpRequest) => {
             if (req.readyState == 4) {
                 if (req.status != 200) {
-                    this._announceButton.nextElementSibling.children[0].classList.add("unfocused");
+                    this._announceButton.nextElementSibling.children[0].classList.add("ui-hidden");
+                    window.notifications.customError(
+                        "announceTemplatesListError",
+                        formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                    );
                     return;
                 }
-                this._announceButton.nextElementSibling.children[0].classList.remove("unfocused");
+                this._announceButton.nextElementSibling.children[0].classList.remove("ui-hidden");
                 const list = req.response["announcements"] as string[];
                 if (list.length == 0) {
-                    this._announceButton.nextElementSibling.children[0].classList.add("unfocused");
+                    this._announceButton.nextElementSibling.children[0].classList.add("ui-hidden");
                     return;
                 }
                 if (list.length > 0) {
@@ -1896,7 +2008,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                                 if (req.status != 200) {
                                     window.notifications.customError(
                                         "getTemplateError",
-                                        window.lang.notif("errorFailureCheckLogs"),
+                                        formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                                     );
                                 } else {
                                     template = req.response;
@@ -1911,7 +2023,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                                 if (req.status != 200) {
                                     window.notifications.customError(
                                         "deleteTemplateError",
-                                        window.lang.notif("errorFailureCheckLogs"),
+                                        formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                                     );
                                 }
                                 this.reload();
@@ -1958,7 +2070,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         }
         this._deleteNotify.checked = false;
         this._deleteReason.value = "";
-        this._deleteReason.classList.add("unfocused");
+        this._deleteReason.classList.add("ui-hidden");
         form.onsubmit = (event: Event) => {
             event.preventDefault();
             toggleLoader(button);
@@ -1972,11 +2084,11 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                         toggleLoader(button);
                         window.modals.deleteUser.close();
                         if (req.status != 200 && req.status != 204) {
-                            let errorMsg = window.lang.notif("errorFailureCheckLogs");
-                            if (!("error" in req.response)) {
-                                errorMsg = window.lang.notif("errorPartialFailureCheckLogs");
-                            }
-                            window.notifications.customError("deleteUserError", errorMsg);
+                            const fallback =
+                                req.response && typeof req.response === "object" && !("error" in req.response)
+                                    ? window.lang.notif("errorPartialFailureCheckLogs")
+                                    : window.lang.notif("errorFailureCheckLogs");
+                            window.notifications.customError("deleteUserError", formatApiFailure(req, fallback));
                         } else if (this._shouldEnable) {
                             window.notifications.customSuccess(
                                 "enableUserSuccess",
@@ -2007,7 +2119,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         button.classList.remove("~urge");
         this._deleteNotify.checked = false;
         this._deleteReason.value = "";
-        this._deleteReason.classList.add("unfocused");
+        this._deleteReason.classList.add("ui-hidden");
         form.onsubmit = (event: Event) => {
             event.preventDefault();
             toggleLoader(button);
@@ -2021,11 +2133,11 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                     toggleLoader(button);
                     window.modals.deleteUser.close();
                     if (req.status != 200 && req.status != 204) {
-                        let errorMsg = window.lang.notif("errorFailureCheckLogs");
-                        if (!("error" in req.response)) {
-                            errorMsg = window.lang.notif("errorPartialFailureCheckLogs");
-                        }
-                        window.notifications.customError("deleteUserError", errorMsg);
+                        const fallback =
+                            req.response && typeof req.response === "object" && !("error" in req.response)
+                                ? window.lang.notif("errorPartialFailureCheckLogs")
+                                : window.lang.notif("errorFailureCheckLogs");
+                        window.notifications.customError("deleteUserError", formatApiFailure(req, fallback));
                     } else {
                         window.notifications.customSuccess(
                             "deleteUserSuccess",
@@ -2073,14 +2185,17 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 } else if (req.status == 204) {
                     message = window.lang.strings("sendPWRSuccess");
                 } else {
-                    window.notifications.customError("errorSendPWR", window.lang.strings("errorFailureCheckLogs"));
+                    window.notifications.customError(
+                        "errorSendPWR",
+                        formatApiFailure(req, window.lang.strings("errorFailureCheckLogs")),
+                    );
                     return;
                 }
                 message += " " + window.lang.strings("sendPWRValidFor");
                 messageBox.textContent = message;
                 let linkButton = document.getElementById("send-pwr-link") as HTMLSpanElement;
                 if (link) {
-                    linkButton.classList.remove("unfocused");
+                    linkButton.classList.remove("ui-hidden");
                     linkButton.onclick = () => {
                         toClipboard(link);
                         linkButton.textContent = window.lang.strings("copied");
@@ -2093,7 +2208,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                         }, 800);
                     };
                 } else {
-                    linkButton.classList.add("unfocused");
+                    linkButton.classList.add("ui-hidden");
                 }
                 window.modals.sendPWR.show();
             },
@@ -2151,11 +2266,20 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 if (req.readyState == 4) {
                     toggleLoader(button);
                     if (req.status == 500) {
-                        let response = JSON.parse(req.response);
+                        let response: { [key: string]: unknown } = {};
+                        if (typeof req.response === "string") {
+                            try {
+                                response = JSON.parse(req.response) as { [key: string]: unknown };
+                            } catch {
+                                response = {};
+                            }
+                        } else if (req.response && typeof req.response === "object") {
+                            response = req.response as { [key: string]: unknown };
+                        }
                         let errorMsg = "";
                         if ("homescreen" in response && "policy" in response) {
-                            const homescreen = Object.keys(response["homescreen"]).length;
-                            const policy = Object.keys(response["policy"]).length;
+                            const homescreen = Object.keys(response["homescreen"] as object).length;
+                            const policy = Object.keys(response["policy"] as object).length;
                             if (homescreen != 0 && policy == 0) {
                                 errorMsg = window.lang.notif("errorSettingsAppliedNoHomescreenLayout");
                             } else if (policy != 0 && homescreen == 0) {
@@ -2164,13 +2288,21 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                                 errorMsg = window.lang.notif("errorSettingsFailed");
                             }
                         } else if ("error" in response) {
-                            errorMsg = response["error"];
+                            errorMsg = String(response["error"] ?? "");
                         }
-                        window.notifications.customError("modifySettingsError", errorMsg);
+                        window.notifications.customError(
+                            "modifySettingsError",
+                            errorMsg || formatApiFailure(req, window.lang.notif("errorSettingsFailed")),
+                        );
                     } else if (req.status == 200 || req.status == 204) {
                         window.notifications.customSuccess(
                             "modifySettingsSuccess",
                             window.lang.quantity("appliedSettings", this._collectUsers().length),
+                        );
+                    } else {
+                        window.notifications.customError(
+                            "modifySettingsError",
+                            formatApiFailure(req, window.lang.notif("errorSettingsFailed")),
                         );
                     }
                     this.reload();
@@ -2189,7 +2321,14 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         // Check if we're disabling or enabling
         if (this.users.get(list[0]).referrals_enabled) {
             _delete("/users/referral", { users: list }, (req: XMLHttpRequest) => {
-                if (req.readyState != 4 || req.status != 200) return;
+                if (req.readyState != 4) return;
+                if (req.status != 200) {
+                    window.notifications.customError(
+                        "disableReferralsError",
+                        formatApiFailure(req, window.lang.notif("errorSettingsFailed")),
+                    );
+                    return;
+                }
                 window.notifications.customSuccess(
                     "disabledReferralsSuccess",
                     window.lang.quantity("appliedSettings", list.length),
@@ -2262,7 +2401,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                         if (req.status == 400) {
                             window.notifications.customError(
                                 "noReferralTemplateError",
-                                window.lang.notif("errorNoReferralTemplate"),
+                                formatApiFailure(req, window.lang.notif("errorNoReferralTemplate")),
                             );
                         } else if (req.status == 200 || req.status == 204) {
                             window.notifications.customSuccess(
@@ -2345,7 +2484,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         const submit = this._extendExpiryForm.querySelector(`input[type="submit"]`) as HTMLInputElement;
         const submitSpan = submit.nextElementSibling;
         if (invalid || cantShow) {
-            this._extendExpiryDate.classList.add("unfocused");
+            this._extendExpiryDate.classList.add("ui-hidden");
         }
         if (invalid) {
             submit.disabled = true;
@@ -2360,7 +2499,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                     ${users.length > 1 ? "<span>" + window.lang.strings("expirationBasedOn") + "</span>" : ""}
                 </div>
                 `;
-                this._extendExpiryDate.classList.remove("unfocused");
+                this._extendExpiryDate.classList.remove("ui-hidden");
             }
         }
     };
@@ -2371,8 +2510,8 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         for (let id of list) {
             applyList.push(id);
         }
-        this._enableExpiryReason.classList.add("unfocused");
-        this._enableExpiryNotify.parentElement.classList.remove("unfocused");
+        this._enableExpiryReason.classList.add("ui-hidden");
+        this._enableExpiryNotify.parentElement.classList.remove("ui-hidden");
         this._enableExpiryNotify.checked = false;
         this._enableExpiryReason.value = "";
         let header: string;
@@ -2380,10 +2519,10 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             header = window.lang.quantity("reEnableUsers", list.length);
         } else if (this._settingExpiry) {
             header = window.lang.quantity("setExpiry", list.length);
-            // this._enableExpiryNotify.parentElement.classList.add("unfocused");
+            // this._enableExpiryNotify.parentElement.classList.add("ui-hidden");
         } else {
             header = window.lang.quantity("extendExpiry", applyList.length);
-            // this._enableExpiryNotify.parentElement.classList.add("unfocused");
+            // this._enableExpiryNotify.parentElement.classList.add("ui-hidden");
         }
         document.getElementById("header-extend-expiry").textContent = header;
         const extend = () => {
@@ -2416,7 +2555,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                     if (req.status != 200 && req.status != 204) {
                         window.notifications.customError(
                             "extendExpiryError",
-                            window.lang.notif("errorFailureCheckLogs"),
+                            formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                         );
                     } else {
                         window.notifications.customSuccess(
@@ -2441,11 +2580,11 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                         if (req.readyState == 4) {
                             if (req.status != 200 && req.status != 204) {
                                 window.modals.extendExpiry.close();
-                                let errorMsg = window.lang.notif("errorFailureCheckLogs");
-                                if (!("error" in req.response)) {
-                                    errorMsg = window.lang.notif("errorPartialFailureCheckLogs");
-                                }
-                                window.notifications.customError("deleteUserError", errorMsg);
+                                const fallback =
+                                    req.response && typeof req.response === "object" && !("error" in req.response)
+                                        ? window.lang.notif("errorPartialFailureCheckLogs")
+                                        : window.lang.notif("errorFailureCheckLogs");
+                                window.notifications.customError("deleteUserError", formatApiFailure(req, fallback));
                                 return;
                             }
                             extend();
@@ -2458,7 +2597,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         };
         this._extendExpiryTextInput.value = "";
         this._usingExtendExpiryTextInput = false;
-        this._extendExpiryDate.classList.add("unfocused");
+        this._extendExpiryDate.classList.add("ui-hidden");
         this._displayExpiryDate();
         window.modals.extendExpiry.show();
     };
@@ -2473,7 +2612,6 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
     };
 
     focusAccount = (userID: string) => {
-        console.debug("focusing user", userID);
         this._search.setQueryParam(`id:"${userID}"`);
         if (userID in this.users) this.users.get(userID).focus();
     };
@@ -2688,8 +2826,8 @@ class ActivityLogEntry extends TableRow implements ActivityLogEntryDTO, Searchab
     constructor(user: string, entry: ActivityLogEntryDTO) {
         super();
         this._row.innerHTML = `
-        <td class="text-center-i"><span class="jf-activity-log-severity chip ~info dark:~d_info unfocused"></span></td>
-        <td class="jf-activity-log-user-name-combined max-w-96 truncate"><div class="flex flex-row gap-2 items-baseline"><span class="chip ~gray dark:~d_gray jf-activity-log-user unfocused"></span><span class="jf-activity-log-name truncate"></span></div></td>
+        <td class="text-center-i"><span class="jf-activity-log-severity chip ~info dark:~d_info ui-hidden"></span></td>
+        <td class="jf-activity-log-user-name-combined max-w-96 truncate"><div class="flex flex-row gap-2 items-baseline"><span class="chip ~gray dark:~d_gray jf-activity-log-user ui-hidden"></span><span class="jf-activity-log-name truncate"></span></div></td>
         <td class="jf-activity-log-type italic"></td>
         <td class="jf-activity-log-overview"></td>
         <td class="jf-activity-log-time"></td>
@@ -2733,8 +2871,8 @@ class ActivityLogEntry extends TableRow implements ActivityLogEntryDTO, Searchab
             endOfUserBadge = "";
             nameContent = nameContent.substring(space + 1, nameContent.length);
         }
-        if (this.User == "") this._user.classList.add("unfocused");
-        else this._user.classList.remove("unfocused");
+        if (this.User == "") this._user.classList.add("ui-hidden");
+        else this._user.classList.remove("ui-hidden");
         this._user.textContent = this.User + endOfUserBadge;
         this._name.textContent = nameContent;
         this._name.title = nameContent;
@@ -2824,8 +2962,8 @@ class ActivityLogEntry extends TableRow implements ActivityLogEntryDTO, Searchab
     }
     set Severity(v: ActivitySeverity) {
         this._e.Severity = v;
-        if (v) this._severity.classList.remove("unfocused");
-        else this._severity.classList.add("unfocused");
+        if (v) this._severity.classList.remove("ui-hidden");
+        else this._severity.classList.add("ui-hidden");
         ["~neutral", "~positive", "~warning", "~critical", "~info", "~urge"].forEach((c) =>
             this._severity.classList.remove(c),
         );
@@ -2886,7 +3024,7 @@ class UserInfo extends PaginatedList {
     username: string;
     jfId: string;
     constructor(card: HTMLElement) {
-        card.classList.add("unfocused");
+        card.classList.add("ui-hidden");
         card.innerHTML = `
         <div class="flex flex-col gap-2">
             <div class="overflow-x-scroll">
@@ -2914,7 +3052,7 @@ class UserInfo extends PaginatedList {
                         </thead>
                         <tbody class="jf-activity-table-content"></tbody>
                     </table>
-                    <div class="unfocused h-[100%] my-3 jf-activity-no-activity">
+                    <div class="ui-hidden h-[100%] my-3 jf-activity-no-activity">
                         <div class="flex flex-col gap-2 h-[100%] justify-center items-center">
                             <span class="text-2xl font-medium italic text-center">${window.lang.strings("noActivityFound")}</span>
                             <span class="text-sm font-light italic text-center" id="accounts-no-local-results">${window.lang.strings("noActivityFoundLocally")}</span>
@@ -3032,10 +3170,10 @@ class UserInfo extends PaginatedList {
         this._link.href = `${window.pages.Base}${window.pages.Admin}/activity?user=${this.username}`;
 
         if (onBack) {
-            this._back.classList.remove("unfocused");
+            this._back.classList.remove("ui-hidden");
             this._back.onclick = () => onBack();
         } else {
-            this._back.classList.add("unfocused");
+            this._back.classList.add("ui-hidden");
             this._back.onclick = null;
         }
         this.reload(onLoad);
@@ -3063,14 +3201,14 @@ class UserInfo extends PaginatedList {
         this._hidden = v;
         if (v) {
             this.unbindPageEvents();
-            this._card.classList.add("unfocused");
-            this._back.classList.add("unfocused");
+            this._card.classList.add("ui-hidden");
+            this._back.classList.add("ui-hidden");
             this.username = "";
             this.jfId = "";
         } else {
             this.bindPageEvents();
-            this._card.classList.remove("unfocused");
-            this._back.classList.remove("unfocused");
+            this._card.classList.remove("ui-hidden");
+            this._back.classList.remove("ui-hidden");
         }
     }
 }

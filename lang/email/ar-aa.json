@@ -52,7 +52,8 @@
         "youHaveBeenInvited": "تمت دعوتك إلى Jellyfin.",
         "toJoin": "للإنضمام، اتبع الرابط أدناه.",
         "inviteExpiry": "ستنتهي صلاحية الدعوة في {date} {time}، خلال {expiresInMinutes}، اتخذ اجراءاً.",
-        "linkButton": "قم بإعداد حسابك"
+        "linkButton": "قم بإعداد حسابك",
+        "linkFallbackHint": "If the button does not work, copy and paste this link into your browser."
     },
     "welcomeEmail": {
         "name": "الترحيب",

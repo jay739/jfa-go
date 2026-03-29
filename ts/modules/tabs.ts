@@ -1,5 +1,14 @@
 import { PageManager } from "./pages";
 
+declare var window: GlobalWindow;
+
+const tabTitleLangKey: Record<string, string> = {
+    invites: "invites",
+    accounts: "accounts",
+    activity: "activity",
+    settings: "settings",
+};
+
 export function isPageEventBindable(object: any): object is PageEventBindable {
     return "bindPageEvents" in object;
 }
@@ -49,13 +58,19 @@ export class TabManager implements TabManager {
                 tab.buttonEl.offsetLeft - (tab.buttonEl.parentElement.offsetWidth - tab.buttonEl.offsetWidth) / 2;
         }
 
+        const titleKey = tabTitleLangKey[tabID];
+        const sectionTitle = titleKey ? window.lang.strings(titleKey) : tabID;
+        const baseTitle = document.title;
+        const pageTitle = `${sectionTitle} - ${baseTitle}`;
+
         tab.page = {
             name: tabID,
-            title: document.title /*FIXME: Get actual names from translations*/,
+            title: pageTitle,
             url: url,
             show: () => {
+                document.title = pageTitle;
                 tab.buttonEl.classList.add("active", "~urge");
-                tab.tabEl.classList.remove("unfocused");
+                tab.tabEl.classList.remove("ui-hidden");
                 tab.buttonEl.parentElement.scrollTo({
                     left: scrollTo(),
                     top: 0,
@@ -67,7 +82,7 @@ export class TabManager implements TabManager {
             hide: () => {
                 tab.buttonEl.classList.remove("active");
                 tab.buttonEl.classList.remove("~urge");
-                tab.tabEl.classList.add("unfocused");
+                tab.tabEl.classList.add("ui-hidden");
                 if (unloadFunc) unloadFunc();
                 return true;
             },

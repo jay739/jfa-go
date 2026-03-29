@@ -713,7 +713,7 @@ func (app *appContext) Announce(gc *gin.Context) {
 	var req announcementDTO
 	gc.BindJSON(&req)
 	if !messagesEnabled {
-		respondBool(400, false, gc)
+		respondAPIError(400, "errorMessagesDisabled", "MESSAGES_DISABLED", "", gc)
 		return
 	}
 	// Generally, we only need to construct once. If {username} is included, however, this needs to be done for each user.
@@ -731,11 +731,11 @@ func (app *appContext) Announce(gc *gin.Context) {
 			}, map[string]any{"username": user.Name})
 			if err != nil {
 				app.err.Printf(lm.FailedConstructAnnouncementMessage, userID, err)
-				respondBool(500, false, gc)
+				respondAPIError(500, "errorAnnounceConstruct", "ANNOUNCE_TEMPLATE", err.Error(), gc)
 				return
 			} else if err := app.sendByID(msg, userID); err != nil {
 				app.err.Printf(lm.FailedSendAnnouncementMessage, userID, "?", err)
-				respondBool(500, false, gc)
+				respondAPIError(500, "errorAnnounceSend", "ANNOUNCE_SEND", err.Error(), gc)
 				return
 			}
 		}
@@ -747,11 +747,11 @@ func (app *appContext) Announce(gc *gin.Context) {
 		}, map[string]any{"username": ""})
 		if err != nil {
 			app.err.Printf(lm.FailedConstructAnnouncementMessage, "*", err)
-			respondBool(500, false, gc)
+			respondAPIError(500, "errorAnnounceConstruct", "ANNOUNCE_TEMPLATE", err.Error(), gc)
 			return
 		} else if err := app.sendByID(msg, req.Users...); err != nil {
 			app.err.Printf(lm.FailedSendAnnouncementMessage, "*", "?", err)
-			respondBool(500, false, gc)
+			respondAPIError(500, "errorAnnounceSend", "ANNOUNCE_SEND", err.Error(), gc)
 			return
 		}
 		// app.info.Printf(lm.SentAnnouncementMessage, "*", "?")

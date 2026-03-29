@@ -1,4 +1,4 @@
-import { _get, _post, _delete, toDateString } from "../modules/common.js";
+import { _get, _post, _delete, toDateString, formatApiFailure } from "../modules/common.js";
 import {
     SearchConfiguration,
     QueryType,
@@ -276,7 +276,7 @@ export class Activity implements activity, SearchableItem {
         } */
 
         // lazy late addition, hide then unhide if needed
-        this._expiryTypeBadge.classList.add("unfocused");
+        this._expiryTypeBadge.classList.add("ui-hidden");
         if (this.type == "changePassword" || this.type == "resetPassword") {
             let innerHTML = ``;
             if (this.type == "changePassword") innerHTML = window.lang.strings("accountChangedPassword");
@@ -298,16 +298,16 @@ export class Activity implements activity, SearchableItem {
         } else if (this.type == "creation") {
             this._title.innerHTML = window.lang.strings("accountCreated").replace("{user}", this._genUserLink());
             if (this.source_type == "user") {
-                this._referrer.classList.remove("unfocused");
+                this._referrer.classList.remove("ui-hidden");
                 this._referrer.innerHTML = `<span class="supra">${window.lang.strings("referrer")}</span>${this._genSrcUserLink()}`;
             } else {
-                this._referrer.classList.add("unfocused");
+                this._referrer.classList.add("ui-hidden");
                 this._referrer.textContent = ``;
             }
         } else if (this.type == "deletion") {
             if (this.source_type == "daemon") {
                 this._title.innerHTML = window.lang.strings("accountExpired").replace("{user}", this._genUserText());
-                this._expiryTypeBadge.classList.remove("unfocused");
+                this._expiryTypeBadge.classList.remove("ui-hidden");
                 this._expiryTypeBadge.classList.add("~critical");
                 this._expiryTypeBadge.classList.remove("~info");
                 this._expiryTypeBadge.textContent = window.lang.strings("deleted");
@@ -319,7 +319,7 @@ export class Activity implements activity, SearchableItem {
         } else if (this.type == "disabled") {
             if (this.source_type == "daemon") {
                 this._title.innerHTML = window.lang.strings("accountExpired").replace("{user}", this._genUserLink());
-                this._expiryTypeBadge.classList.remove("unfocused");
+                this._expiryTypeBadge.classList.remove("ui-hidden");
                 this._expiryTypeBadge.classList.add("~info");
                 this._expiryTypeBadge.classList.remove("~critical");
                 this._expiryTypeBadge.textContent = window.lang.strings("disabled");
@@ -370,10 +370,10 @@ export class Activity implements activity, SearchableItem {
     set ip(v: string) {
         this._act.ip = v;
         if (v) {
-            this._ip.classList.remove("unfocused");
+            this._ip.classList.remove("ui-hidden");
             this._ip.innerHTML = `<span class="supra">IP</span><span class="font-mono bg-inherit">${v}</span>`;
         } else {
-            this._ip.classList.add("unfocused");
+            this._ip.classList.add("ui-hidden");
             this._ip.textContent = ``;
         }
     }
@@ -541,6 +541,11 @@ export class Activity implements activity, SearchableItem {
             if (req.readyState != 4) return;
             if (req.status == 200) {
                 window.notifications.customSuccess("activityDeleted", window.lang.notif("activityDeleted"));
+            } else {
+                window.notifications.customError(
+                    "activityDeleteError",
+                    formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                );
             }
             document.dispatchEvent(activityReload);
         });
@@ -611,7 +616,10 @@ export class activityList extends PaginatedList implements Navigatable, AsTab {
             pageLoadCallback: (req: XMLHttpRequest) => {
                 if (req.readyState != 4) return;
                 if (req.status != 200) {
-                    window.notifications.customError("loadActivitiesError", window.lang.notif("errorLoadActivities"));
+                    window.notifications.customError(
+                        "loadActivitiesError",
+                        formatApiFailure(req, window.lang.notif("errorLoadActivities")),
+                    );
                     return;
                 }
             },
@@ -678,15 +686,15 @@ export class activityList extends PaginatedList implements Navigatable, AsTab {
     }
 
     /*private _notFoundCallback = (notFound: boolean) => {
-        if (notFound) this._loadMoreButton.classList.add("unfocused");
-        else this._loadMoreButton.classList.remove("unfocused");
+        if (notFound) this._loadMoreButton.classList.add("ui-hidden");
+        else this._loadMoreButton.classList.remove("ui-hidden");
 
         if (notFound && !this._lastPage) {
-            this._keepSearchingButton.classList.remove("unfocused");
-            this._keepSearchingDescription.classList.remove("unfocused");
+            this._keepSearchingButton.classList.remove("ui-hidden");
+            this._keepSearchingDescription.classList.remove("ui-hidden");
         } else {
-            this._keepSearchingButton.classList.add("unfocused");
-            this._keepSearchingDescription.classList.add("unfocused");
+            this._keepSearchingButton.classList.add("ui-hidden");
+            this._keepSearchingDescription.classList.add("ui-hidden");
         }
     };*/
 

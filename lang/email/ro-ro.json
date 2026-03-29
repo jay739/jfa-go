@@ -52,7 +52,8 @@
         "youHaveBeenInvited": "Ai fost invitat la Jellyfin.",
         "toJoin": "Pentru a vă alătura, urmați linkul de mai jos.",
         "inviteExpiry": "Această invitație va expira pe {date} la {time}, care este în {expiresInMinutes}, așa că acționați rapid.",
-        "linkButton": "Configurați-vă contul"
+        "linkButton": "Configurați-vă contul",
+        "linkFallbackHint": "If the button does not work, copy and paste this link into your browser."
     },
     "welcomeEmail": {
         "name": "Bun venit",

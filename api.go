@@ -14,6 +14,18 @@ import (
 	"gopkg.in/ini.v1"
 )
 
+// apiErrorBody is returned for several failure paths so the admin UI can show translation keys plus an optional technical hint.
+type apiErrorBody struct {
+	Error string `json:"error"`
+	Code  string `json:"code,omitempty"`
+	Hint  string `json:"hint,omitempty"`
+}
+
+func respondAPIError(code int, errorKey, errCode, hint string, gc *gin.Context) {
+	gc.JSON(code, apiErrorBody{Error: errorKey, Code: errCode, Hint: hint})
+	gc.Abort()
+}
+
 func respond(code int, message string, gc *gin.Context) {
 	resp := stringResponse{}
 	if code == 200 || code == 204 {

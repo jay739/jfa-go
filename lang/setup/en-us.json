@@ -21,6 +21,9 @@
         "errorNotAdmin": "User is not allowed to manage server.",
         "errorUserDisabled": "User may be disabled.",
         "error404": "404, check the internal URL.",
+        "errorEmptyServer": "Enter a Jellyfin server URL (internal field, or public URL if that is the only one you use).",
+        "errorEmptyCredentials": "Enter Jellyfin username and password.",
+        "errorInvalidServerURL": "Server URL is missing a hostname (e.g. https://jellyfin.example.com).",
         "errorConnectionRefused": "Connection refused.",
         "errorUnknown": "Unknown error, check app logs.",
         "errorProxy": "Proxy configuration invalid."

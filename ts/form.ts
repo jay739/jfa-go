@@ -1,6 +1,14 @@
 import { Modal } from "./modules/modal.js";
 import { notificationBox, whichAnimationEvent } from "./modules/common.js";
-import { _get, _post, toggleLoader, addLoader, removeLoader, toDateString } from "./modules/common.js";
+import {
+    _get,
+    _post,
+    toggleLoader,
+    addLoader,
+    removeLoader,
+    toDateString,
+    formatApiFailure,
+} from "./modules/common.js";
 import { loadLangSelector } from "./modules/lang.js";
 import { Validator, ValidatorConf, ValidatorRespDTO } from "./modules/validator.js";
 import { Discord, Telegram, Matrix, ServiceConfiguration, MatrixConfiguration } from "./modules/account-linking.js";
@@ -69,11 +77,11 @@ if (window.telegramEnabled) {
         successFunc: (modalClosed: boolean) => {
             if (modalClosed) return;
             telegramVerified = true;
-            telegramButton.classList.add("unfocused");
-            document.getElementById("contact-via").classList.remove("unfocused");
-            document.getElementById("contact-via-email").parentElement.classList.remove("unfocused");
+            telegramButton.classList.add("ui-hidden");
+            document.getElementById("contact-via").classList.remove("ui-hidden");
+            document.getElementById("contact-via-email").parentElement.classList.remove("ui-hidden");
             const checkbox = document.getElementById("contact-via-telegram") as HTMLInputElement;
-            checkbox.parentElement.classList.remove("unfocused");
+            checkbox.parentElement.classList.remove("ui-hidden");
             checkbox.checked = true;
             validator.validate();
         },
@@ -103,11 +111,11 @@ if (window.discordEnabled) {
         successFunc: (modalClosed: boolean) => {
             if (modalClosed) return;
             discordVerified = true;
-            discordButton.classList.add("unfocused");
-            document.getElementById("contact-via").classList.remove("unfocused");
-            document.getElementById("contact-via-email").parentElement.classList.remove("unfocused");
+            discordButton.classList.add("ui-hidden");
+            document.getElementById("contact-via").classList.remove("ui-hidden");
+            document.getElementById("contact-via-email").parentElement.classList.remove("ui-hidden");
             const checkbox = document.getElementById("contact-via-discord") as HTMLInputElement;
-            checkbox.parentElement.classList.remove("unfocused");
+            checkbox.parentElement.classList.remove("ui-hidden");
             checkbox.checked = true;
             validator.validate();
         },
@@ -137,11 +145,11 @@ if (window.matrixEnabled) {
         successFunc: () => {
             matrixVerified = true;
             matrixPIN = matrix.pin;
-            matrixButton.classList.add("unfocused");
-            document.getElementById("contact-via").classList.remove("unfocused");
-            document.getElementById("contact-via-email").parentElement.classList.remove("unfocused");
+            matrixButton.classList.add("ui-hidden");
+            document.getElementById("contact-via").classList.remove("ui-hidden");
+            document.getElementById("contact-via-email").parentElement.classList.remove("ui-hidden");
             const checkbox = document.getElementById("contact-via-matrix") as HTMLInputElement;
-            checkbox.parentElement.classList.remove("unfocused");
+            checkbox.parentElement.classList.remove("ui-hidden");
             checkbox.checked = true;
             validator.validate();
         },
@@ -185,7 +193,7 @@ if (!window.usernameEnabled) {
     usernameField.parentElement.remove();
     usernameField = emailField;
 } else if (!window.collectEmail) {
-    emailField.parentElement.classList.add("unfocused");
+    emailField.parentElement.classList.add("ui-hidden");
     emailField.value = "";
 }
 const passwordField = document.getElementById("create-password") as HTMLInputElement;
@@ -358,11 +366,10 @@ const create = (event: SubmitEvent) => {
             } else if (req.status != 401 && req.status != 400) {
                 submitSpan.classList.add("~critical");
                 submitSpan.classList.remove("~urge");
-                if (req.response["error"] as string) {
-                    submitSpan.textContent = window.messages[req.response["error"]];
-                } else {
-                    submitSpan.textContent = window.messages["errorPassword"];
-                }
+                const fallback =
+                    (req.response && (req.response["error"] as string) && window.messages[req.response["error"]]) ||
+                    window.messages["errorPassword"];
+                submitSpan.textContent = formatApiFailure(req, fallback);
                 setTimeout(() => {
                     submitSpan.classList.add("~urge");
                     submitSpan.classList.remove("~critical");
@@ -380,11 +387,11 @@ const create = (event: SubmitEvent) => {
                         window.confirmationModal.show();
                         return;
                     }
-                    if (req.response["error"] in window.messages) {
-                        submitSpan.textContent = window.messages[req.response["error"]];
-                    } else {
-                        submitSpan.textContent = req.response["error"];
-                    }
+                    const raw =
+                        req.response["error"] in window.messages
+                            ? window.messages[req.response["error"]]
+                            : (req.response["error"] as string);
+                    submitSpan.textContent = formatApiFailure(req, raw);
                     setTimeout(() => {
                         submitSpan.textContent = submitText;
                     }, 1000);

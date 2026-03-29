@@ -52,7 +52,8 @@
         "youHaveBeenInvited": "您已受邀注册 Jellyfin。",
         "toJoin": "若要加入，请点击以下链接。",
         "inviteExpiry": "此邀请将于 {date} {time} 到期，即 {expires In Minutes} 内，请尽快注册。",
-        "linkButton": "设置您的账号"
+        "linkButton": "设置您的账号",
+        "linkFallbackHint": "若按钮无法使用，请复制链接到浏览器中打开。"
     },
     "welcomeEmail": {
         "name": "欢迎",

@@ -178,4 +178,10 @@ func helpFunc() {
 		}
 	}
 	fmt.Fprint(stderr, out)
+	fmt.Fprint(stderr, `
+Environment:
+  JFA_GO_CONFIG_HOST
+	If set, paths under /jfa-go/config/... in config.ini are read from this directory instead
+	(useful when running the binary on the host while config still uses Docker-style paths).
+`)
 }

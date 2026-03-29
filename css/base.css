@@ -180,7 +180,12 @@ sup.\~critical, .text-critical {
     display: block;
 }
 
-.unfocused {
+.ui-hidden {
+    display: none;
+}
+
+/* Primary actions hidden when not applicable (e.g. no row selected). Same effect as .ui-hidden, distinct for clarity. */
+.action-unavailable {
     display: none;
 }
 

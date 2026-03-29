@@ -10,6 +10,7 @@ import {
     addLoader,
     removeLoader,
     DateCountdown,
+    formatApiFailure,
 } from "../modules/common.js";
 import { DiscordSearch, DiscordUser, newDiscordSearch } from "../modules/discord.js";
 import { reloadProfileNames } from "../modules/profiles.js";
@@ -45,16 +46,26 @@ class DOMInvite implements Invite {
         _patch("/invites/edit", state, (req: XMLHttpRequest) => {
             if (req.readyState == 4 && !(req.status == 200 || req.status == 204)) {
                 revertChanges();
+                window.notifications.customError(
+                    "inviteEditError",
+                    formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                );
             }
         });
     };
 
     delete = () =>
         _delete("/invites", { code: this.code }, (req: XMLHttpRequest) => {
-            if (req.readyState == 4 && (req.status == 200 || req.status == 204)) {
+            if (req.readyState != 4) return;
+            if (req.status == 200 || req.status == 204) {
                 this.remove();
                 const inviteDeletedEvent = new CustomEvent("inviteDeletedEvent", { detail: this.code });
                 document.dispatchEvent(inviteDeletedEvent);
+            } else {
+                window.notifications.customError(
+                    "inviteDeleteError",
+                    formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                );
             }
         });
 
@@ -69,11 +80,11 @@ class DOMInvite implements Invite {
         if (label) {
             labelLabel.textContent = window.lang.strings("userLabel");
             value.textContent = label;
-            value.classList.remove("unfocused");
+            value.classList.remove("ui-hidden");
         } else {
             labelLabel.textContent = "";
             value.textContent = "";
-            value.classList.add("unfocused");
+            value.classList.add("ui-hidden");
         }
     }
 
@@ -161,10 +172,10 @@ class DOMInvite implements Invite {
         this._userExpiryString = "";
         if (!(this._userExpiry.months || this._userExpiry.days || this._userExpiry.hours || this._userExpiry.minutes)) {
             expiry.textContent = "";
-            expiry.parentElement.classList.add("unfocused");
+            expiry.parentElement.classList.add("ui-hidden");
         } else {
             expiry.textContent = window.lang.strings("userExpiry");
-            expiry.parentElement.classList.remove("unfocused");
+            expiry.parentElement.classList.remove("ui-hidden");
             const fields = ["months", "days", "hours", "minutes"].map((v) => this._userExpiry[v]);
             const abbrevs = ["mo", "d", "h", "m"];
             for (let i = 0; i < fields.length; i++) {
@@ -381,6 +392,10 @@ class DOMInvite implements Invite {
             if (req.readyState == 4) {
                 if (!(req.status == 200 || req.status == 204)) {
                     select.value = previous || "noProfile";
+                    window.notifications.customError(
+                        "inviteEditError",
+                        formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                    );
                 } else {
                     this._profile = profile;
                 }
@@ -400,6 +415,10 @@ class DOMInvite implements Invite {
             if (req.readyState != 4) return;
             if (req.status != 200 && req.status != 204) {
                 this.label = old;
+                window.notifications.customError(
+                    "inviteEditError",
+                    formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                );
             }
         });
     };
@@ -477,7 +496,7 @@ class DOMInvite implements Invite {
                 this._details.removeEventListener("transitionend", mainTransitionEnd);
                 this._details.style.maxHeight = "9999px";
             };
-            this._details.classList.remove("unfocused");
+            this._details.classList.remove("ui-hidden");
             this._details.classList.add("focused");
             this._details.style.transitionDuration = "1ms";
             // Add negative y margin to cancel out "gap-x" when we unhide (and are initially height: 0)
@@ -496,7 +515,7 @@ class DOMInvite implements Invite {
                 this._details.style.paddingBottom = "";
                 this._details.style.marginTop = "0";
                 this._details.style.marginBottom = "0";
-                this._details.classList.add("unfocused");
+                this._details.classList.add("ui-hidden");
                 this._details.classList.remove("focused");
             };
             const mainTransitionStart = () => {
@@ -524,14 +543,14 @@ class DOMInvite implements Invite {
             this._detailsToggle.previousElementSibling.classList.add("rotated");
             this._detailsToggle.previousElementSibling.classList.remove("not-rotated");
 
-            this._details.classList.remove("unfocused");
+            this._details.classList.remove("ui-hidden");
             this._details.classList.add("focused");
             this._details.style.maxHeight = "9999px";
             this._details.style.opacity = "100%";
         } else {
             this._detailsToggle.previousElementSibling.classList.remove("rotated");
             this._detailsToggle.previousElementSibling.classList.add("not-rotated");
-            this._details.classList.add("unfocused");
+            this._details.classList.add("ui-hidden");
             this._details.classList.remove("focused");
             this._details.style.maxHeight = "0";
             this._details.style.opacity = "0";
@@ -609,7 +628,7 @@ class DOMInvite implements Invite {
         <span class="button ~critical @low inv-delete h-full">${window.lang.strings("delete")}</span>
         <label>
             <i class="icon px-2.5 py-2 ri-arrow-down-s-line text-xl not-rotated"></i>
-            <input class="inv-toggle-details unfocused" type="checkbox">
+            <input class="inv-toggle-details ui-hidden" type="checkbox">
         </label>
         `;
 
@@ -628,7 +647,7 @@ class DOMInvite implements Invite {
 
         this._details = document.createElement("div") as HTMLDivElement;
         this._container.appendChild(this._details);
-        this._details.classList.add("card", "~neutral", "@low", "inv-details", "transition-all", "unfocused");
+        this._details.classList.add("card", "~neutral", "@low", "inv-details", "transition-all", "ui-hidden");
         this._details.style.maxHeight = "0";
         this._details.style.opacity = "0";
         const detailsInner = document.createElement("div") as HTMLDivElement;
@@ -698,7 +717,7 @@ class DOMInvite implements Invite {
         <p class="label flex items-center gap-2 supra">${window.lang.strings("inviteDateCreated")} <strong class="inv-created"></strong></p>
         <p class="label flex items-center gap-2 supra">${window.lang.strings("inviteRemainingUses")} <strong class="inv-remaining"></strong></p>
         <p class="label flex items-center gap-2 supra"><span class="user-expiry"></span> <strong class="user-expiry-time"></strong></p>
-        <p class="flex items-center gap-2"><span class="user-label-label label supra"></span> <span class="user-label chip ~blue unfocused"></span></p>
+        <p class="flex items-center gap-2"><span class="user-label-label label supra"></span> <span class="user-label chip ~blue ui-hidden"></span></p>
         <div class="invite-send-to-dialog"></div>
         `;
 
@@ -821,7 +840,6 @@ export class DOMInviteList implements InviteList {
         const url = new URL(window.location.href);
         if (!url.searchParams.has("invite")) return;
         url.searchParams.delete("invite");
-        console.log("pushing", url.toString());
         window.history.pushState(null, "", url.toString());
     }
 
@@ -899,6 +917,13 @@ export class DOMInviteList implements InviteList {
         reloadProfileNames(() =>
             _get("/invites", null, (req: XMLHttpRequest) => {
                 if (req.readyState == 4) {
+                    if (req.status != 200) {
+                        window.notifications.customError(
+                            "invitesReloadError",
+                            formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                        );
+                        return;
+                    }
                     let data = req.response;
                     if (data["invites"] === undefined || data["invites"] == null || data["invites"].length == 0) {
                         this.empty = true;
@@ -1006,11 +1031,11 @@ export class createInvite {
         if (state) {
             this._infUses.parentElement.classList.remove("~neutral");
             this._infUses.parentElement.classList.add("~urge");
-            this._infUsesWarning.classList.remove("unfocused");
+            this._infUsesWarning.classList.remove("ui-hidden");
         } else {
             this._infUses.parentElement.classList.remove("~urge");
             this._infUses.parentElement.classList.add("~neutral");
-            this._infUsesWarning.classList.add("unfocused");
+            this._infUsesWarning.classList.add("ui-hidden");
         }
     }
 
@@ -1104,8 +1129,7 @@ export class createInvite {
 
     get sendTo(): string {
         if (!this._sendTo) return "";
-        if (this._sendTo.addresses.length > 1)
-            console.error("FIXME: SendToDialog has collected more than one address, make them usable or fix it!");
+        // Only the first address is used until multi-address send is implemented.
         if (this._sendTo.addresses.length > 0) return this._sendTo.addresses[0];
         else return "";
     }
@@ -1167,14 +1191,24 @@ export class createInvite {
             label: this.label,
             user_label: this.user_label,
         };
-        _post("/invites", send, (req: XMLHttpRequest) => {
-            if (req.readyState == 4) {
-                if (req.status == 200 || req.status == 204) {
-                    document.dispatchEvent(this._newInviteEvent);
+        _post(
+            "/invites",
+            send,
+            (req: XMLHttpRequest) => {
+                if (req.readyState == 4) {
+                    toggleLoader(this._createButton);
+                    if (req.status == 200 || req.status == 204) {
+                        document.dispatchEvent(this._newInviteEvent);
+                    } else {
+                        window.notifications.customError(
+                            "createInviteError",
+                            formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                        );
+                    }
                 }
-                toggleLoader(this._createButton);
-            }
-        });
+            },
+            true,
+        );
     };
 
     constructor() {
@@ -1229,7 +1263,7 @@ export class createInvite {
         if (window.emailEnabled || window.discordEnabled) {
             this._sendTo = new SendToDialog(sendToContainer);
         } else {
-            sendToContainer.classList.add("unfocused");
+            sendToContainer.classList.add("ui-hidden");
         }
     }
 }
@@ -1259,10 +1293,10 @@ class SendToDialog {
             <label class="label supra">${window.lang.strings("inviteSendToEmail")}</label>
             <div class="flex flex-row gap-2">
                 <input class="input ~neutral @low send-to-dialog-input" type="email" placeholder="example@example.com">
-                <button class="button ~urge @low send-to-dialog-search unfocused" title="${window.lang.strings("search")}">
+                <button class="button ~urge @low send-to-dialog-search ui-hidden" title="${window.lang.strings("search")}">
                     <i class="icon ri-search-2-line"></i>
                 </button>
-                <button class="button ~urge @low send-to-dialog-submit unfocused" title="${window.lang.strings("submit")}">
+                <button class="button ~urge @low send-to-dialog-submit ui-hidden" title="${window.lang.strings("submit")}">
                     <i class="icon ri-send-plane-2-line"></i>
                 </button>
             </div>
@@ -1272,7 +1306,7 @@ class SendToDialog {
             this._input.type = "text";
             this._input.placeholder = "example@example.com | user#1234";
             this._search = this._container.getElementsByClassName("send-to-dialog-search")[0] as HTMLButtonElement;
-            this._search.classList.remove("unfocused");
+            this._search.classList.remove("ui-hidden");
             this._discordSearch = newDiscordSearch(
                 window.lang.strings("findDiscordUser"),
                 window.lang.strings("searchDiscordUser"),
@@ -1294,22 +1328,30 @@ class SendToDialog {
                 this._search.classList.remove("~urge");
             }
             this._submit = this._container.getElementsByClassName("send-to-dialog-submit")[0] as HTMLButtonElement;
-            this._submit.classList.remove("unfocused");
+            this._submit.classList.remove("ui-hidden");
             this._submit.onclick = () => {
                 const icon = this._submit.children[0] as HTMLElement;
                 addLoader(icon, true);
                 if (this.addresses.length == 0) return;
-                _post("/invites/send", { invite: invite.code, "send-to": this.addresses[0] }, (req: XMLHttpRequest) => {
-                    if (req.readyState != 4) return;
-                    removeLoader(icon, true);
-                    if (req.status != 200 && req.status != 204) {
-                        window.notifications.customError("errorSendInvite", window.lang.notif("errorFailureCheckLogs"));
-                        return;
-                    }
-                    window.notifications.customSuccess("sendInvite", window.lang.strings("sent"));
-                    if (onSuccess) onSuccess();
-                    this.addresses = [];
-                });
+                _post(
+                    "/invites/send",
+                    { invite: invite.code, "send-to": this.addresses[0] },
+                    (req: XMLHttpRequest) => {
+                        if (req.readyState != 4) return;
+                        removeLoader(icon, true);
+                        if (req.status != 200 && req.status != 204) {
+                            window.notifications.customError(
+                                "errorSendInvite",
+                                formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                            );
+                            return;
+                        }
+                        window.notifications.customSuccess("sendInvite", window.lang.strings("sent"));
+                        if (onSuccess) onSuccess();
+                        this.addresses = [];
+                    },
+                    true,
+                );
             };
             this._input.addEventListener("keypress", (e: KeyboardEvent) => {
                 if (e.key === "Enter") {

@@ -3,62 +3,42 @@
         <meta name="color-scheme" content="light dark">
         <meta name="supported-color-schemes" content="light dark">
     </mj-raw>
-    <mj-style>
-        :root {
-            Color-scheme: light dark;
-            supported-color-schemes: light dark;
+    <mj-style inline="inline">
+        :root { color-scheme: dark; }
+        .body { background-color: #08080a !important; }
+        .panel { background-color: #12121a !important; }
+        .text-muted { color: #9ca3af !important; }
+        .inner-card {
+            background-color: #14141c !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(255,255,255,0.06) !important;
         }
-        .body {
-            background: #101010 !important;
-            background-color: #101010 !important;
-        }
-        .text-gray {
-            color: rgb(153,153,153) !important;
-        }
-        .bg-gray {
-            background: #292929 !important;
-            background-color: #292929 !important;
-        }
-        @media (prefers-color-scheme: light) {
-            Color-scheme: dark;
-            body, .body {
-                background: #101010 !important;
-                background-color: #101010 !important;
-            }
-            [data-ogsc] .body {
-                background: #101010 !important;
-                background-color: #101010 !important;
-            }
-            [data-ogsb] .body {
-                background: #101010 !important;
-                background-color: #101010 !important;
-            }
-        }
-        @media (prefers-color-scheme: dark) {
-            Color-scheme: dark;
-            body, .body {
-                background: #101010 !important;
-                background-color: #101010 !important;
-            }
-            [data-ogsc] .body {
-                background: #101010 !important;
-                background-color: #101010 !important;
-            }
-            [data-ogsb] .body {
-                background: #101010 !important;
-                background-color: #101010 !important;
-            }
-        }
+        .email-content-html { color: rgba(255,255,255,0.88) !important; font-size: 16px !important; line-height: 1.65 !important; }
+        .email-content-html h1 { font-size: 24px !important; font-weight: 700 !important; margin: 0 0 16px !important; color: #f9fafb !important; line-height: 1.25 !important; letter-spacing: -0.02em !important; }
+        .email-content-html h2 { font-size: 19px !important; font-weight: 650 !important; margin: 24px 0 12px !important; color: #f3f4f6 !important; line-height: 1.3 !important; }
+        .email-content-html h3 { font-size: 17px !important; font-weight: 600 !important; margin: 20px 0 10px !important; color: #e5e7eb !important; }
+        .email-content-html p { margin: 0 0 14px !important; }
+        .email-content-html ul, .email-content-html ol { margin: 0 0 14px !important; padding-left: 22px !important; }
+        .email-content-html li { margin-bottom: 6px !important; }
+        .email-content-html a { color: #7dd3fc !important; text-decoration: underline !important; }
+        .email-content-html blockquote { margin: 14px 0 !important; padding: 10px 16px !important; border-left: 4px solid #3b82f6 !important; background: rgba(59,130,246,0.08) !important; color: #d1d5db !important; }
+        .email-content-html code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 14px !important; background: #1e1e28 !important; padding: 2px 7px !important; border-radius: 6px !important; color: #e5e7eb !important; }
+        .email-content-html pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: 13px !important; background: #1e1e28 !important; padding: 14px 16px !important; border-radius: 10px !important; overflow-x: auto !important; margin: 0 0 16px !important; line-height: 1.5 !important; }
+        .email-content-html hr { border: none !important; border-top: 1px solid rgba(255,255,255,0.1) !important; margin: 20px 0 !important; }
+        .email-content-html table { border-collapse: collapse !important; width: 100% !important; margin: 0 0 14px !important; font-size: 15px !important; }
+        .email-content-html th, .email-content-html td { border: 1px solid rgba(255,255,255,0.1) !important; padding: 8px 10px !important; text-align: left !important; }
+        .email-content-html th { background: rgba(255,255,255,0.05) !important; font-weight: 600 !important; }
+        .eyebrow { text-transform: uppercase !important; letter-spacing: 0.12em !important; font-size: 11px !important; font-weight: 600 !important; color: #93c5fd !important; margin-bottom: 8px !important; }
     </mj-style>
     <mj-attributes>
-        <mj-class name="body" background-color="#101010" />
-        <mj-class name="bg-gray" background-color="#292929" />
-        <mj-class name="text-white" color="rgb(255,255,255)" />
-        <mj-class name="blue" background-color="rgb(0,164,220)" />
+        <mj-class name="body" background-color="#08080a" />
+        <mj-class name="bg-gray" background-color="#12121a" />
+        <mj-class name="text-white" color="#f9fafb" />
+        <mj-class name="blue" background-color="#2563eb" />
         <mj-class name="secondary" font-style="italic" font-size="14px" />
-        <mj-class name="text-gray" color="rgb(153,153,153)" />
-        <mj-all font-family="Hanken Grotesk, Noto Sans, Helvetica, Arial, sans-serif" font-size="16px" color="rgba(255,255,255,0.8)">
+        <mj-class name="text-gray" color="#9ca3af" />
+        <mj-all font-family="Hanken Grotesk, Noto Sans, Helvetica, Arial, sans-serif" font-size="16px" line-height="1.6" color="rgba(249,250,251,0.9)">
     </mj-attributes>
-    <mj-font name="Plus Jakarta Sans" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,700;1,700&display=swap" />
+    <mj-font name="Plus Jakarta Sans" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;1,600&display=swap" />
     <mj-font name="Hanken Grotesk" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital@0;1&display=swap" />
 </mj-head>

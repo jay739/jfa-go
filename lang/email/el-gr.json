@@ -42,7 +42,8 @@
         "toJoin": "Για να συμμετέχετε, ακολουθήστε τον παρακάτω σύνδεσμο.",
         "inviteExpiry": "Αυτή η πρόσκληση θα λήξει στις {date} στις {time}, που είναι σε {expiresInMinutes}, οπότε ενεργήστε γρήγορα.",
         "linkButton": "Ρυθμίστε τον λογαριασμό σας",
-        "name": "Email πρόσκλησης"
+        "name": "Email πρόσκλησης",
+        "linkFallbackHint": "If the button does not work, copy and paste this link into your browser."
     },
     "welcomeEmail": {
         "title": "Καλώς ήλθατε στο Jellyfin",

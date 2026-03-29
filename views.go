@@ -228,6 +228,12 @@ func (app *appContext) AdminPage(gc *gin.Context) {
 		builtBy = "???"
 	}
 
+	jfWeb := strings.TrimSuffix(app.config.Section("jellyfin").Key("public_server").String(), "/")
+	if jfWeb == "" {
+		jfWeb = strings.TrimSuffix(app.config.Section("jellyfin").Key("server").String(), "/")
+	}
+	jfWebJSON, _ := json.Marshal(jfWeb)
+
 	app.gcHTML(gc, http.StatusOK, "admin.html", AdminPage, lang, gin.H{
 		"contactMessage":   "",
 		"linkResetEnabled": app.config.Section("password_resets").Key("link_reset").MustBool(false),
@@ -246,7 +252,8 @@ func (app *appContext) AdminPage(gc *gin.Context) {
 		"jfAllowAll":       jfAllowAll,
 		"userPageEnabled":  app.config.Section("user_page").Key("enabled").MustBool(false),
 		"showUserPageLink": app.config.Section("user_page").Key("show_link").MustBool(true),
-		"loginAppearance":  app.config.Section("ui").Key("login_appearance").MustString("clear"),
+		"loginAppearance":    app.config.Section("ui").Key("login_appearance").MustString("clear"),
+		"jellyfinWebURLJSON": template.JS(jfWebJSON),
 	})
 }
 

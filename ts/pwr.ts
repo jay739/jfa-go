@@ -1,6 +1,6 @@
 import { Modal } from "./modules/modal.js";
 import { Validator, ValidatorConf } from "./modules/validator.js";
-import { _post, addLoader, removeLoader } from "./modules/common.js";
+import { _post, addLoader, removeLoader, formatApiFailure } from "./modules/common.js";
 import { loadLangSelector } from "./modules/lang.js";
 import { Captcha, GreCAPTCHA } from "./modules/captcha.js";
 import { setupTooltips } from "./modules/ui.js";
@@ -129,7 +129,7 @@ form.onsubmit = (event: Event) => {
                     return;
                 } else if (req.status != 200) {
                     const old = submitSpan.textContent;
-                    submitSpan.textContent = window.messages["errorUnknown"];
+                    submitSpan.textContent = formatApiFailure(req, window.messages["errorUnknown"]);
                     submitSpan.classList.add("~critical");
                     submitSpan.classList.remove("~urge");
                     setTimeout(() => {

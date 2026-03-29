@@ -43,7 +43,8 @@
         "toJoin": "Pour continuer, suis le lien en dessous.",
         "inviteExpiry": "L'invitation expirera le {date}, à {time}, soit dans {expiresInMinutes}, alors fais vite.",
         "linkButton": "Lien",
-        "name": "Courriel d'invitation"
+        "name": "Courriel d'invitation",
+        "linkFallbackHint": "Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur."
     },
     "welcomeEmail": {
         "youCanLoginWith": "Tu peux te connecter avec les informations ci-dessous",

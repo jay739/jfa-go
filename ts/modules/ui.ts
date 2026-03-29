@@ -17,6 +17,7 @@ export class HiddenInputField {
     private _input: HTMLInputElement;
     private _content: HTMLElement;
     private _toggle: HTMLElement;
+    private _deferOuterClick: ReturnType<typeof setTimeout> | null = null;
 
     previous: string;
 
@@ -56,16 +57,12 @@ export class HiddenInputField {
         this.setEditing(false, true);
     }
 
-    // FIXME: not working
     outerClickListener = ((event: Event) => {
-        if (
-            !(
-                event.target instanceof HTMLElement &&
-                (this._input.contains(event.target) || this._toggle.contains(event.target))
-            )
-        ) {
-            this.toggle(!this._c.clickAwayShouldSave);
+        const t = event.target;
+        if (t instanceof Node && this._c.container.contains(t)) {
+            return;
         }
+        this.setEditing(false, false, !this._c.clickAwayShouldSave);
     }).bind(this);
 
     get editing(): boolean {
@@ -77,7 +74,15 @@ export class HiddenInputField {
 
     setEditing(e: boolean, noEvent: boolean = false, noSave: boolean = false) {
         if (e) {
-            document.addEventListener("click", this.outerClickListener);
+            if (this._deferOuterClick != null) {
+                clearTimeout(this._deferOuterClick);
+                this._deferOuterClick = null;
+            }
+            // Defer so the same click that opened edit mode is not treated as "outside".
+            this._deferOuterClick = setTimeout(() => {
+                this._deferOuterClick = null;
+                document.addEventListener("click", this.outerClickListener);
+            }, 0);
             this.previous = this.value;
             this._input.value = this.value;
             this._toggle.classList.add(HiddenInputField.saveClass);
@@ -86,6 +91,10 @@ export class HiddenInputField {
             this._input.focus();
             this._content.classList.add("hidden");
         } else {
+            if (this._deferOuterClick != null) {
+                clearTimeout(this._deferOuterClick);
+                this._deferOuterClick = null;
+            }
             document.removeEventListener("click", this.outerClickListener);
             this.value = noSave ? this.previous : this._input.value;
             this._toggle.classList.add(HiddenInputField.editClass);
@@ -146,7 +155,7 @@ export class RadioBasedTabSelector {
             const label = document.createElement("label");
             label.classList.add("grow");
             label.innerHTML = `
-                <input type="radio" name="${this._id}" value="${tab.name}" class="unfocused" ${i == 0 ? "checked" : ""}>
+                <input type="radio" name="${this._id}" value="${tab.name}" class="ui-hidden" ${i == 0 ? "checked" : ""}>
                 <span class="button ~neutral ${i == 0 ? "@high" : "@low"} radio-tab-button supra w-full text-center">${tab.buttonHTML || tab.name}</span>
             `;
             let ft: RadioBasedTabItem = {
@@ -171,12 +180,12 @@ export class RadioBasedTabSelector {
         for (let tab of this._tabs) {
             if (tab.input.checked) {
                 this._selected = tab.tab.id;
-                tab.tab.content?.classList.remove("unfocused");
+                tab.tab.content?.classList.remove("ui-hidden");
                 tab.button.classList.add("@high");
                 tab.button.classList.remove("@low");
                 if (tab.tab.onShow) tab.tab.onShow();
             } else {
-                tab.tab.content?.classList.add("unfocused");
+                tab.tab.content?.classList.add("ui-hidden");
                 tab.button.classList.add("@low");
                 tab.button.classList.remove("@high");
                 if (tab.tab.onHide) tab.tab.onHide();
@@ -195,13 +204,13 @@ export class RadioBasedTabSelector {
             if (tab.tab.id == id) {
                 this._selected = tab.tab.id;
                 tab.input.checked = true;
-                tab.tab.content?.classList.remove("unfocused");
+                tab.tab.content?.classList.remove("ui-hidden");
                 tab.button.classList.add("@high");
                 tab.button.classList.remove("@low");
                 if (tab.tab.onShow) tab.tab.onShow();
             } else {
                 tab.input.checked = false;
-                tab.tab.content?.classList.add("unfocused");
+                tab.tab.content?.classList.add("ui-hidden");
                 tab.button.classList.add("@low");
                 tab.button.classList.remove("@high");
                 if (tab.tab.onHide) tab.tab.onHide();
@@ -232,7 +241,6 @@ export class Tooltip extends HTMLElement {
     }
 
     toggle() {
-        console.log("toggle!");
         this.visible ? this.close() : this.open();
     }
 
@@ -265,10 +273,8 @@ export class Tooltip extends HTMLElement {
         this._content = this.getElementsByClassName("content")[0] as HTMLElement;
         const clickEvent = () => {
             if (this.clicked) {
-                console.log("clicked again!");
                 this.toggle();
             } else {
-                console.log("clicked!");
                 this.clicked = true;
                 this.open();
             }
@@ -280,7 +286,6 @@ export class Tooltip extends HTMLElement {
         });
         this.addEventListener("mouseleave", () => {
             if (this.clicked) return;
-            console.log("mouseleave");
             this.close();
         });
     }

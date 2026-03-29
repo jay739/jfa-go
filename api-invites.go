@@ -171,7 +171,7 @@ func (app *appContext) SendInvite(gc *gin.Context) {
 	inv, ok := app.storage.GetInvitesKey(req.Invite)
 	if !ok {
 		app.err.Printf(lm.FailedGetInvite, req.Invite, lm.NotFound)
-		respond(500, "Invite not found", gc)
+		respondAPIError(404, "errorInviteNotFound", "INVITE_NOT_FOUND", "", gc)
 		return
 	}
 	err := app.sendInvite(req.sendInviteDTO, &inv)
@@ -179,7 +179,7 @@ func (app *appContext) SendInvite(gc *gin.Context) {
 	app.storage.SetInvitesKey(req.Invite, inv)
 	if err != nil {
 		app.err.Printf(lm.FailedSendInviteMessage, req.Invite, req.SendTo, err)
-		respond(500, err.Error(), gc)
+		respondAPIError(500, "errorInviteSend", "INVITE_SEND", err.Error(), gc)
 		return
 	}
 	app.info.Printf(lm.SentInviteMessage, req.Invite, req.SendTo)
@@ -379,9 +379,10 @@ func (app *appContext) GenerateInvite(gc *gin.Context) {
 		err := app.sendInvite(req.sendInviteDTO, &invite)
 		if err != nil {
 			app.err.Printf(lm.FailedSendInviteMessage, invite.Code, req.SendTo, err)
-		} else {
-			app.info.Printf(lm.SentInviteMessage, invite.Code, req.SendTo)
+			respondAPIError(500, "errorInviteSendOnCreate", "INVITE_SEND_ON_CREATE", err.Error(), gc)
+			return
 		}
+		app.info.Printf(lm.SentInviteMessage, invite.Code, req.SendTo)
 	}
 	if req.Profile != "" {
 		if _, ok := app.storage.GetProfileKey(req.Profile); ok {

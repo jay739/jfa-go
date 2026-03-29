@@ -146,11 +146,11 @@ export abstract class PaginatedList implements PageEventBindable {
     set lastPage(v: boolean) {
         this._lastPage = v;
         if (v) {
-            this._c.loadAllButtons.forEach((v) => v.classList.add("unfocused"));
+            this._c.loadAllButtons.forEach((v) => v.classList.add("ui-hidden"));
             this._c.loadMoreButtons.forEach((v) => {
                 v.textContent = window.lang.strings("noMoreResults");
                 if (this._c.hideButtonsOnLastPage) {
-                    v.classList.add("unfocused");
+                    v.classList.add("ui-hidden");
                 }
                 v.disabled = true;
             });
@@ -158,11 +158,11 @@ export abstract class PaginatedList implements PageEventBindable {
             this._c.loadMoreButtons.forEach((v) => {
                 v.textContent = window.lang.strings("loadMore");
                 if (this._c.hideButtonsOnLastPage) {
-                    v.classList.remove("unfocused");
+                    v.classList.remove("ui-hidden");
                 }
                 v.disabled = false;
             });
-            this._c.loadAllButtons.forEach((v) => v.classList.remove("unfocused"));
+            this._c.loadAllButtons.forEach((v) => v.classList.remove("ui-hidden"));
         }
         this.autoSetServerSearchButtonsDisabled();
     }
@@ -233,8 +233,8 @@ export abstract class PaginatedList implements PageEventBindable {
             loadAll: boolean,
             callback?: (resp: PaginatedDTO) => void,
         ) => {
-            // if (this._search.inSearch && !this.lastPage) this._c.loadAllButton.classList.remove("unfocused");
-            // else this._c.loadAllButton.classList.add("unfocused");
+            // if (this._search.inSearch && !this.lastPage) this._c.loadAllButton.classList.remove("ui-hidden");
+            // else this._c.loadAllButton.classList.add("ui-hidden");
 
             this.autoSetServerSearchButtonsDisabled();
 
@@ -266,7 +266,6 @@ export abstract class PaginatedList implements PageEventBindable {
             if (previousServerSearch) previousServerSearch(params, newSearch, then);
         };
         searchConfig.clearServerSearch = () => {
-            console.trace("Clearing server search");
             this._page = 0;
             this.reload();
         };
@@ -296,7 +295,6 @@ export abstract class PaginatedList implements PageEventBindable {
     // Sets the elements with "name"s in "elements" as visible or not.
     // appendedItems==true implies "elements" is the previously rendered elements plus some new ones on the end. Knowing this means the page's infinite scroll doesn't have to be reset.
     setVisibility = (elements: string[], visible: boolean, appendedItems: boolean = false) => {
-        let timer = this._search.timeSearches ? performance.now() : null;
         if (visible) this._visible = elements;
         else this._visible = this._search.ordering.filter((v) => !elements.includes(v));
         // console.log(elements.length, visible, this._visible.length);
@@ -335,11 +333,6 @@ export abstract class PaginatedList implements PageEventBindable {
         this._scroll.rendered = Math.max(baseIndex, this._scroll.initialRenderCount);
         // appendChild over replaceChildren because there's already elements on the DOM
         this._container.appendChild(frag);
-
-        if (this._search.timeSearches) {
-            const totalTime = performance.now() - timer;
-            console.debug(`setVisibility took ${totalTime}ms`);
-        }
     };
 
     // Computes required scroll info, requiring one on-DOM item. Should be computed on page resize and this._visible change.
@@ -370,10 +363,7 @@ export abstract class PaginatedList implements PageEventBindable {
         failCallback?: (req: XMLHttpRequest) => void,
     ) => {
         if (this._loadLock) {
-            console.debug("Queuing load, position:", this._loadQueue.length);
-            const now = Date.now();
             this._loadQueue.push(() => {
-                console.debug("Queued load running, appended at:", now);
                 this._load(itemLimit, page, appendFunc, pre, post, failCallback);
             });
             return;
@@ -425,7 +415,6 @@ export abstract class PaginatedList implements PageEventBindable {
     // Removes all elements, and reloads the first page.
     public abstract reload: (callback?: (resp: PaginatedDTO) => void) => void;
     protected _reload = (callback?: (resp: PaginatedDTO) => void) => {
-        console.trace("reloading");
         this.lastPage = false;
         this._counter.reset();
         this._counter.getTotal(
@@ -450,7 +439,7 @@ export abstract class PaginatedList implements PageEventBindable {
             (resp: PaginatedDTO) => {
                 this._search.onSearchBoxChange(true, false, false);
                 if (this._search.inSearch) {
-                    // this._c.loadAllButton.classList.remove("unfocused");
+                    // this._c.loadAllButton.classList.remove("ui-hidden");
                 } else {
                     this._counter.shown = this._counter.loaded;
                     this.setVisibility(this._search.ordering, true);

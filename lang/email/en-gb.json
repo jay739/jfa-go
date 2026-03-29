@@ -56,7 +56,8 @@
         "inviteExpiry": "This invite will expire on {date} at {time}, which is in {expiresInMinutes}, so act quick.",
         "linkButton": "Setup your account",
         "title": "Invite - Jellyfin",
-        "youHaveBeenInvited": "You've been invited to Jellyfin."
+        "youHaveBeenInvited": "You've been invited to Jellyfin.",
+        "linkFallbackHint": "If the button does not work, copy and paste this link into your browser."
     },
     "userExpired": {
         "name": "User expiry",

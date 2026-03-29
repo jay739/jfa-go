@@ -52,7 +52,8 @@
         "youHaveBeenInvited": "Du er blevet inviteret til Jellyfin.",
         "toJoin": "Tilmeld dig med linket nedenfor.",
         "inviteExpiry": "Invitationen vil udløbe den {date} kl. {time}, hvilket er om {expiresInMinutes}, så skynd dig.",
-        "linkButton": "Opsæt din konto"
+        "linkButton": "Opsæt din konto",
+        "linkFallbackHint": "Hvis knappen ikke virker, kopiér og indsæt linket i din browser."
     },
     "welcomeEmail": {
         "name": "Velkommen",

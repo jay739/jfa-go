@@ -1,0 +1,17 @@
+{
+    "meta": {
+        "name": "English (US)"
+    },
+    "strings": {
+        "title": "Crash report",
+        "heading": "Crash report for jfa-go",
+        "createIssue": "Create an Issue",
+        "fullLog": "Full Log",
+        "copy": "Copy",
+        "copied": "Copied.",
+        "normal": "Normal",
+        "sanitized": "Sanitized",
+        "sanitizedNotice": "An attempt has been made to remove sensitive info, but make sure to check yourself.",
+        "errorLabel": "Error:"
+    }
+}

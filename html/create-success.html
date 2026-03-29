@@ -5,13 +5,19 @@
         <title>{{ .strings.successHeader }} - jfa-go</title>
     </head>
     <body class="section">
-        <div class="page-container m-2 lg:my-20 lg:mx-64">
-            <div class="card ~neutral @low mb-4">
-                <span class="heading mb-4">{{ .strings.successHeader }}</span>
-                <p class="content my-4">{{ .successMessage }}</p>
-                <a class="button ~urge @high full-width center supra submit" href="{{ .jfLink }}" id="create-success-button">{{ .strings.continue }}</a>
+        <div class="page-container mx-auto flex min-h-[70vh] max-w-lg flex-col justify-center px-4 py-12 lg:py-20">
+            <div class="overflow-hidden rounded-2xl border border-black/10 bg-gradient-to-b from-emerald-500/20 via-transparent to-transparent shadow-xl dark:border-white/10 dark:from-emerald-500/10">
+                <div class="h-1.5 w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"></div>
+                <div class="card ~neutral @low rounded-none rounded-b-2xl border-0 px-6 py-8 sm:px-8">
+                    <div class="mb-4 flex flex-row items-center gap-3">
+                        <span class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-3xl text-emerald-600 dark:text-emerald-400" aria-hidden="true"><i class="ri-checkbox-circle-fill"></i></span>
+                        <span class="heading mb-0">{{ .strings.successHeader }}</span>
+                    </div>
+                    <p class="content mb-6 text-base leading-relaxed">{{ .successMessage }}</p>
+                    <a class="button ~urge @high full-width center supra submit" href="{{ .jfLink }}" id="create-success-button">{{ .strings.continue }}</a>
+                </div>
             </div>
-            <i class="content">{{ .contactMessage }}</i>
+            {{ if .contactMessage }}<p class="content mt-6 text-center text-sm opacity-80">{{ .contactMessage }}</p>{{ end }}
         </div>
     </body>
-</html>                            
+</html>

@@ -1,13 +1,11 @@
 <mjml>
     <mj-include path="./layout/header.mjml" />
-    <mj-body>
+    <mj-body background-color="#08080a">
         <mj-include path="./layout/body-start.mjml" />
-        <mj-section mj-class="body">
+        <mj-section mj-class="body" padding="8px 24px 28px">
             <mj-column>
-                <mj-text>
-                    <h3>{{ .inviteExpired }}</h3>
-                    <p>{{ .expiredAt }}</p>
-                </mj-text>
+                <mj-text font-size="20px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, sans-serif" line-height="1.3" padding-bottom="12px">{{ .inviteExpired }}</mj-text>
+                <mj-text font-size="15px" line-height="1.65" mj-class="text-gray">{{ .expiredAt }}</mj-text>
             </mj-column>
         </mj-section>
         <mj-include path="./layout/body-end.mjml" />

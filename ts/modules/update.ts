@@ -1,4 +1,4 @@
-import { _get, _post, toggleLoader, toDateString } from "../modules/common.js";
+import { _get, _post, toggleLoader, toDateString, formatApiFailure } from "../modules/common.js";
 import { Marked, Renderer } from "@ts-stack/markdown";
 
 declare var window: GlobalWindow;
@@ -17,7 +17,10 @@ export class Updater implements updater {
         _get("/config/update", null, (req: XMLHttpRequest) => {
             if (req.readyState == 4) {
                 if (req.status != 200) {
-                    window.notifications.customError("errorCheckUpdate", window.lang.notif("errorCheckUpdate"));
+                    window.notifications.customError(
+                        "errorCheckUpdate",
+                        formatApiFailure(req, window.lang.notif("errorCheckUpdate")),
+                    );
                     return;
                 }
                 let resp = req.response as updateDTO;
@@ -101,12 +104,12 @@ export class Updater implements updater {
         const download = document.getElementById("update-download") as HTMLSpanElement;
         const update = document.getElementById("update-update") as HTMLSpanElement;
         if (can) {
-            download.classList.add("unfocused");
-            update.classList.remove("unfocused");
+            download.classList.add("ui-hidden");
+            update.classList.remove("ui-hidden");
         } else {
             download.onclick = () => window.open(this._update.download_link || this._update.link);
-            download.classList.remove("unfocused");
-            update.classList.add("unfocused");
+            download.classList.remove("ui-hidden");
+            update.classList.add("ui-hidden");
         }
     }
 
@@ -142,7 +145,10 @@ export class Updater implements updater {
                                 window.lang.notif("updateAppliedRefresh"),
                             );
                         } else if (req.status != 200) {
-                            window.notifications.customError("applyUpdateError", window.lang.notif("errorApplyUpdate"));
+                            window.notifications.customError(
+                                "applyUpdateError",
+                                formatApiFailure(req, window.lang.notif("errorApplyUpdate")),
+                            );
                         } else {
                             window.notifications.customSuccess(
                                 "applyUpdate",

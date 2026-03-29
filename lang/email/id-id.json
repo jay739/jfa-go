@@ -42,7 +42,8 @@
         "toJoin": "Untuk masuk, silahkan ikuti link dibawah ini.",
         "inviteExpiry": "Undangan ini akan berakhir dalam {date} pada {time}, yaitu dalam {expiresInMinutes}, jadi bergegaslah.",
         "linkButton": "Persiapkan akunmu",
-        "name": "Email Undangan"
+        "name": "Email Undangan",
+        "linkFallbackHint": "If the button does not work, copy and paste this link into your browser."
     },
     "welcomeEmail": {
         "title": "Selamat datang di Jellyfin",

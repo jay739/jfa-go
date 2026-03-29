@@ -58,6 +58,9 @@
         "errorConnection": "Couldn't connect to jfa-go.",
         "errorUnknown": "Unknown error.",
         "error401Unauthorized": "Unauthorized. Try refreshing the page.",
+        "error403Forbidden": "You are not allowed to do that. If you use Jellyfin login, you may need administrator rights or accounts-admin access.",
+        "error429TooManyRequests": "Too many requests. Wait a moment and try again.",
+        "errorLoadMyDetails": "Could not load your account details. Try refreshing the page.",
         "errorSaveSettings": "Couldn't save settings.",
         "errorSpecialSymbols": "Field cannot contain special symbols."
     },

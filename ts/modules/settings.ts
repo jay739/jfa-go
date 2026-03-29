@@ -11,6 +11,7 @@ import {
     toClipboard,
     toDateString,
     SetupCopyButton,
+    formatApiFailure,
 } from "../modules/common.js";
 import { Marked } from "@ts-stack/markdown";
 import { stripMarkdown } from "../modules/stripmd.js";
@@ -119,13 +120,13 @@ class DOMSetting {
     setting: string;
 
     get hidden(): boolean {
-        return this._hideEl.classList.contains("unfocused");
+        return this._hideEl.classList.contains("ui-hidden");
     }
     set hidden(v: boolean) {
         if (v) {
-            this._hideEl.classList.add("unfocused");
+            this._hideEl.classList.add("ui-hidden");
         } else {
-            this._hideEl.classList.remove("unfocused");
+            this._hideEl.classList.remove("ui-hidden");
         }
         document.dispatchEvent(changedEvent(this._section, this.setting, this.valueAsString(), v));
     }
@@ -159,34 +160,34 @@ class DOMSetting {
     set description(d: string) {
         this._tooltip.content.textContent = d;
         if (d == "") {
-            this._tooltip.classList.add("unfocused");
+            this._tooltip.classList.add("ui-hidden");
         } else {
-            this._tooltip.classList.remove("unfocused");
+            this._tooltip.classList.remove("ui-hidden");
         }
     }
 
     get required(): boolean {
-        return !this._required.classList.contains("unfocused");
+        return !this._required.classList.contains("ui-hidden");
     }
     set required(state: boolean) {
         if (state) {
-            this._required.classList.remove("unfocused");
+            this._required.classList.remove("ui-hidden");
             this._required.innerHTML = RequiredBadge.outerHTML;
         } else {
-            this._required.classList.add("unfocused");
+            this._required.classList.add("ui-hidden");
             this._required.textContent = ``;
         }
     }
 
     get requires_restart(): boolean {
-        return !this._restart.classList.contains("unfocused");
+        return !this._restart.classList.contains("ui-hidden");
     }
     set requires_restart(state: boolean) {
         if (state) {
-            this._restart.classList.remove("unfocused");
+            this._restart.classList.remove("ui-hidden");
             this._restart.innerHTML = RestartRequiredBadge.outerHTML;
         } else {
-            this._restart.classList.add("unfocused");
+            this._restart.classList.add("ui-hidden");
             this._restart.textContent = ``;
         }
     }
@@ -247,12 +248,12 @@ class DOMSetting {
             ${inputOnTop ? input : ""}
             <div class="flex flex-row gap-2 items-baseline">
                 <span class="setting-label"></span>
-                <tool-tip class="setting-tooltip below-center sm:right unfocused">
+                <tool-tip class="setting-tooltip below-center sm:right ui-hidden">
                     <i class="icon ri-information-line align-[-0.05rem]"></i>
                     <span class="content sm"></span>
                 </tool-tip>
-                <span class="setting-required unfocused"></span>
-                <span class="setting-restart unfocused"></span>
+                <span class="setting-required ui-hidden"></span>
+                <span class="setting-restart ui-hidden"></span>
             </div>
             ${inputOnTop ? "" : input}
         </label>
@@ -511,13 +512,13 @@ class DOMNote extends DOMSetting implements SNote {
 
     // We're a note, no one depends on us so we don't need to broadcast a state change.
     get hidden(): boolean {
-        return this._container.classList.contains("unfocused");
+        return this._container.classList.contains("ui-hidden");
     }
     set hidden(v: boolean) {
         if (v) {
-            this._container.classList.add("unfocused");
+            this._container.classList.add("ui-hidden");
         } else {
-            this._container.classList.remove("unfocused");
+            this._container.classList.remove("ui-hidden");
         }
     }
 
@@ -617,16 +618,16 @@ abstract class groupableItem {
         return this._el.parentElement.getAttribute("data-group");
     };
     get hidden(): boolean {
-        return this._el.classList.contains("unfocused");
+        return this._el.classList.contains("ui-hidden");
     }
     set hidden(v: boolean) {
         if (v) {
-            this._el.classList.add("unfocused");
+            this._el.classList.add("ui-hidden");
             if (this.inGroup()) {
                 document.dispatchEvent(new CustomEvent(`settings-group-${this.inGroup()}-child-hidden`));
             }
         } else {
-            this._el.classList.remove("unfocused");
+            this._el.classList.remove("ui-hidden");
             if (this.inGroup()) {
                 document.dispatchEvent(new CustomEvent(`settings-group-${this.inGroup()}-child-visible`));
             }
@@ -739,7 +740,7 @@ class groupButton extends groupableItem {
             this._icon.classList.remove("not-rotated");
             // Hide the scrollbar while we animate
             this._parentSidebar.style.overflowY = "hidden";
-            this._dropdown.classList.remove("unfocused");
+            this._dropdown.classList.remove("ui-hidden");
             const fullHeight = () => {
                 this._dropdown.removeEventListener("transitionend", fullHeight);
                 this._dropdown.style.maxHeight = "9999px";
@@ -754,7 +755,7 @@ class groupButton extends groupableItem {
             this._icon.classList.remove("rotated");
             const mainTransitionEnd = () => {
                 this._dropdown.removeEventListener("transitionend", mainTransitionEnd);
-                this._dropdown.classList.add("unfocused");
+                this._dropdown.classList.add("ui-hidden");
                 // Return the scrollbar (or whatever, just don't hide it)
                 this._parentSidebar.style.overflowY = "";
             };
@@ -781,12 +782,12 @@ class groupButton extends groupableItem {
             this._icon.classList.add("rotated");
             this._dropdown.style.maxHeight = "9999px";
             this._dropdown.style.opacity = "100%";
-            this._dropdown.classList.remove("unfocused");
+            this._dropdown.classList.remove("ui-hidden");
         } else {
             this._icon.classList.remove("rotated");
             this._dropdown.style.maxHeight = "0";
             this._dropdown.style.opacity = "0";
-            this._dropdown.classList.add("unfocused");
+            this._dropdown.classList.add("ui-hidden");
         }
     }
 
@@ -796,7 +797,7 @@ class groupButton extends groupableItem {
 
     private _childHidden = () => {
         for (let el of this._dropdown.children) {
-            if (!el.classList.contains("unfocused")) {
+            if (!el.classList.contains("ui-hidden")) {
                 return;
             }
         }
@@ -819,7 +820,7 @@ class groupButton extends groupableItem {
         <span class="group-button-name"></span>
         <label class="button border-none shadow-none">
             <i class="icon ri-arrow-down-s-line"></i>
-            <input class="unfocused" type="checkbox">
+            <input class="ui-hidden" type="checkbox">
         </label>
         `;
 
@@ -827,7 +828,7 @@ class groupButton extends groupableItem {
         this._el.appendChild(this._dropdown);
         this._dropdown.style.maxHeight = "0";
         this._dropdown.style.opacity = "0";
-        this._dropdown.classList.add("settings-dropdown", "unfocused", "flex", "flex-col", "gap-2", "transition-all");
+        this._dropdown.classList.add("settings-dropdown", "ui-hidden", "flex", "flex-col", "gap-2", "transition-all");
 
         this._icon = this.button.querySelector("i.icon");
         this._check = this.button.querySelector("input[type=checkbox]") as HTMLInputElement;
@@ -859,7 +860,7 @@ class sectionPanel {
         this._sectionName = sectionName;
         this._settings = {};
         this._section = document.createElement("div") as HTMLDivElement;
-        this._section.classList.add("settings-section", "unfocused", "flex", "flex-col", "gap-2");
+        this._section.classList.add("settings-section", "ui-hidden", "flex", "flex-col", "gap-2");
         this._section.setAttribute("data-section", sectionName);
         let innerHTML = `
         <div class="flex flex-row justify-between">
@@ -929,13 +930,13 @@ class sectionPanel {
     };
 
     get visible(): boolean {
-        return !this._section.classList.contains("unfocused");
+        return !this._section.classList.contains("ui-hidden");
     }
     set visible(s: boolean) {
         if (s) {
-            this._section.classList.remove("unfocused");
+            this._section.classList.remove("ui-hidden");
         } else {
-            this._section.classList.add("unfocused");
+            this._section.classList.add("ui-hidden");
         }
     }
 
@@ -1010,9 +1011,6 @@ class sectionButton extends groupableItem {
         let [sect, dependant] = splitDependant(this.section, this._meta.depends_true || this._meta.depends_false);
         let state = !Boolean(this._meta.depends_false);
         document.addEventListener(`settings-${sect}-${dependant}`, (event: settingsChangedEvent) => {
-            console.log(
-                `recieved settings-${sect}-${dependant} = ${event.detail.value} = ${toBool(event.detail.value)} / ${event.detail.hidden}`,
-            );
             const hide = event.detail.hidden || toBool(event.detail.value) !== state;
             this.hidden = hide;
             document.dispatchEvent(new CustomEvent(`settings-${name}`, { detail: !hide }));
@@ -1027,9 +1025,9 @@ class sectionButton extends groupableItem {
 
     private _advancedListener = (event: advancedEvent) => {
         if (!event.detail) {
-            this._el.classList.add("unfocused");
+            this._el.classList.add("ui-hidden");
         } else {
-            this._el.classList.remove("unfocused");
+            this._el.classList.remove("ui-hidden");
         }
         document.dispatchEvent(new CustomEvent("settings-re-search"));
     };
@@ -1225,7 +1223,10 @@ export class settingsList implements AsTab {
                 if (req.status == 200 || req.status == 204) {
                     window.notifications.customSuccess("settingsSaved", window.lang.notif("saveSettings"));
                 } else {
-                    window.notifications.customError("settingsSaved", window.lang.notif("errorSaveSettings"));
+                    window.notifications.customError(
+                        "settingsSaved",
+                        formatApiFailure(req, window.lang.notif("errorSaveSettings")),
+                    );
                 }
                 this.reload();
                 if (run) {
@@ -1256,7 +1257,10 @@ export class settingsList implements AsTab {
                 if (req.readyState != 4 || req.status != 200) return;
                 const backupDTO = req.response as BackupDTO;
                 if (backupDTO.path == "") {
-                    window.notifications.customError("backupError", window.lang.strings("errorFailureCheckLogs"));
+                    window.notifications.customError(
+                        "backupError",
+                        formatApiFailure(req, window.lang.strings("errorFailureCheckLogs")),
+                    );
                     return;
                 }
                 const location = document.getElementById("settings-backed-up-location");
@@ -1323,7 +1327,7 @@ export class settingsList implements AsTab {
         this._groupButtons = {};
         this._sections = {};
         this._buttons = {};
-        document.addEventListener("settings-section-changed", () => this._saveButton.classList.remove("unfocused"));
+        document.addEventListener("settings-section-changed", () => this._saveButton.classList.remove("ui-hidden"));
         document.getElementById("settings-restart").onclick = () => {
             _post("/restart", null, () => {});
             window.modals.settingsRefresh.modal.querySelector("span.heading").textContent =
@@ -1378,11 +1382,11 @@ export class settingsList implements AsTab {
             if (this._advanced) {
                 parent.classList.add("~urge");
                 parent.classList.remove("~neutral");
-                this._tasksButton.classList.remove("unfocused");
+                this._tasksButton.classList.remove("ui-hidden");
             } else {
                 parent.classList.add("~neutral");
                 parent.classList.remove("~urge");
-                this._tasksButton.classList.add("unfocused");
+                this._tasksButton.classList.add("ui-hidden");
             }
             this._searchbox.oninput(null);
         });
@@ -1447,16 +1451,19 @@ export class settingsList implements AsTab {
                         if (req.status == 400) {
                             window.notifications.customError(
                                 "errorUnknown",
-                                window.lang.notif(req.response["error"] as string),
+                                formatApiFailure(req, window.lang.notif("errorUnknown")),
                             );
                             return;
                         } else if (req.status == 401) {
-                            window.notifications.customError("errorUnauthorized", req.response["error"] as string);
+                            window.notifications.customError(
+                                "errorUnauthorized",
+                                formatApiFailure(req, window.lang.notif("error401Unauthorized")),
+                            );
                             return;
                         } else if (req.status == 500) {
                             window.notifications.customError(
                                 "errorAddMatrix",
-                                window.lang.notif("errorFailureCheckLogs"),
+                                formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                             );
                             return;
                         }
@@ -1479,7 +1486,10 @@ export class settingsList implements AsTab {
         _get("/config", null, (req: XMLHttpRequest) => {
             if (req.readyState != 4) return;
             if (req.status != 200) {
-                window.notifications.customError("settingsLoadError", window.lang.notif("errorLoadSettings"));
+                window.notifications.customError(
+                    "settingsLoadError",
+                    formatApiFailure(req, window.lang.notif("errorLoadSettings")),
+                );
                 return;
             }
             this._settings = req.response as Settings;
@@ -1558,7 +1568,7 @@ export class settingsList implements AsTab {
             }
             document.dispatchEvent(new CustomEvent("settings-loaded"));
             document.dispatchEvent(new CustomEvent("settings-advancedState", { detail: false }));
-            this._saveButton.classList.add("unfocused");
+            this._saveButton.classList.add("ui-hidden");
             this._needsRestart = false;
         });
     };
@@ -1672,7 +1682,7 @@ export class settingsList implements AsTab {
                     }
                     if (
                         query != "" &&
-                        ((shouldShow && element.querySelector("label").classList.contains("unfocused")) || !shouldShow)
+                        ((shouldShow && element.querySelector("label").classList.contains("ui-hidden")) || !shouldShow)
                     ) {
                         // Add a note explaining why the setting is hidden
                         if (!dependencyCard) {
@@ -1729,9 +1739,9 @@ export class settingsList implements AsTab {
 
         if (firstVisibleSection && (query != "" || this._visibleSection == "")) {
             this._buttons[firstVisibleSection].select();
-            this._noResultsPanel.classList.add("unfocused");
+            this._noResultsPanel.classList.add("ui-hidden");
         } else if (query != "") {
-            this._noResultsPanel.classList.remove("unfocused");
+            this._noResultsPanel.classList.remove("ui-hidden");
             if (this._visibleSection) {
                 this._sections[this._visibleSection].visible = false;
                 this._buttons[this._visibleSection].selected = false;
@@ -1782,16 +1792,19 @@ class MessageEditor {
         _get("/config/emails/" + id, null, (req: XMLHttpRequest) => {
             if (req.readyState == 4) {
                 if (req.status != 200) {
-                    window.notifications.customError("loadTemplateError", window.lang.notif("errorFailureCheckLogs"));
+                    window.notifications.customError(
+                        "loadTemplateError",
+                        formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                    );
                     return;
                 }
                 if (this._names[id] !== undefined) {
                     this._header.textContent = this._names[id].name;
                 }
-                this._aside.classList.add("unfocused");
+                this._aside.classList.add("ui-hidden");
                 if (this._names[id].description != "") {
                     this._aside.textContent = this._names[id].description;
-                    this._aside.classList.remove("unfocused");
+                    this._aside.classList.remove("ui-hidden");
                 }
 
                 this._templ = req.response as templateEmail;
@@ -1811,9 +1824,9 @@ class MessageEditor {
                     innerHTML += '<span class="button ~' + colors[ci] + ' @low"></span>';
                 }
                 if (this._templ.variables.length == 0) {
-                    this._variablesLabel.classList.add("unfocused");
+                    this._variablesLabel.classList.add("ui-hidden");
                 } else {
-                    this._variablesLabel.classList.remove("unfocused");
+                    this._variablesLabel.classList.remove("ui-hidden");
                 }
                 this._variables.innerHTML = innerHTML;
                 let buttons = this._variables.querySelectorAll("span.button") as NodeListOf<HTMLSpanElement>;
@@ -1829,7 +1842,7 @@ class MessageEditor {
 
                 innerHTML = "";
                 if (this._templ.conditionals == null || this._templ.conditionals.length == 0) {
-                    this._conditionalsLabel.classList.add("unfocused");
+                    this._conditionalsLabel.classList.add("ui-hidden");
                     this._conditionals.textContent = ``;
                 } else {
                     for (let i = this._templ.conditionals.length - 1; i >= 0; i--) {
@@ -1837,7 +1850,7 @@ class MessageEditor {
                         // FIXME: Store full color strings (with ~) so tailwind sees them.
                         innerHTML += '<span class="button ~' + colors[ci] + ' @low"></span>';
                     }
-                    this._conditionalsLabel.classList.remove("unfocused");
+                    this._conditionalsLabel.classList.remove("ui-hidden");
                     this._conditionals.innerHTML = innerHTML;
                     buttons = this._conditionals.querySelectorAll("span.button") as NodeListOf<HTMLSpanElement>;
                     for (let i = 0; i < this._templ.conditionals.length; i++) {
@@ -1892,7 +1905,7 @@ class MessageEditor {
                     if (req.status != 200) {
                         window.notifications.customError(
                             "loadTemplateError",
-                            window.lang.notif("errorFailureCheckLogs"),
+                            formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                         );
                         return;
                     }
@@ -1935,7 +1948,7 @@ class MessageEditor {
                                         if (req.status != 200 && req.status != 204) {
                                             window.notifications.customError(
                                                 "setEmailStateError",
-                                                window.lang.notif("errorFailureCheckLogs"),
+                                                formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
                                             );
                                             return;
                                         }
@@ -1971,7 +1984,10 @@ class MessageEditor {
                 if (req.readyState == 4) {
                     window.modals.editor.close();
                     if (req.status != 200) {
-                        window.notifications.customError("saveEmailError", window.lang.notif("errorSaveEmail"));
+                        window.notifications.customError(
+                            "saveEmailError",
+                            formatApiFailure(req, window.lang.notif("errorSaveEmail")),
+                        );
                         return;
                     }
                     window.notifications.customSuccess("saveEmail", window.lang.notif("saveEmail"));
@@ -2003,7 +2019,13 @@ class TasksList {
     load = () =>
         _get("/tasks", null, (req: XMLHttpRequest) => {
             if (req.readyState != 4) return;
-            if (req.status != 200) return;
+            if (req.status != 200) {
+                window.notifications.customError(
+                    "tasksLoadError",
+                    formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                );
+                return;
+            }
             let resp = req.response["tasks"] as TaskDTO[];
             this._list.textContent = "";
             for (let t of resp) {
@@ -2046,7 +2068,10 @@ class Task {
                 removeLoader(button);
                 setTimeout(window.modals.tasks.close, 1000);
                 if (req.status != 204) {
-                    window.notifications.customError("errorRunTask", window.lang.notif("errorFailureCheckLogs"));
+                    window.notifications.customError(
+                        "errorRunTask",
+                        formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                    );
                     return;
                 }
                 window.notifications.customSuccess("runTask", window.lang.notif("runTask"));

@@ -1,5 +1,5 @@
 import { Modal } from "../modules/modal.js";
-import { toggleLoader, _post, unicodeB64Encode } from "../modules/common.js";
+import { toggleLoader, _post, unicodeB64Encode, formatApiFailure } from "../modules/common.js";
 
 declare var window: GlobalWindow;
 
@@ -43,7 +43,7 @@ export class Login {
 
     bindLogout = (button: HTMLElement) => {
         this._logoutButton = button;
-        this._logoutButton.classList.add("unfocused");
+        this._logoutButton.classList.add("ui-hidden");
         const logoutFunc = (url: string, tryAgain: boolean) => {
             _post(
                 url + "logout",
@@ -85,19 +85,11 @@ export class Login {
         req.onreadystatechange = ((req: XMLHttpRequest, _: Event): any => {
             if (req.readyState == 4) {
                 if (req.status != 200) {
-                    let errorMsg = window.lang.notif("errorConnection");
-                    if (req.response) {
-                        errorMsg = req.response["error"];
-                        const langErrorMsg = window.lang.strings(errorMsg);
-                        if (langErrorMsg) {
-                            errorMsg = langErrorMsg;
-                        }
-                    }
-                    if (!errorMsg) {
-                        errorMsg = window.lang.notif("errorUnknown");
-                    }
                     if (!refresh) {
-                        window.notifications.customError("loginError", errorMsg);
+                        window.notifications.customError(
+                            "loginError",
+                            formatApiFailure(req, window.lang.notif("errorUnknown")),
+                        );
                     } else {
                         this._modal.show();
                     }
@@ -110,7 +102,7 @@ export class Login {
                     }
                     if (this._hasOpacityWall) this._wall.remove();
                     this._modal.close();
-                    if (this._logoutButton != null) this._logoutButton.classList.remove("unfocused");
+                    if (this._logoutButton != null) this._logoutButton.classList.remove("ui-hidden");
                 }
                 if (run) {
                     run(+req.status);

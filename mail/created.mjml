@@ -1,22 +1,25 @@
 <mjml>
     <mj-include path="./layout/header.mjml" />
-    <mj-body>
+    <mj-body background-color="#08080a">
         <mj-include path="./layout/body-start.mjml" />
-        <mj-section mj-class="body">
+        <mj-section mj-class="body" padding="8px 24px 12px">
             <mj-column>
-                <mj-text>
-                    <p>{{ .aUserWasCreated }}</p>
-                </mj-text>
-                <mj-table css-class="bg-gray" mj-class="bg-gray">
-                  <tr style="text-align: left;">
-                      <th>{{ .nameString }}</th>
-                      <th>{{ .addressString }}</th>
-                      <th>{{ .timeString }}</th>
-                  </tr>
-                  <tr class="text-gray" style="font-style: italic; text-align: left;">
-                    <th>{{ .name }}</th>
-                    <th>{{ .address }}</th>
-                    <th>{{ .time }}</th>
+                <mj-text font-size="16px" line-height="1.65" padding-bottom="16px">{{ .aUserWasCreated }}</mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section mj-class="body" padding="0 24px 28px">
+            <mj-column css-class="inner-card" padding="4px 4px 4px 4px">
+                <mj-table cellpadding="12px" color="#e5e7eb" font-size="14px">
+                    <tr style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <th style="padding:10px 12px;font-weight:600;color:#9ca3af;">{{ .nameString }}</th>
+                        <th style="padding:10px 12px;font-weight:600;color:#9ca3af;">{{ .addressString }}</th>
+                        <th style="padding:10px 12px;font-weight:600;color:#9ca3af;">{{ .timeString }}</th>
+                    </tr>
+                    <tr style="text-align:left;font-style:italic;">
+                        <td style="padding:12px;color:#f3f4f6;">{{ .name }}</td>
+                        <td style="padding:12px;color:#f3f4f6;">{{ .address }}</td>
+                        <td style="padding:12px;color:#d1d5db;">{{ .time }}</td>
+                    </tr>
                 </mj-table>
             </mj-column>
         </mj-section>

@@ -1,4 +1,4 @@
-import { addLoader, removeLoader, _get } from "../modules/common.js";
+import { addLoader, removeLoader, _get, formatApiFailure } from "../modules/common.js";
 
 declare var window: GlobalWindow;
 
@@ -38,6 +38,10 @@ export function newDiscordSearch(
                     if (req.status != 200) {
                         removeLoader(list);
                         list.parentElement.classList.remove("mb-4", "mt-4");
+                        window.notifications.customError(
+                            "discordSearchError",
+                            formatApiFailure(req, window.lang.notif("errorFailureCheckLogs")),
+                        );
                         return;
                     }
                     const users = req.response["users"] as Array<DiscordUser>;

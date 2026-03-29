@@ -42,7 +42,8 @@
         "toJoin": "Per entrare, segui il link sotto.",
         "inviteExpiry": "Questo invito scadrà il {date} alle {time}, quindi in {expiresInMinutes}, agisci in fretta.",
         "linkButton": "Imposta il tuo account",
-        "name": "Email di invito"
+        "name": "Email di invito",
+        "linkFallbackHint": "Se il pulsante non funziona, copia e incolla questo link nel browser."
     },
     "welcomeEmail": {
         "title": "Benvenuto su Jellyfin",

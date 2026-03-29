@@ -1,6 +1,6 @@
 declare interface Modal {
     modal: HTMLElement;
-    closeButton: HTMLSpanElement;
+    closeButton: HTMLSpanElement | null;
     show: () => void;
     close: (event?: Event, noDispatch?: boolean) => void;
     toggle: () => void;
@@ -59,6 +59,8 @@ declare interface GlobalWindow extends Window {
     jfAllowAll: boolean;
     referralsEnabled: boolean;
     loginAppearance: string;
+    /** Jellyfin web root (from server config) for “Open in Jellyfin” on the accounts tab. */
+    jellyfinWebURL?: string;
 }
 
 declare interface PageEventBindable {

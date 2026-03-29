@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io/fs"
+	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -66,8 +67,23 @@ type testReq struct {
 func (app *appContext) TestJF(gc *gin.Context) {
 	var req testReq
 	gc.BindJSON(&req)
+	req.Server = strings.TrimSpace(req.Server)
+	req.Username = strings.TrimSpace(req.Username)
+	if req.Server == "" {
+		respond(400, "errorEmptyServer", gc)
+		return
+	}
+	if req.Username == "" || req.Password == "" {
+		respond(400, "errorEmptyCredentials", gc)
+		return
+	}
 	if !(strings.HasPrefix(req.Server, "http://") || strings.HasPrefix(req.Server, "https://")) {
 		req.Server = "http://" + req.Server
+	}
+	parsed, err := url.Parse(req.Server)
+	if err != nil || parsed.Host == "" {
+		respond(400, "errorInvalidServerURL", gc)
+		return
 	}
 	serverType := mediabrowser.JellyfinServer
 	if req.ServerType == "emby" {

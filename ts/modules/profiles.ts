@@ -1,4 +1,4 @@
-import { _get, _post, _delete, toggleLoader, _put } from "../modules/common.js";
+import { _get, _post, _delete, toggleLoader, _put, formatApiFailure } from "../modules/common.js";
 import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
 import codeInput, { CodeInput } from "@webcoder49/code-input/code-input.mjs";
@@ -14,6 +14,18 @@ export const profileLoadEvent = new CustomEvent("profileLoadEvent");
 export const reloadProfileNames = (then?: () => void) =>
     _get("/profiles/names", null, (req: XMLHttpRequest) => {
         if (req.readyState != 4) return;
+        if (req.status != 200) {
+            window.availableProfiles = [];
+            if (req.status !== 401 && req.status !== 403 && req.status !== 429) {
+                window.notifications.customError(
+                    "profilesNamesError",
+                    formatApiFailure(req, window.lang.notif("errorLoadProfiles")),
+                );
+            }
+            document.dispatchEvent(profileLoadEvent);
+            if (then) then();
+            return;
+        }
         window.availableProfiles = req.response["profiles"];
         document.dispatchEvent(profileLoadEvent);
         if (then) then();
@@ -55,11 +67,11 @@ class profile implements Profile {
     }
     set admin(state: boolean) {
         if (state) {
-            this._adminChip.classList.remove("unfocused");
+            this._adminChip.classList.remove("ui-hidden");
             this._adminChip.classList.add("chip", "~info");
             this._adminChip.textContent = "Admin";
         } else {
-            this._adminChip.classList.add("unfocused");
+            this._adminChip.classList.add("ui-hidden");
             this._adminChip.classList.remove("chip", "~info");
             this._adminChip.textContent = "";
         }
@@ -216,7 +228,7 @@ class profile implements Profile {
                 } else {
                     window.notifications.customError(
                         "profileDelete",
-                        window.lang.var("notifications", "errorDeleteProfile", `"${this.name}"`),
+                        formatApiFailure(req, window.lang.var("notifications", "errorDeleteProfile", `"${this.name}"`)),
                     );
                 }
             }
@@ -296,7 +308,7 @@ export class ProfileEditor {
                                                     if (req.status != 204) {
                                                         window.notifications.customError(
                                                             "errorDeleteOmbi",
-                                                            window.lang.notif("errorUnknown"),
+                                                            formatApiFailure(req, window.lang.notif("errorUnknown")),
                                                         );
                                                         return;
                                                     }
@@ -317,7 +329,7 @@ export class ProfileEditor {
                                                     if (req.status != 204) {
                                                         window.notifications.customError(
                                                             "errorDeleteJellyseerr",
-                                                            window.lang.notif("errorUnknown"),
+                                                            formatApiFailure(req, window.lang.notif("errorUnknown")),
                                                         );
                                                         return;
                                                     }
@@ -347,7 +359,10 @@ export class ProfileEditor {
                     this.default = resp.default_profile;
                     window.modals.profiles.show();
                 } else {
-                    window.notifications.customError("profileEditor", window.lang.notif("errorLoadProfiles"));
+                    window.notifications.customError(
+                        "profileEditor",
+                        formatApiFailure(req, window.lang.notif("errorLoadProfiles")),
+                    );
                 }
             }
         });
@@ -404,7 +419,10 @@ export class ProfileEditor {
                     if (req.readyState == 4) {
                         toggleLoader(button);
                         if (req.status == 400) {
-                            window.notifications.customError("unknownError", window.lang.notif("errorUnknown"));
+                            window.notifications.customError(
+                                "unknownError",
+                                formatApiFailure(req, window.lang.notif("errorUnknown")),
+                            );
                         } else if (req.status == 200 || req.status == 204) {
                             window.notifications.customSuccess(
                                 "enableReferralsSuccess",
@@ -427,7 +445,10 @@ export class ProfileEditor {
         _get("/profiles/raw/" + urlSafeName, null, (req: XMLHttpRequest) => {
             if (req.readyState != 4) return;
             if (req.status != 200) {
-                window.notifications.customError("errorLoadProfile", window.lang.notif("errorLoadProfile"));
+                window.notifications.customError(
+                    "errorLoadProfile",
+                    formatApiFailure(req, window.lang.notif("errorLoadProfile")),
+                );
                 return;
             }
             const editorContainer = document.getElementById("modal-edit-profile-editor");
@@ -466,7 +487,10 @@ export class ProfileEditor {
                             delete this._profiles[name];
                         }
                     } else {
-                        window.notifications.customError("errorSavedProfile", window.lang.notif("errorSavedProfile"));
+                        window.notifications.customError(
+                            "errorSavedProfile",
+                            formatApiFailure(req, window.lang.notif("errorSavedProfile")),
+                        );
                     }
                     window.modals.editProfile.close();
                     // Reload with new info from edits
@@ -490,7 +514,10 @@ export class ProfileEditor {
                         this.default = newDefault;
                     } else {
                         this.default = prevDefault;
-                        window.notifications.customError("profileDefault", window.lang.notif("errorSetDefaultProfile"));
+                        window.notifications.customError(
+                            "profileDefault",
+                            formatApiFailure(req, window.lang.notif("errorSetDefaultProfile")),
+                        );
                     }
                 }
             });
@@ -517,7 +544,10 @@ export class ProfileEditor {
                         window.modals.profiles.close();
                         window.modals.addProfile.show();
                     } else {
-                        window.notifications.customError("loadUsers", window.lang.notif("errorLoadUsers"));
+                        window.notifications.customError(
+                            "loadUsers",
+                            formatApiFailure(req, window.lang.notif("errorLoadUsers")),
+                        );
                     }
                 }
             });
@@ -545,7 +575,10 @@ export class ProfileEditor {
                     } else {
                         window.notifications.customError(
                             "createProfile",
-                            window.lang.var("notifications", "errorCreateProfile", `"${send["name"]}"`),
+                            formatApiFailure(
+                                req,
+                                window.lang.var("notifications", "errorCreateProfile", `"${send["name"]}"`),
+                            ),
                         );
                     }
                     window.modals.profiles.show();
@@ -586,7 +619,10 @@ export class ombiProfiles {
                     if (req.status == 200 || req.status == 204) {
                         window.notifications.customSuccess("ombiDefaults", window.lang.notif("setOmbiProfile"));
                     } else {
-                        window.notifications.customError("ombiDefaults", window.lang.notif("errorSetOmbiProfile"));
+                        window.notifications.customError(
+                            "ombiDefaults",
+                            formatApiFailure(req, window.lang.notif("errorSetOmbiProfile")),
+                        );
                     }
                     window.modals.ombiProfile.close();
                 }
@@ -611,7 +647,10 @@ export class ombiProfiles {
                     this._select.innerHTML = innerHTML;
                     window.modals.ombiProfile.show();
                 } else {
-                    window.notifications.customError("ombiLoadError", window.lang.notif("errorLoadOmbiUsers"));
+                    window.notifications.customError(
+                        "ombiLoadError",
+                        formatApiFailure(req, window.lang.notif("errorLoadOmbiUsers")),
+                    );
                 }
             }
         });
@@ -639,7 +678,10 @@ export class jellyseerrProfiles {
                 if (req.status == 200 || req.status == 204) {
                     window.notifications.customSuccess("jellyseerrDefaults", window.lang.notif("savedProfile"));
                 } else {
-                    window.notifications.customError("jellyseerrDefaults", window.lang.notif("errorSavedProfile"));
+                    window.notifications.customError(
+                        "jellyseerrDefaults",
+                        formatApiFailure(req, window.lang.notif("errorSavedProfile")),
+                    );
                 }
                 window.modals.jellyseerrProfile.close();
             }
@@ -663,7 +705,10 @@ export class jellyseerrProfiles {
                     this._select.innerHTML = innerHTML;
                     window.modals.jellyseerrProfile.show();
                 } else {
-                    window.notifications.customError("jellyseerrLoadError", window.lang.notif("errorLoadUsers"));
+                    window.notifications.customError(
+                        "jellyseerrLoadError",
+                        formatApiFailure(req, window.lang.notif("errorLoadUsers")),
+                    );
                 }
             }
         });

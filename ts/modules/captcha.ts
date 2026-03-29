@@ -1,4 +1,4 @@
-import { _get, _post } from "./common.js";
+import { _get, _post, formatApiFailure } from "./common.js";
 
 declare var window: GlobalWindow;
 
@@ -56,10 +56,17 @@ export class Captcha {
                         this.checkbox.classList.add("~critical");
                         this.checkbox.classList.remove("~positive");
                         this.verified = false;
+                        if (req.status >= 500) {
+                            window.notifications.customError(
+                                "captchaVerifyError",
+                                formatApiFailure(req, window.lang.notif("errorCaptcha")),
+                            );
+                        }
                     }
                     callback();
                 }
             },
+            true,
         );
 
     generate = () =>
@@ -72,6 +79,11 @@ export class Captcha {
                 <img class="w-full" src="${window.location.toString().substring(0, window.location.toString().lastIndexOf(window.pages.Form))}/captcha/img/${this.code}/${this.isPWR ? Math.random() : this.captchaID}${this.isPWR ? "?pwr=true" : ""}"></img>
                 `;
                     this.input.value = "";
+                } else if (req.status !== 401 && req.status !== 403 && req.status !== 429) {
+                    window.notifications.customError(
+                        "captchaGenError",
+                        formatApiFailure(req, window.lang.notif("errorUnknown")),
+                    );
                 }
             }
         });

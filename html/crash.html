@@ -4,34 +4,34 @@
         <!--- This CSS is inlined so we should keep this here! -->
         <link inline rel="stylesheet" type="text/css" href="web/css/v0.6.0bundle.css">
         {{ template "header.txt" . }}
-        <title>Crash report</title>
+        <title>{{ .crash.Title }}</title>
     </head>
-    <body>
+    <body data-copy-label="{{ .crash.Copy }}" data-copied-label="{{ .crash.Copied }}">
         <div class="page-container m-2 lg:my-20 lg:mx-64">
             <div class="card ~critical sectioned">
                 <section class="section ~critical flex flex-col gap-2">
-                    <span class="heading">Crash report for jfa-go</span>
+                    <span class="heading">{{ .crash.Heading }}</span>
                     {{ if .Err }}
                     <div class="font-mono bg-inherit pre-line">
-                    Error: {{ .Err }}
+                    {{ .crash.ErrorLabel }} {{ .Err }}
                     </div>
                     {{ end }}
-                    <a class="button ~critical w-full center" target="_blank" href="https://github.com/hrfee/jfa-go/issues/new/choose">Create an Issue</a>
+                    <a class="button ~critical w-full center" target="_blank" href="https://github.com/hrfee/jfa-go/issues/new/choose">{{ .crash.CreateIssue }}</a>
                 </section>
                 <section class="section ~neutral @low flex flex-col gap-4">
                     <div class="flex flex-row justify-between gap-4">
-                        <span class="subheading font-medium">Full Log</span>
-                        <span class="button ~urge" id="copy-log">Copy</span>
+                        <span class="subheading font-medium">{{ .crash.FullLog }}</span>
+                        <span class="button ~urge" id="copy-log">{{ .crash.Copy }}</span>
                     </div>
                     <div class="flex flex-row gap-2 justify-between">
-                        <button class="button ~neutral @high supra w-full center" id="button-log-normal">Normal</button>
-                        <button class="button ~neutral @low supra w-full center" id="button-log-sanitized">Sanitized</button>
+                        <button class="button ~neutral @high supra w-full center" id="button-log-normal">{{ .crash.Normal }}</button>
+                        <button class="button ~neutral @low supra w-full center" id="button-log-sanitized">{{ .crash.Sanitized }}</button>
                     </div>
                     <div id="log-normal">
                         <pre class="card font-mono bg-inherit pre-line">{{ .Log }}</pre>
                     </div>
-                    <div id="log-sanitized" class="flex flex-col gap-2 unfocused">
-                        <p class="support subheading">An attempt has been made to remove sensitive info, but make sure to check yourself.</p>
+                    <div id="log-sanitized" class="flex flex-col gap-2 ui-hidden">
+                        <p class="support subheading">{{ .crash.SanitizedNotice }}</p>
                         <pre class="card font-mono bg-inherit pre-line">{{ .SanitizedLog }}</pre>
                     </div>
                 </section>

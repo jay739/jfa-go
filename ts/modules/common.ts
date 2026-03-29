@@ -92,6 +92,16 @@ export const _get = (
             return;
         } else if (req.status == 401) {
             window.notifications.customError("401Error", window.lang.notif("error401Unauthorized"));
+        } else if (req.status == 403) {
+            window.notifications.customError(
+                "403Error",
+                formatApiFailure(req, window.lang.notif("error403Forbidden")),
+            );
+        } else if (req.status == 429) {
+            window.notifications.customError(
+                "429Error",
+                formatApiFailure(req, window.lang.notif("error429TooManyRequests")),
+            );
         }
         onreadystatechange(req);
     };
@@ -154,6 +164,16 @@ export const _req = (
             return;
         } else if (req.status == 401) {
             window.notifications.customError("401Error", window.lang.notif("error401Unauthorized"));
+        } else if (req.status == 403) {
+            window.notifications.customError(
+                "403Error",
+                formatApiFailure(req, window.lang.notif("error403Forbidden")),
+            );
+        } else if (req.status == 429) {
+            window.notifications.customError(
+                "429Error",
+                formatApiFailure(req, window.lang.notif("error429TooManyRequests")),
+            );
         }
         onreadystatechange(req);
     };
@@ -206,6 +226,16 @@ export function _delete(
             return;
         } else if (req.status == 401) {
             window.notifications.customError("401Error", window.lang.notif("error401Unauthorized"));
+        } else if (req.status == 403) {
+            window.notifications.customError(
+                "403Error",
+                formatApiFailure(req, window.lang.notif("error403Forbidden")),
+            );
+        } else if (req.status == 429) {
+            window.notifications.customError(
+                "429Error",
+                formatApiFailure(req, window.lang.notif("error429TooManyRequests")),
+            );
         }
         onreadystatechange(req);
     };
@@ -435,6 +465,39 @@ export function bindManualDropdowns() {
             }
         };
     }
+}
+
+/** Builds a user-visible message from JSON API errors ({ error, hint, code }) or falls back. */
+export function formatApiFailure(req: XMLHttpRequest, fallback: string): string {
+    if (req.status === 0) {
+        return fallback;
+    }
+    const r = req.response as { error?: string | boolean; hint?: string; code?: string } | null;
+    if (!r || typeof r !== "object") {
+        return fallback;
+    }
+    if (r.error === true) {
+        return fallback;
+    }
+    const msgKey = typeof r.error === "string" ? r.error : "";
+    if (msgKey) {
+        const wm = (window as unknown as { messages?: Record<string, string> }).messages;
+        if (wm && typeof wm[msgKey] === "string" && wm[msgKey]) {
+            const hint = typeof r.hint === "string" && r.hint.trim() ? " — " + r.hint : "";
+            return wm[msgKey] + hint;
+        }
+        const tr = window.lang?.notif(msgKey) || window.lang?.strings(msgKey);
+        if (tr) {
+            const hint = typeof r.hint === "string" && r.hint.trim() ? " — " + r.hint : "";
+            return tr + hint;
+        }
+        const hint = typeof r.hint === "string" && r.hint.trim() ? " — " + r.hint : "";
+        return msgKey + hint;
+    }
+    if (typeof r.hint === "string" && r.hint.trim()) {
+        return fallback + " — " + r.hint;
+    }
+    return fallback;
 }
 
 export function unicodeB64Decode(s: string): string {

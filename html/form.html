@@ -35,12 +35,13 @@
         </div>
         {{ template "account-linking.html" . }}
         <div id="notification-box"></div>
-        <div class="page-container m-2 lg:my-20 lg:mx-64 flex flex-col gap-4">
-            <div class="top-2 inset-x-2 lg:absolute flex flex-row justify-between">
+        <div class="page-container mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 lg:py-16">
+            <div class="flex flex-row justify-end lg:absolute lg:right-8 lg:top-6">
                 {{ template "lang-select.html" . }}
             </div>
-            <div class="card dark:~d_neutral @low">
-                <div class="flex flex-col md:flex-row gap-3 items-baseline mb-2">
+            <div class="rounded-2xl border border-black/10 bg-gradient-to-b from-white/60 to-transparent p-1 shadow-lg dark:border-white/10 dark:from-white/5">
+            <div class="card dark:~d_neutral @low rounded-xl shadow-sm">
+                <div class="flex flex-col gap-1 border-b border-black/5 pb-4 dark:border-white/10 md:flex-row md:items-end md:justify-between">
                     <span class="heading">
                         {{ if .passwordReset }}
                         {{ .strings.passwordReset }}
@@ -48,7 +49,7 @@
                         {{ .strings.createAccountHeader }}
                         {{ end }}
                     </span>
-                    <span class="subheading">
+                    <span class="subheading max-w-xl">
                         {{ if .passwordReset }}
                             {{ .strings.enterYourPassword }}
                         {{ else }}
@@ -82,22 +83,22 @@
                             <span class="button ~info @low full-width center mb-4" id="link-matrix">{{ .strings.linkMatrix }} {{ if .matrixRequired }}({{ .strings.required }}){{ end }}</span>
                             {{ end }}
                             {{ if or (.telegramEnabled) (or .discordEnabled .matrixEnabled) }}
-                            <div id="contact-via" class="unfocused flex flex-col gap-2">
-                                <label class="flex flex-row gap-2 switch unfocused">
+                            <div id="contact-via" class="ui-hidden flex flex-col gap-2">
+                                <label class="flex flex-row gap-2 switch ui-hidden">
                                     <input type="checkbox" name="contact-via" value="email" id="contact-via-email"><span>Contact through Email</span>
                                 </label>
                                 {{ if .telegramEnabled }}
-                                <label class="flex flex-row gap-2 switch unfocused">
+                                <label class="flex flex-row gap-2 switch ui-hidden">
                                     <input type="checkbox" name="contact-via" value="telegram" id="contact-via-telegram"><span>Contact through Telegram</span>
                                 </label>
                                 {{ end }}
                                 {{ if .discordEnabled }}
-                                <label class="flex flex-row gap-2 switch unfocused">
+                                <label class="flex flex-row gap-2 switch ui-hidden">
                                     <input type="checkbox" name="contact-via" value="discord" id="contact-via-discord"><span>Contact through Discord</span>
                                 </label>
                                 {{ end }}
                                 {{ if .matrixEnabled }}
-                                <label class="flex flex-row gap-2 switch unfocused">
+                                <label class="flex flex-row gap-2 switch ui-hidden">
                                     <input type="checkbox" name="contact-via" value="matrix" id="contact-via-matrix"><span>Contact through Matrix</span>
                                 </label>
                                 {{ end }}
@@ -110,7 +111,7 @@
                             <label class="label supra" for="create-reenter-password">{{ .strings.reEnterPassword }}</label>
                             <input type="password" class="input ~neutral @high mt-2 mb-4" placeholder="{{ .strings.password }}" id="create-reenter-password" aria-label="{{ .strings.reEnterPassword }}">
                             <label>
-                                <input type="submit" class="unfocused">
+                                <input type="submit" class="ui-hidden">
                                 <span class="button ~urge @low full-width center supra submit">
                                     {{ if .passwordReset }}
                                     {{ .strings.reset }}
@@ -162,6 +163,7 @@
                         {{ end }}
                     </div>
                 </div>
+            </div>
             </div>
         </div>
         {{ template "form-base" . }}

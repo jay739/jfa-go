@@ -42,7 +42,8 @@
         "toJoin": "Para participar, clique no link abaixo.",
         "inviteExpiry": "Este convite expira em {date} às {time}, que é em {expiresInMinutes}, então seja rápido.",
         "linkButton": "Crie sua conta",
-        "name": "Convide por email"
+        "name": "Convide por email",
+        "linkFallbackHint": "Se o botão não funcionar, copie e cole este link no navegador."
     },
     "welcomeEmail": {
         "title": "Bem vindo ao Jellyfin",

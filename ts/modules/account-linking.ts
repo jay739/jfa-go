@@ -1,5 +1,5 @@
 import { Modal } from "../modules/modal.js";
-import { _get, _post, toggleLoader, addLoader, removeLoader } from "../modules/common.js";
+import { _get, _post, toggleLoader, addLoader, removeLoader, formatApiFailure } from "../modules/common.js";
 
 interface formWindow extends GlobalWindow {
     invalidPassword: string;
@@ -83,10 +83,16 @@ export class ServiceLinker {
             if (req.readyState != 4) return;
             if (req.status == 401) {
                 this._conf.modal.close();
-                window.notifications.customError("invalidCodeError", this._conf.invalidCodeError);
+                window.notifications.customError(
+                    "invalidCodeError",
+                    formatApiFailure(req, this._conf.invalidCodeError),
+                );
             } else if (req.status == 400) {
                 this._conf.modal.close();
-                window.notifications.customError("accountLinkedError", this._conf.accountLinkedError);
+                window.notifications.customError(
+                    "accountLinkedError",
+                    formatApiFailure(req, this._conf.accountLinkedError),
+                );
             } else if (req.status == 200) {
                 if (req.response["success"] as boolean) {
                     this._verified = true;
@@ -239,7 +245,7 @@ export class Matrix {
                 return;
             } else if (req.status != 200) {
                 this._conf.modal.close();
-                window.notifications.customError("unknownError", this._conf.unknownError);
+                window.notifications.customError("unknownError", formatApiFailure(req, this._conf.unknownError));
                 return;
             }
             this._userID = this._input.value;
@@ -257,6 +263,13 @@ export class Matrix {
         _get(this._conf.verifiedURL + this._userID + "/" + this._input.value, null, (req: XMLHttpRequest) => {
             if (req.readyState != 4) return;
             removeLoader(this._submit);
+            if (req.status != 200) {
+                window.notifications.customError(
+                    "invalidCodeError",
+                    formatApiFailure(req, this._conf.invalidCodeError),
+                );
+                return;
+            }
             const valid = req.response["success"] as boolean;
             if (valid) {
                 this._conf.modal.close();
@@ -267,7 +280,10 @@ export class Matrix {
                     this._conf.successFunc();
                 }
             } else {
-                window.notifications.customError("invalidCodeError", this._conf.invalidCodeError);
+                window.notifications.customError(
+                    "invalidCodeError",
+                    formatApiFailure(req, this._conf.invalidCodeError),
+                );
                 this._submit.classList.add("~critical");
                 this._submit.classList.remove("~info");
                 setTimeout(() => {

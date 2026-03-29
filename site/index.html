@@ -24,7 +24,7 @@
                     <pre style="margin: 0; line-height: 125%">sudo apt-get update && sudo apt-get install curl apt-transport-https gnupg
 curl https://apt.hrfee.dev/hrfee.pubkey.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/apt.hrfee.dev.gpg
 
-echo <span style="color: #aa5500">&quot;deb https://apt.hrfee.dev trusty<span id="deb-unstable" class="unfocused">-unstable</span> main&quot;</span> | sudo tee /etc/apt/sources.list.d/hrfee.list
+echo <span style="color: #aa5500">&quot;deb https://apt.hrfee.dev trusty<span id="deb-unstable" class="ui-hidden">-unstable</span> main&quot;</span> | sudo tee /etc/apt/sources.list.d/hrfee.list
 
 sudo apt-get update
 
@@ -48,7 +48,7 @@ sudo apt-get install jfa-go-tray
      -v /path/to/.config/jfa-go:/data <span style="color: #BB6622; font-weight: bold">\ </span><span style="color: #408080; font-style: italic"># Path to wherever you want to store the config file and other data</span>
      -v /path/to/jellyfin:/jf <span style="color: #BB6622; font-weight: bold">\ </span><span style="color: #408080; font-style: italic"># Optional path to Jellyfin config directory for auto password resets, ignore if using Emby</span>
      -v /etc/localtime:/etc/localtime:ro <span style="color: #BB6622; font-weight: bold">\ </span><span style="color: #408080; font-style: italic"># Makes sure time is correct</span>
-     hrfee/jfa-go<span id="docker-unstable" class="unfocused">:unstable</span></pre>
+     hrfee/jfa-go<span id="docker-unstable" class="ui-hidden">:unstable</span></pre>
                 </div>
             </div>
         </div>
@@ -122,7 +122,7 @@ sudo apt-get install jfa-go-tray
                         <a class="button ~info mr-2 mb-2 lang-link" target="_blank" href="https://aur.archlinux.org/packages/jfa-go-bin">arch (aur binary)</a>
                     </div>
                 </div>
-                <div class="mt-1 unfocused" id="sect-unstable">
+                <div class="mt-1 ui-hidden" id="sect-unstable">
                     <p class="row center">Built on every commit, so may include incomplete/broken features. Take care.</p>
                     <div class="row col flex center">
                         <a class="button ~info mr-2 mb-2 lang-link" id="download-docker-unstable">docker</a>

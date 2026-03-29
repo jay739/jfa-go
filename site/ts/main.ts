@@ -27,24 +27,24 @@ const unstableButton = document.getElementById("download-unstable") as HTMLSpanE
 const dockerUnstable = document.getElementById("docker-unstable");
 
 stableButton.onclick = () => {
-    debUnstable.classList.add("unfocused");
-    dockerUnstable.classList.add("unfocused");
+    debUnstable.classList.add("ui-hidden");
+    dockerUnstable.classList.add("ui-hidden");
     stableButton.classList.add("@high");
     stableButton.classList.remove("@low");
     unstableButton.classList.remove("@high");
-    stableSect.classList.remove("unfocused");
-    unstableSect.classList.add("unfocused");
+    stableSect.classList.remove("ui-hidden");
+    unstableSect.classList.add("ui-hidden");
 
 }
 
 unstableButton.onclick = () => {
-    debUnstable.classList.remove("unfocused");
-    dockerUnstable.classList.remove("unfocused");
+    debUnstable.classList.remove("ui-hidden");
+    dockerUnstable.classList.remove("ui-hidden");
     unstableButton.classList.add("@high");
     unstableButton.classList.remove("@low");
     stableButton.classList.remove("@high");
-    stableSect.classList.add("unfocused");
-    unstableSect.classList.remove("unfocused");
+    stableSect.classList.add("ui-hidden");
+    unstableSect.classList.remove("ui-hidden");
 }
 
 const dockerModal = new Modal(document.getElementById("modal-docker"));

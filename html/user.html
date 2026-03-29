@@ -31,7 +31,7 @@
                     </label>
                     <button class="button ~urge @low supra full-width center lg modal-submit">{{ .strings.submit }}</button>
                 </div>
-                <div class="confirmation-required unfocused flex flex-col gap-2">
+                <div class="confirmation-required ui-hidden flex flex-col gap-2">
                     <span class="heading">{{ .strings.confirmationRequired }} <span class="modal-close">&times;</span></span>
                     <p class="content">{{ .strings.confirmationRequiredMessage }}</p>
                 </div>
@@ -54,7 +54,7 @@
                         <p>{{ .strings.resetPasswordThroughJellyfin }}</p>
                     {{ end }}
                 </div>
-                <input type="text" class="col sm field ~neutral @low input" id="pwr-address" placeholder="username | example@example.com | user#1234 | @user:host | @username">
+                <input type="text" class="col sm field ~neutral @low input" id="pwr-address" placeholder="{{ .strings.pwrAddressPlaceholder }}">
                 {{ if .linkResetEnabled }}
                     <span class="button ~info @low full-width center" id="pwr-submit">
                         {{ .strings.submit }}
@@ -68,14 +68,14 @@
         {{ template "login-modal.html" . }}
         {{ template "account-linking.html" . }}
         <div id="notification-box"></div>
-        <div class="page-container m-2 lg:my-20 lg:mx-64 flex flex-col gap-4 unfocused">
+        <div class="page-container m-2 lg:my-20 lg:mx-64 flex flex-col gap-4 ui-hidden">
             <div class="top-2 inset-x-2 lg:absolute flex flex-row justify-between">
                 <div class="flex flex-row gap-2">
                     {{ template "lang-select.html" . }}
                     <span class="button ~warning h-min" alt="{{ .strings.theme }}" id="button-theme"><i class="ri-sun-line"></i></span>
-                    <span class="button ~critical @low unfocused" id="logout-button">{{ .strings.logout }}</span>
+                    <span class="button ~critical @low ui-hidden" id="logout-button">{{ .strings.logout }}</span>
                 </div>
-                <a class="button ~info unfocused h-min flex flex-row gap-1" href="/" id="admin-back-button"><i class="ri-arrow-left-fill"></i>{{ .strings.admin }}</a>
+                <a class="button ~info ui-hidden h-min flex flex-row gap-1" href="/" id="admin-back-button"><i class="ri-arrow-left-fill"></i>{{ .strings.admin }}</a>
             </div>
             <div class="card @low dark:~d_neutral" id="card-user">
                 <span class="heading flex flex-row gap-4"></span>
@@ -122,7 +122,7 @@
                     </div>
                 </div>
                 <div>
-                    <div class="card @low dark:~d_neutral unfocused flex flex-col gap-2" id="card-status">
+                    <div class="card @low dark:~d_neutral ui-hidden flex flex-col gap-2" id="card-status">
                         <span class="heading">{{ .strings.expiry }}</span>
                         <aside class="aside ~warning user-expiry"></aside>
                         <div class="user-expiry-countdown"></div>
@@ -130,7 +130,7 @@
                 </div>
                 {{ if .referralsEnabled }}
                     <div>
-                        <div class="card @low dark:~d_neutral unfocused flex flex-col gap-2" id="card-referrals">
+                        <div class="card @low dark:~d_neutral ui-hidden flex flex-col gap-2" id="card-referrals">
                             <span class="heading">{{ .strings.referrals }}</span>
                             <aside class="aside ~neutral col user-referrals-description"></aside>
                             <div class="flex flex-row justify-between gap-2">

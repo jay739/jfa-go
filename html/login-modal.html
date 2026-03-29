@@ -24,7 +24,7 @@
             <input type="text" class="field input ~neutral @high" placeholder="{{ .strings.username }}" id="login-user">
             <input type="password" class="field input ~neutral @high" placeholder="{{ .strings.password }}" id="login-password">
             <label>
-                <input type="submit" class="unfocused">
+                <input type="submit" class="ui-hidden">
                 <span class="button ~urge @low full-width center supra submit">{{ .strings.login }}</span>
             </label>
             {{ if index . "pwrEnabled" }}

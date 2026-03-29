@@ -41,7 +41,8 @@
         "youHaveBeenInvited": "Du har blivit inbjuden till Jellyfin.",
         "toJoin": "För att gå med, följ länken nedan.",
         "inviteExpiry": "Denna inbjudan upphör att gälla den {date} vid {time}, vilket är om {expiresInMinutes}, så agera snabbt.",
-        "linkButton": "Ställ in ditt konto"
+        "linkButton": "Ställ in ditt konto",
+        "linkFallbackHint": "Om knappen inte fungerar, kopiera och klistra in länken i webbläsaren."
     },
     "welcomeEmail": {
         "name": "Välkomst e-post",

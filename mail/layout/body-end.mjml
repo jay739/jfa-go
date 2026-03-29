@@ -1,5 +1,6 @@
-<mj-section mj-class="bg-gray">
+<mj-section mj-class="body" padding="0 24px 28px">
     <mj-column>
-        <mj-text mj-class="secondary text-gray">{{ .footer }}</mj-text>
+        <mj-divider border-width="1px" border-color="rgba(255,255,255,0.08)" padding="8px 0 20px" />
+        <mj-text mj-class="secondary text-gray" font-size="13px" line-height="1.55" align="center">{{ .footer }}</mj-text>
     </mj-column>
 </mj-section>

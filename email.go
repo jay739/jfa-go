@@ -391,6 +391,7 @@ func (emailer *Emailer) constructInvite(invite *Invite, placeholders bool) (*Mes
 		"youHaveBeenInvited": emailer.lang.InviteEmail.get("youHaveBeenInvited"),
 		"toJoin":             emailer.lang.InviteEmail.get("toJoin"),
 		"linkButton":         emailer.lang.InviteEmail.get("linkButton"),
+		"linkFallbackHint":   emailer.lang.InviteEmail.get("linkFallbackHint"),
 		"date":               d,
 		"time":               t,
 		"expiresInMinutes":   expiresIn,

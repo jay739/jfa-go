@@ -42,7 +42,8 @@
         "toJoin": "Volg onderstaande link om door te gaan.",
         "inviteExpiry": "Deze uitnodiging verloopt op {date}, om {time}, dat is over {expiresInMinutes}, dus wees er snel bij.",
         "linkButton": "Maak account aan",
-        "name": "Uitnodigingse-mail"
+        "name": "Uitnodigingse-mail",
+        "linkFallbackHint": "Als de knop niet werkt, kopieer en plak deze link in je browser."
     },
     "welcomeEmail": {
         "title": "Welkom bij Jellyfin",

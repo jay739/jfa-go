@@ -42,7 +42,8 @@
         "toJoin": "Um beizutreten, folge dem untenstehenden Link.",
         "inviteExpiry": "Dieser Invite wird am {date}; um {time} ablaufen, was in {expiresInMinutes} ist, also handle schnell.",
         "linkButton": "Richte dein Konto ein",
-        "name": "Einladungs-E-Mail"
+        "name": "Einladungs-E-Mail",
+        "linkFallbackHint": "Wenn die Schaltfläche nicht funktioniert, kopieren Sie diesen Link in den Browser."
     },
     "welcomeEmail": {
         "title": "Wilkommen bei Jellyfin",

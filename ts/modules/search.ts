@@ -492,7 +492,6 @@ export class Search implements Navigatable {
 
     // Returns a list of identifiers (used as keys in items, values in ordering).
     search = (query: string): string[] => {
-        let timer = this.timeSearches ? performance.now() : null;
         if (this._c.filterArea) this._c.filterArea.textContent = "";
 
         const [searchTerms, queries] = this.parseTokens(Search.tokenizeSearch(query));
@@ -502,10 +501,6 @@ export class Search implements Navigatable {
         this._queries = queries;
         this._searchTerms = searchTerms;
 
-        if (this.timeSearches) {
-            const totalTime = performance.now() - timer;
-            console.debug(`Search took ${totalTime}ms`);
-        }
         return result;
     };
 
@@ -588,14 +583,14 @@ export class Search implements Navigatable {
 
     setNotFoundPanelVisibility = (visible: boolean) => {
         if (this._inServerSearch || !this.inSearch) {
-            this._c.notFoundLocallyText?.classList.add("unfocused");
+            this._c.notFoundLocallyText?.classList.add("ui-hidden");
         } else if (this.inSearch) {
-            this._c.notFoundLocallyText?.classList.remove("unfocused");
+            this._c.notFoundLocallyText?.classList.remove("ui-hidden");
         }
         if (visible) {
-            this._c.notFoundPanel?.classList.remove("unfocused");
+            this._c.notFoundPanel?.classList.remove("ui-hidden");
         } else {
-            this._c.notFoundPanel?.classList.add("unfocused");
+            this._c.notFoundPanel?.classList.add("ui-hidden");
         }
     };
 

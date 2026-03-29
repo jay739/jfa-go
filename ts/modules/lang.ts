@@ -1,4 +1,4 @@
-import { _get } from "../modules/common.js";
+import { _get, formatApiFailure } from "../modules/common.js";
 import { Template } from "@hrfee/simpletemplate";
 
 interface Meta {
@@ -68,7 +68,7 @@ export class lang implements Lang {
 export var TimeFmtChange = new CustomEvent("timefmt-change");
 
 export const loadLangSelector = (page: string) => {
-    if (page == "admin" || "user") {
+    if (page === "admin" || page === "user") {
         const setTimefmt = (fmt: string) => {
             document.dispatchEvent(TimeFmtChange);
             localStorage.setItem("timefmt", fmt);
@@ -97,7 +97,14 @@ export const loadLangSelector = (page: string) => {
         (req: XMLHttpRequest) => {
             if (req.readyState == 4) {
                 if (req.status != 200) {
-                    document.getElementById("lang-dropdown").remove();
+                    const dropdown = document.getElementById("lang-dropdown");
+                    if (dropdown) dropdown.remove();
+                    if (req.status !== 401 && req.status !== 403 && req.status !== 429) {
+                        window.notifications?.customError(
+                            "langListError",
+                            formatApiFailure(req, window.lang.notif("errorUnknown")),
+                        );
+                    }
                     return;
                 }
                 const list = document.getElementById("lang-list") as HTMLDivElement;

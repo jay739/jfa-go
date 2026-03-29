@@ -52,7 +52,8 @@
         "youHaveBeenInvited": "Has sido invitado a Jellyfin.",
         "toJoin": "Para unirse, siga el enlace a continuación.",
         "inviteExpiry": "Esta invitación vencerá el {date} a las {time}, que es en {expiresInMinutes}, así que regístrese cuanto antes.",
-        "linkButton": "Configura tu cuenta"
+        "linkButton": "Configura tu cuenta",
+        "linkFallbackHint": "Si el botón no funciona, copia y pega este enlace en tu navegador."
     },
     "welcomeEmail": {
         "name": "Bienvenido",

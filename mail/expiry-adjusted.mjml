@@ -1,16 +1,14 @@
 <mjml>
     <mj-include path="./layout/header.mjml" />
-    <mj-body>
+    <mj-body background-color="#08080a">
         <mj-include path="./layout/body-start.mjml" />
-        <mj-section mj-class="body">
+        <mj-section mj-class="body" padding="8px 24px 28px">
             <mj-column>
-                <mj-text>
-                    <p>{{ .helloUser }}</p>
-                    <h3>{{ .yourExpiryWasAdjusted }}</h3>
-                    <p>{{ .ifPreviouslyDisabled }}</p>
-                    <h4>{{ .newExpiry }}</h4>
-                    <p>{{ .reasonString }}: <i>{{ .reason }}</i></p>
-                </mj-text>
+                <mj-text font-size="16px" line-height="1.65" padding-bottom="10px">{{ .helloUser }}</mj-text>
+                <mj-text font-size="20px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, sans-serif" padding-bottom="8px">{{ .yourExpiryWasAdjusted }}</mj-text>
+                <mj-text font-size="14px" line-height="1.55" mj-class="text-gray" padding-bottom="12px">{{ .ifPreviouslyDisabled }}</mj-text>
+                <mj-text font-size="17px" font-weight="600" padding-bottom="12px">{{ .newExpiry }}</mj-text>
+                <mj-text font-size="14px" line-height="1.55" mj-class="text-gray">{{ .reasonString }}: <span style="font-style:italic;color:#e5e7eb;">{{ .reason }}</span></mj-text>
             </mj-column>
         </mj-section>
         <mj-include path="./layout/body-end.mjml" />

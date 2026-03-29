@@ -37,6 +37,7 @@
         "resetPasswordUsername": "Your Jellyfin username",
         "resetPasswordEmail": "Your email address",
         "resetPasswordContactMethod": "The username of any contact method linked to your account",
+        "pwrAddressPlaceholder": "username | example@example.com | user#1234 | @user:host | @username",
         "resetSent": "Reset Sent.",
         "resetSentDescription": "If an account with the given username/contact method exists, a password reset link has been sent via all contact methods available. The code will expire in 30 minutes.",
         "changePassword": "Change Password",
@@ -61,7 +62,8 @@
         "errorNoMatch": "Passwords don't match.",
         "errorOldPassword": "Old password incorrect.",
         "passwordChanged": "Password Changed.",
-        "verified": "Account verified."
+        "verified": "Account verified.",
+        "errorSaveEmail": "Could not save your email address."
     },
     "validationStrings": {
         "length": {

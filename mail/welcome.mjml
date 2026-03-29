@@ -1,16 +1,25 @@
 <mjml>
     <mj-include path="./layout/header.mjml" />
-    <mj-body>
+    <mj-body background-color="#08080a">
         <mj-include path="./layout/body-start.mjml" />
-        <mj-section mj-class="body">
+        <mj-section mj-class="body" padding="8px 24px 12px">
             <mj-column>
-                <mj-text>
-                    <h3>{{ .welcome }}</h3>
-                    <p>{{ .youCanLoginWith }}:</p>
-                    {{ .jellyfinURLString }}: <a href="{{ .jellyfinURL }}">{{ .jellyfinURL }}</a>
-                    <p>{{ .usernameString }}: <i>{{ .username }}</i></p>
-                    <p>{{ .yourAccountWillExpire }}</p>
-                </mj-text>
+                <mj-text font-size="17px" line-height="1.6" padding-bottom="8px">{{ .welcome }}</mj-text>
+                <mj-text mj-class="text-gray" font-size="15px" padding-bottom="16px">{{ .youCanLoginWith }}:</mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section mj-class="body" padding="0 24px 20px">
+            <mj-column css-class="inner-card" padding="20px 22px">
+                <mj-text font-size="14px" mj-class="text-gray" padding-bottom="6px">{{ .jellyfinURLString }}</mj-text>
+                <mj-text font-size="16px" padding-bottom="14px"><a href="{{ .jellyfinURL }}" style="color:#7dd3fc;">{{ .jellyfinURL }}</a></mj-text>
+                <mj-divider border-color="rgba(255,255,255,0.08)" padding="4px 0 12px" />
+                <mj-text font-size="14px" mj-class="text-gray" padding-bottom="6px">{{ .usernameString }}</mj-text>
+                <mj-text font-size="18px" font-weight="600" font-family="Plus Jakarta Sans, Hanken Grotesk, sans-serif" padding-bottom="4px">{{ .username }}</mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section mj-class="body" padding="0 24px 28px">
+            <mj-column>
+                <mj-text mj-class="text-gray" font-size="14px" line-height="1.55">{{ .yourAccountWillExpire }}</mj-text>
             </mj-column>
         </mj-section>
         <mj-include path="./layout/body-end.mjml" />

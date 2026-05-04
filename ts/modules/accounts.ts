@@ -1355,6 +1355,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         if (!window.linkResetEnabled) {
             this._sendPWR.classList.add("action-unavailable");
         } else {
+            this._sendPWR.classList.remove("ui-hidden");
             this._sendPWR.onclick = this.sendPWR;
         }
         /*if (!window.emailEnabled) {

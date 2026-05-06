@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/goccy/go-yaml"
-	"github.com/hrfee/jfa-go/common"
+	"github.com/jay739/omnifin/common"
 	"gopkg.in/ini.v1"
 )
 

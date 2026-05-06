@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 	"github.com/hrfee/mediabrowser"
 	"github.com/lithammer/shortuuid/v3"
 )
@@ -223,7 +223,7 @@ func (app *appContext) validateJellyfinCredentials(username, password string, gc
 }
 
 // @Summary Grabs an API token using username & password.
-// @description If viewing docs locally, click the lock icon next to this, login with your normal jfa-go credentials. Click 'try it out', then 'execute' and an API Key will be returned, copy it (not including quotes). On any of the other routes, click the lock icon and set the API key as "Bearer `your api key`".
+// @description If viewing docs locally, click the lock icon next to this, login with your normal omnifin credentials. Click 'try it out', then 'execute' and an API Key will be returned, copy it (not including quotes). On any of the other routes, click the lock icon and set the API key as "Bearer `your api key`".
 // @Produce json
 // @Success 200 {object} getTokenDTO
 // @Failure 401 {object} stringResponse

@@ -40,7 +40,7 @@
     },
     "notifications": {
         "errorLoginBlank": "帳戶名稱和/或密碼留空。",
-        "errorConnection": "無法連接到 jfa-go。",
+        "errorConnection": "無法連接到 Omnifin。",
         "errorUnknown": "未知的錯誤。",
         "error401Unauthorized": "未經授權。嘗試重新整理頁面。",
         "errorSaveSettings": "無法儲存設置。"

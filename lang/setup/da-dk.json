@@ -3,7 +3,7 @@
         "name": "Dansk (DK)"
     },
     "strings": {
-        "pageTitle": "Opsæt - jfa-go",
+        "pageTitle": "Opsæt - Omnifin",
         "next": "Næste",
         "back": "Tilbage",
         "optional": "Valgfri",
@@ -26,7 +26,7 @@
     },
     "startPage": {
         "welcome": "Velkommen!",
-        "pressStart": "Du bliver nødt til at gøre et par ting for at konfigurere jfa-go. Tryk på start for at fortsætte.",
+        "pressStart": "Du bliver nødt til at gøre et par ting for at konfigurere Omnifin. Tryk på start for at fortsætte.",
         "httpsNotice": "Sørg for, at du tilgår denne side via HTTPS eller på et privat netværk.",
         "start": "Start"
     },
@@ -37,7 +37,7 @@
     },
     "language": {
         "title": "Sprog",
-        "description": "Fællesskabsoversættelser er tilgængelige for de fleste dele af jfa-go. Du kan vælge standardsprogene nedenfor, men brugere kan stadig ændre det, hvis de ønsker det. Hvis du vil hjælpe med at oversætte, skal du tilmelde dig til {n} for at begynde at bidrage!",
+        "description": "Fællesskabsoversættelser er tilgængelige for de fleste dele af Omnifin. Du kan vælge standardsprogene nedenfor, men brugere kan stadig ændre det, hvis de ønsker det. Hvis du vil hjælpe med at oversætte, skal du tilmelde dig til {n} for at begynde at bidrage!",
         "defaultAdminLang": "Standard administrator sprog",
         "defaultFormLang": "Standard kontooprettelses sprog",
         "defaultEmailLang": "Standard e-mail sprog"
@@ -57,7 +57,7 @@
     },
     "updates": {
         "title": "Opdateringer",
-        "description": "Få besked når nye opdateringer er tilgængelige. jfa-go kontrollerer {n} hvert 30 minut. Ingen IP'er eller personlige identificerbare oplysninger indsamles.",
+        "description": "Få besked når nye opdateringer er tilgængelige. Omnifin kontrollerer {n} hvert 30 minut. Ingen IP'er eller personlige identificerbare oplysninger indsamles.",
         "updateChannel": "Opdaterings Kanal",
         "stable": "Stabil",
         "unstable": "Ustabil"
@@ -86,12 +86,12 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "Ved at oprette forbindelse til Ombi, oprettes både en Jellyfin og Ombi konto når en bruger tilmelder sig via jfa-go. Når installationen er afsluttet, skal du gå til Indstillinger for at indstille en standardprofil til nye Ombi brugere.",
+        "description": "Ved at oprette forbindelse til Ombi, oprettes både en Jellyfin og Ombi konto når en bruger tilmelder sig via Omnifin. Når installationen er afsluttet, skal du gå til Indstillinger for at indstille en standardprofil til nye Ombi brugere.",
         "apiKeyNotice": "Find dette i den første fane i Ombi indstillinger."
     },
     "email": {
         "title": "E-mail",
-        "description": "jfa-go kan sende PIN-koder til nulstilling af adgangskoder og forskellige meddelelser via e-mail. Du kan oprette forbindelse til en SMTP-server eller bruge {n} API.",
+        "description": "Omnifin kan sende PIN-koder til nulstilling af adgangskoder og forskellige meddelelser via e-mail. Du kan oprette forbindelse til en SMTP-server eller bruge {n} API.",
         "method": "Afsendelsesmetode",
         "useEmailAsUsername": "Brug e-mail adresser som brugernavn",
         "useEmailAsUsernameNotice": "Hvis aktiveret, logger nye brugere på Jellyfin/Emby med deres e-mail adresse i stedet for et brugernavn.",
@@ -116,7 +116,7 @@
     },
     "passwordResets": {
         "title": "Nulstilling af Adgangskoder",
-        "description": "Når en bruger forsøger at nulstille deres adgangskode, opretter Jellyfin en fil med navnet 'passwordreset - *. Json', som indeholder en Pinkode. jfa-go læser filen og sender Pinkoden til brugeren. jfa-go læser filen og sender Pinkoden til brugeren. Hvis du aktiverede funktionen \"Brugerside\", kan en nulstilling også udføres der, givet et brugernavn, email eller kontaktmetode.",
+        "description": "Når en bruger forsøger at nulstille deres adgangskode, opretter Jellyfin en fil med navnet 'passwordreset - *. Json', som indeholder en Pinkode. Omnifin læser filen og sender Pinkoden til brugeren. Omnifin læser filen og sender Pinkoden til brugeren. Hvis du aktiverede funktionen \"Brugerside\", kan en nulstilling også udføres der, givet et brugernavn, email eller kontaktmetode.",
         "pathToJellyfin": "Sti til Jellyfin's konfigurations mappe",
         "pathToJellyfinNotice": "Hvis du ikke ved hvor dette er, kan du prøve at nulstille din adgangskode i Jellyfin. En popup med '<sti til jellyfin>/passwordreset - *. Json' vises. Dette er ikke nødvendigt, hvis du kun ønsker at bruge selvbetjenings nulstilling af adgangskode via \"Brugersiden\".",
         "resetLinks": "Send et link i stedet for en PIN-kode",
@@ -149,12 +149,12 @@
     },
     "messages": {
         "title": "Beskeder",
-        "description": "jfa-go kan sende nulstilling af adgangskoder og forskellige meddelelser via E-mail, Discord, Telegram og/eller Matrix. Du kan konfigurere E-mail herunder, og de andre kan konfigureres i Indstillinger senere. Instruktioner kan findes på {n}. Hvis du ikke har brug for dette, kan du deaktivere disse funktioner her."
+        "description": "Omnifin kan sende nulstilling af adgangskoder og forskellige meddelelser via E-mail, Discord, Telegram og/eller Matrix. Du kan konfigurere E-mail herunder, og de andre kan konfigureres i Indstillinger senere. Instruktioner kan findes på {n}. Hvis du ikke har brug for dette, kan du deaktivere disse funktioner her."
     },
     "userPage": {
         "description": "Brugersiden (vist som \"Min konto\") giver brugerne adgang til oplysninger om deres konto, såsom deres kontaktmetoder og kontoudløb. De kan også ændre deres adgangskode, starte en nulstilling af adgangskode og linke/ændre kontaktmetoder uden at skulle spørge dig. Derudover kan tilpassede Markdown beskeder vises til brugerne før og efter login.",
         "title": "Brugerside",
         "customizeMessages": "Klik på redigeringsknappen ved siden af \"Brugerside\" i indstillingerne for at indstille dem senere.",
-        "requiredSettings": "Log ind på jfa-go via Jellyfin skal indstilles. Sørg for, at \"nulstil adgangskode via link\" er valgt senere for selvbetjenings nulstilling af adgangskode."
+        "requiredSettings": "Log ind på Omnifin via Jellyfin skal indstilles. Sørg for, at \"nulstil adgangskode via link\" er valgt senere for selvbetjenings nulstilling af adgangskode."
     }
 }

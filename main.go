@@ -27,17 +27,17 @@ import (
 	"github.com/lithammer/shortuuid/v3"
 	"gopkg.in/ini.v1"
 
-	"github.com/hrfee/jfa-go/common"
-	_ "github.com/hrfee/jfa-go/docs"
-	"github.com/hrfee/jfa-go/jellyseerr"
-	"github.com/hrfee/jfa-go/logger"
-	lm "github.com/hrfee/jfa-go/logmessages"
-	"github.com/hrfee/jfa-go/ombi"
+	"github.com/jay739/omnifin/common"
+	_ "github.com/jay739/omnifin/docs"
+	"github.com/jay739/omnifin/jellyseerr"
+	"github.com/jay739/omnifin/logger"
+	lm "github.com/jay739/omnifin/logmessages"
+	"github.com/jay739/omnifin/ombi"
 )
 
 var (
 	PLATFORM           string = runtime.GOOS
-	SOCK               string = "jfa-go.sock"
+	SOCK               string = "omnifin.sock"
 	SRV                *http.Server
 	RESTART            chan bool
 	TRAYRESTART        chan bool
@@ -204,11 +204,11 @@ func start(asDaemon, firstCall bool) {
 		set default config and data paths
 		data: Contains invites.json, emails.json, user_profile.json, etc.
 		config: config.ini. Usually in data, but can be changed via -config.
-		localFS: jfa-go's internal data. On internal builds, this is contained within the binary.
+		localFS: omnifin's internal data. On internal builds, this is contained within the binary.
 				 On external builds, the directory is named "data" and placed next to the executable.
 	*/
 	userConfigDir, _ := os.UserConfigDir()
-	app.dataPath = filepath.Join(userConfigDir, "jfa-go")
+	app.dataPath = filepath.Join(userConfigDir, "omnifin")
 	app.configPath = filepath.Join(app.dataPath, "config.ini")
 	// gin-static doesn't just take a plain http.FileSystem, so we implement it's ServeFileSystem. See static.go.
 	app.webFS = httpFS{
@@ -280,7 +280,7 @@ func start(asDaemon, firstCall bool) {
 		app.info.Print(warning("\n\nWARNING: Don't use pprof in production.\n\n"))
 	}
 
-	// Starts listener to receive commands over a unix socket. Use with 'jfa-go start/stop'
+	// Starts listener to receive commands over a unix socket. Use with 'omnifin start/stop'
 	if asDaemon {
 		go func() {
 			os.Remove(SOCK)
@@ -482,7 +482,7 @@ func start(asDaemon, firstCall bool) {
 			app.info.Println(lm.UsingLocalAuth)
 		} else {
 			app.debug.Println(lm.UsingJellyfinAuth)
-			app.authJf, _ = mediabrowser.NewServer(serverType, server, "jfa-go", app.version, "auth", "auth", timeoutHandler, cacheTimeout)
+			app.authJf, _ = mediabrowser.NewServer(serverType, server, "omnifin", app.version, "auth", "auth", timeoutHandler, cacheTimeout)
 			if debugMode {
 				app.authJf.Verbose = true
 			}
@@ -512,7 +512,7 @@ func start(asDaemon, firstCall bool) {
 		}
 		app.validator.init(validatorConf)
 
-		// Test mode for testing connection to Jellyfin, accessed with 'jfa-go test'
+		// Test mode for testing connection to Jellyfin, accessed with 'omnifin test'
 		if TEST {
 			test(app)
 			os.Exit(0)
@@ -724,13 +724,13 @@ func flagPassed(name string) (found bool) {
 	return
 }
 
-// @title jfa-go internal API
+// @title omnifin internal API
 // @version 0.6.1
-// @description API for the jfa-go frontend
-// @contact.name Harvey Tindall
-// @contact.email hrfee@hrfee.dev
+// @description API for the omnifin frontend
+// @contact.name Jayakrishna Konda
+// @contact.email contact@jay739.dev
 // @license.name MIT
-// @license.url https://raw.githubusercontent.com/hrfee/jfa-go/main/LICENSE
+// @license.url https://raw.githubusercontent.com/jay739/omnifin/main/LICENSE
 // @BasePath /
 
 // @securityDefinitions.apikey Bearer
@@ -762,7 +762,7 @@ func flagPassed(name string) (found bool) {
 // @tag.description Routes related to the activity log.
 
 // @tag.name Configuration
-// @tag.description jfa-go settings.
+// @tag.description omnifin settings.
 
 // @tag.name Ombi
 // @tag.description Ombi related operations.
@@ -784,10 +784,10 @@ func printVersion() {
 	if TRAY {
 		tray = " TrayIcon"
 	}
-	fmt.Println(info("jfa-go version: %s (%s)%s\n", hiwhite(version), white(commit), tray))
+	fmt.Println(info("omnifin version: %s (%s)%s\n", hiwhite(version), white(commit), tray))
 }
 
-const SYSTEMD_SERVICE = "jfa-go.service"
+const SYSTEMD_SERVICE = "omnifin.service"
 
 func main() {
 	// Generate list of "-tags" for about page.
@@ -867,7 +867,7 @@ func main() {
 			fmt.Printf(lm.FailedWriting+"\n", SYSTEMD_SERVICE, err)
 			os.Exit(1)
 		}
-		fmt.Println(info(`If you want to execute jfa-go with special arguments, re-run this command with them.
+		fmt.Println(info(`If you want to execute omnifin with special arguments, re-run this command with them.
 Move the newly created SYSTEMD_SERVICE file to ~/.config/systemd/user (Creating it if necessary).
 Then run "systemctl --user daemon-reload".
 You can then run:
@@ -877,15 +877,15 @@ You can then run:
 		time.Sleep(time.Millisecond)
 		color.New(color.FgGreen).Print("To start: ")
 		time.Sleep(time.Millisecond)
-		fmt.Print(info("systemctl --user start jfa-go\n\n"))
+		fmt.Print(info("systemctl --user start omnifin\n\n"))
 		time.Sleep(time.Millisecond)
 		color.New(color.FgRed).Print("To stop: ")
 		time.Sleep(time.Millisecond)
-		fmt.Print(info("systemctl --user stop jfa-go\n\n"))
+		fmt.Print(info("systemctl --user stop omnifin\n\n"))
 		time.Sleep(time.Millisecond)
 		color.New(color.FgYellow).Print("To restart: ")
 		time.Sleep(time.Millisecond)
-		fmt.Print(info("systemctl --user stop jfa-go\n"))
+		fmt.Print(info("systemctl --user stop omnifin\n"))
 	} else if TRAY {
 		RunTray()
 	} else {

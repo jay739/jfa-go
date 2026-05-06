@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-#### Read the [FAQ](https://wiki.jfa-go.com/docs/faq/) first!
+#### This is a fork of [jfa-go](https://github.com/hrfee/jfa-go). For upstream issues, check the [jfa-go FAQ](https://wiki.jfa-go.com/docs/faq/) and consider reporting there if the problem is not specific to omnifin.
 
 **Describe the bug**
 
@@ -21,7 +21,7 @@ What to do to reproduce the problem.
 
 **If you're using a build with a tray icon, right-click on it and press "Open logs" to access your logs.**
 
-When you notice the problem, check the output of `jfa-go` or get the logs by pressing the "Logs" button in the Settings tab. If the problem is not obvious (e.g a panic (red text) or 'ERROR' log), re-run jfa-go with the `-debug` argument and reproduce the problem. You should then take a screenshot of the output, or paste it here, preferably between \`\`\` tags (e.g \`\`\``Log here`\`\`\`). Remember to censor any personal information.
+When you notice the problem, check the output of `omnifin` or get the logs by pressing the "Logs" button in the Settings tab. If the problem is not obvious (e.g a panic (red text) or 'ERROR' log), re-run omnifin with the `-debug` argument and reproduce the problem. You should then take a screenshot of the output, or paste it here, preferably between \`\`\` tags (e.g \`\`\``Log here`\`\`\`). Remember to censor any personal information.
 
 
 If nothing catches your eye in the log, access the admin page via your browser, go into the console (Right click > Inspect Element > Console), refresh, reproduce the problem then paste the output here in the same way as above.
@@ -32,5 +32,5 @@ If you see it as necessary, include relevant sections of your `config.ini`, for 
 
 **Platform/Version**
 
-Include the platform jfa-go is running on (e.g Windows, Linux, Docker), the version (first line of output by `jfa-go` or Settings>About in web UI), and if necessary the browser version and platform.
+Include the platform omnifin is running on (e.g Windows, Linux, Docker), the version (first line of output by `omnifin` or Settings>About in web UI), and if necessary the browser version and platform.
 

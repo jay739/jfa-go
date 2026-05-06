@@ -3,7 +3,7 @@
         "name": "简体中文(CN)"
     },
     "strings": {
-        "pageTitle": "设置 - jfa-go",
+        "pageTitle": "设置 - Omnifin",
         "next": "下一步",
         "back": "上一步",
         "optional": "可选的",
@@ -27,7 +27,7 @@
     },
     "startPage": {
         "welcome": "欢迎！",
-        "pressStart": "您需要完成几个步骤来设置jfa-go。点击开始来继续。",
+        "pressStart": "您需要完成几个步骤来设置Omnifin。点击开始来继续。",
         "httpsNotice": "请确保您仅通过HTTPS或者局域网访问本页面。",
         "start": "开始"
     },
@@ -38,7 +38,7 @@
     },
     "language": {
         "title": "语言",
-        "description": "jfa-go 的大部分内容都有社区翻译。您可以选择下面的默认语言，但用户仍然可以根据自己的意愿进行更改。如果您想帮助翻译，请在{n}注册并开始贡献您的力量！",
+        "description": "Omnifin 的大部分内容都有社区翻译。您可以选择下面的默认语言，但用户仍然可以根据自己的意愿进行更改。如果您想帮助翻译，请在{n}注册并开始贡献您的力量！",
         "defaultAdminLang": "默认管理语言",
         "defaultFormLang": "默认帐户创建语言",
         "defaultEmailLang": "默认电子邮件语言"
@@ -87,16 +87,16 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "连接到 Ombi，当用户通过 jfa-go 创建账户时，将同时创建 Jellyfin 和 Ombi 帐户。设置完成后，转到设置为新 Ombi 用户设置默认配置文件。",
+        "description": "连接到 Ombi，当用户通过 Omnifin 创建账户时，将同时创建 Jellyfin 和 Ombi 帐户。设置完成后，转到设置为新 Ombi 用户设置默认配置文件。",
         "apiKeyNotice": "在Ombi设置的第一个选项卡中找到这个选项。"
     },
     "messages": {
         "title": "信息",
-        "description": "jfa-go 可以通过电子邮件、Discord、Telegram 和/或 Matrix 发送密码重置和各种消息。您可以在下面设置电子邮件，其他的可以稍后在设置中进行配置。说明可以在 {n} 上找到。如果您不需要此功能，可以在此处禁用这些功能。"
+        "description": "Omnifin 可以通过电子邮件、Discord、Telegram 和/或 Matrix 发送密码重置和各种消息。您可以在下面设置电子邮件，其他的可以稍后在设置中进行配置。说明可以在 {n} 上找到。如果您不需要此功能，可以在此处禁用这些功能。"
     },
     "email": {
         "title": "电子邮箱",
-        "description": "jfa-go 可以通过电子邮件发送密码重置 PIN 和各种通知。您可以连接到 SMTP 服务器，或使用 {n} API。",
+        "description": "Omnifin 可以通过电子邮件发送密码重置 PIN 和各种通知。您可以连接到 SMTP 服务器，或使用 {n} API。",
         "method": "发送方式",
         "useEmailAsUsername": "使用电子邮件地址作为用户名",
         "useEmailAsUsernameNotice": "如果启用，新用户将使用他们的电子邮件地址而不是用户名登录 Jellyfin/Emby。",
@@ -121,7 +121,7 @@
     },
     "passwordResets": {
         "title": "重置密码",
-        "description": "当用户尝试重置密码时，Jellyfin 会创建一个名为“passwordreset-*.json”的文件，其中包含一个 PIN码。jfa-go 会读取该文件并将 PIN 码发送给用户。",
+        "description": "当用户尝试重置密码时，Jellyfin 会创建一个名为“passwordreset-*.json”的文件，其中包含一个 PIN码。Omnifin 会读取该文件并将 PIN 码发送给用户。",
         "pathToJellyfin": "Jellyfin 配置目录的路径",
         "pathToJellyfinNotice": "如果您找不到它在哪，请尝试在 Jellyfin 中重置您的密码。将出现一个带有 '<path to jellyfin>/passwordreset-*.json' 的弹出窗口。",
         "resetLinks": "发送链接而不是PIN码",
@@ -153,7 +153,7 @@
         "emailMessageNotice": "显示在电子邮件的底部。"
     },
     "proxy": {
-        "description": "让jfa-go通过HTTP/SOCKS5代理进行所有连接。连接到Jellyfin将通过此代理进行测试。",
+        "description": "让Omnifin通过HTTP/SOCKS5代理进行所有连接。连接到Jellyfin将通过此代理进行测试。",
         "title": "代理",
         "protocol": "协议",
         "address": "地址（包括端口）"
@@ -162,6 +162,6 @@
         "description": "用户页面（显示为“我的帐户”）允许用户访问有关他们帐户的信息，如其联系方式和账户过期日期。他们还可以更改密码、启动密码重置，并在无需询问您的情况下链接/更改联系方式。此外，用户还可以在登录前后看到自定义的Markdown消息。",
         "title": "用户页面",
         "customizeMessages": "在设置中，单击“用户页面”旁边的编辑按钮以稍后进行设置。",
-        "requiredSettings": "通过Jellyfin登录到jfa-go必须设置。确保稍后选择“通过链接重置密码”以进行自助密码重置。"
+        "requiredSettings": "通过Jellyfin登录到Omnifin必须设置。确保稍后选择“通过链接重置密码”以进行自助密码重置。"
     }
 }

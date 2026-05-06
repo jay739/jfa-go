@@ -45,7 +45,7 @@
     },
     "notifications": {
         "errorLoginBlank": "De gebruikersnaam en/of wachtwoord is leeg.",
-        "errorConnection": "Kon geen verbinding maken met jfa-go.",
+        "errorConnection": "Kon geen verbinding maken met Omnifin.",
         "errorUnknown": "Onbekende fout.",
         "error401Unauthorized": "Geen toegang. Probeer de pagina te vernieuwen.",
         "errorSaveSettings": "Opslaan van instellingen mislukt."

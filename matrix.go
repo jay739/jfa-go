@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gomarkdown/markdown"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 	"github.com/timshannon/badgerhold/v4"
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/event"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	DEVICE_ID = id.DeviceID("jfa-go")
+	DEVICE_ID = id.DeviceID("omnifin")
 )
 
 type MatrixDaemon struct {

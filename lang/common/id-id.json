@@ -44,7 +44,7 @@
     },
     "notifications": {
         "errorLoginBlank": "Nama pengguna dan / atau sandi kosong.",
-        "errorConnection": "Tidak dapat terhubung ke jfa-go.",
+        "errorConnection": "Tidak dapat terhubung ke Omnifin.",
         "errorUnknown": "Terjadi kesalahan yang tidak diketahui.",
         "error401Unauthorized": "Tidak ter-otorisasi. Coba segarkan halaman.",
         "errorSaveSettings": "Tidak dapat menyimpan pengaturan."

@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 )
 
 // https://bbengfort.github.io/snippets/2016/06/26/background-work-goroutines-timer.html THANKS

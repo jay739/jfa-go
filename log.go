@@ -8,10 +8,10 @@ import (
 	"regexp"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hrfee/jfa-go/linecache"
+	"github.com/jay739/omnifin/linecache"
 )
 
-var logPath string = filepath.Join(temp, "jfa-go.log")
+var logPath string = filepath.Join(temp, "omnifin.log")
 var lineCache = linecache.NewLineCache(100)
 
 var stderr = os.Stderr

@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 	"github.com/hrfee/mediabrowser"
 	"github.com/lithammer/shortuuid/v3"
 )

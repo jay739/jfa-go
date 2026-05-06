@@ -8,7 +8,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/goccy/go-yaml"
-	"github.com/hrfee/jfa-go/common"
+	"github.com/jay739/omnifin/common"
 )
 
 func flattenOrder(c common.Config) (sections []string) {

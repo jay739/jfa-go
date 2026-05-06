@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hrfee/jfa-go/ombi"
+	"github.com/jay739/omnifin/ombi"
 	"gopkg.in/ini.v1"
 )
 
@@ -474,7 +474,7 @@ func intialiseCustomContent(app *appContext) {
 // 	}
 // }
 
-// Migrate poorly-named and duplicate "url_base" settings to the single "external jfa-go URL" setting.
+// Migrate poorly-named and duplicate "url_base" settings to the single "external omnifin URL" setting.
 func migrateExternalURL(app *appContext) {
 	tempConfig, _ := ini.ShadowLoad(app.configPath)
 	err := tempConfig.SaveTo(app.configPath + "_" + commit + ".bak")
@@ -495,7 +495,7 @@ func migrateExternalURL(app *appContext) {
 		preferred = strings.TrimSuffix(url2, "/invite")
 	}
 
-	fmt.Println(warning("The duplicate URL Base settings in \"Invite emails\" and \"Password Resets\" have been merged into General > External jfa-go URL. A backup config has been made."))
+	fmt.Println(warning("The duplicate URL Base settings in \"Invite emails\" and \"Password Resets\" have been merged into General > External omnifin URL. A backup config has been made."))
 
 	tempConfig.Section("ui").Key("jfa_url").SetValue(preferred)
 	app.config.Section("password_resets").DeleteKey("url_base")

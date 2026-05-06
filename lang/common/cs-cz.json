@@ -45,7 +45,7 @@
     },
     "notifications": {
         "errorLoginBlank": "Uživatelské jméno a/nebo heslo zůstalo prázdné.",
-        "errorConnection": "Nelze se připojit k jfa-go.",
+        "errorConnection": "Nelze se připojit k Omnifin.",
         "errorUnknown": "Neznámá chyba.",
         "error401Unauthorized": "Neoprávněný. Zkuste stránku obnovit.",
         "errorSaveSettings": "Nastavení se nepodařilo uložit."

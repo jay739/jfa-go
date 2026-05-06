@@ -7,7 +7,7 @@ import (
 	"embed"
 	"io/fs"
 
-	"github.com/hrfee/jfa-go/logger"
+	"github.com/jay739/omnifin/logger"
 )
 
 const binaryType = "internal"

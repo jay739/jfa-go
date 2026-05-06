@@ -3,7 +3,7 @@
         "name": "Bahasa Indonesia (ID)"
     },
     "strings": {
-        "pageTitle": "Persiapan - jfa-go",
+        "pageTitle": "Persiapan - Omnifin",
         "next": "Lanjut",
         "back": "Kembali",
         "optional": "Pilihan",
@@ -19,7 +19,7 @@
     },
     "startPage": {
         "welcome": "Selamat Datang!",
-        "pressStart": "Anda perlu melakukan beberapa hal untuk menyiapkan jfa-go. Tekan mulai untuk melanjutkan.",
+        "pressStart": "Anda perlu melakukan beberapa hal untuk menyiapkan Omnifin. Tekan mulai untuk melanjutkan.",
         "httpsNotice": "Pastikan Anda mengakses halaman ini melalui HTTPS atau di jaringan pribadi.",
         "start": "Mulai"
     },
@@ -30,7 +30,7 @@
     },
     "language": {
         "title": "Bahasa",
-        "description": "Terjemahan komunitas tersedia untuk sebagian besar bagian dari jfa-go. Anda dapat memilih bahasa default di bawah ini, tetapi pengguna masih dapat mengubahnya jika mereka mau. Jika Anda ingin membantu menerjemahkan, daftar ke {n} untuk mulai berkontribusi!",
+        "description": "Terjemahan komunitas tersedia untuk sebagian besar bagian dari Omnifin. Anda dapat memilih bahasa default di bawah ini, tetapi pengguna masih dapat mengubahnya jika mereka mau. Jika Anda ingin membantu menerjemahkan, daftar ke {n} untuk mulai berkontribusi!",
         "defaultAdminLang": "Bahasa admin default",
         "defaultFormLang": "Bahasa default pembuatan akun",
         "defaultEmailLang": "Bahasa default email"
@@ -69,12 +69,12 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "Dengan terhubung ke Ombi, akun Jellyfin dan Ombi akan dibuat saat pengguna bergabung melalui jfa-go. Setelah pengaturan selesai, buka Pengaturan untuk mengatur profil default untuk pengguna ombi baru.",
+        "description": "Dengan terhubung ke Ombi, akun Jellyfin dan Ombi akan dibuat saat pengguna bergabung melalui Omnifin. Setelah pengaturan selesai, buka Pengaturan untuk mengatur profil default untuk pengguna ombi baru.",
         "apiKeyNotice": "Temukan ini di tab pertama pengaturan Ombi."
     },
     "email": {
         "title": "Email",
-        "description": "jfa-go dapat mengirimkan PIN pengaturan ulang kata sandi dan berbagai notifikasi melalui email. Anda bisa terhubung ke server SMTP, atau menggunakan {n} API.",
+        "description": "Omnifin dapat mengirimkan PIN pengaturan ulang kata sandi dan berbagai notifikasi melalui email. Anda bisa terhubung ke server SMTP, atau menggunakan {n} API.",
         "method": "Metode pengiriman",
         "useEmailAsUsername": "Gunakan alamat email sebagai nama pengguna",
         "useEmailAsUsernameNotice": "Jika diaktifkan, pengguna baru akan masuk ke Jellyfin / Emby dengan alamat email mereka, bukan nama pengguna.",
@@ -99,7 +99,7 @@
     },
     "passwordResets": {
         "title": "Reset Kata Sandi",
-        "description": "Ketika pengguna mencoba mengatur ulang kata sandinya, Jellyfin membuat file bernama 'passwordreset - *. Json' yang berisi PIN. jfa-go membaca file dan mengirimkan PIN ke pengguna.",
+        "description": "Ketika pengguna mencoba mengatur ulang kata sandinya, Jellyfin membuat file bernama 'passwordreset - *. Json' yang berisi PIN. Omnifin membaca file dan mengirimkan PIN ke pengguna.",
         "pathToJellyfin": "Jalur ke direktori konfigurasi Jellyfin",
         "pathToJellyfinNotice": "Jika Anda tidak tahu di mana ini, coba setel ulang kata sandi Anda di Jellyfin. Sebuah popup dengan '<path to jellyfin> / passwordreset - *. Json' akan muncul."
     },

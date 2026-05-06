@@ -37,7 +37,7 @@ const (
 
 	SocketPath          = "Socket Path: \"%s\""
 	FailedSocketConnect = "Couldn't establish socket connection at \"%s\": %v"
-	SocketCheckRunning  = "Make sure jfa-go is running."
+	SocketCheckRunning  = "Make sure omnifin is running."
 	FailedSocketRead    = "Couldn't read message on socket \"%s\": %v"
 	SocketWrite         = "Command sent."
 	FailedSocketWrite   = "Coudln't write message on socket \"%s\": %v"
@@ -220,10 +220,10 @@ const (
 	EnableAllPWRMethods                = "No PWR method preferences set in [user_page], all will be enabled"
 	InitProxy                          = "Initialized proxy @ \"%s\""
 	FailedInitProxy                    = "Failed to initialize proxy @ \"%s\": %v\nStartup will pause for a bit to grab your attention."
-	NoURLSuffix                        = `Warning: Given "jfa_url"/"External jfa-go URL" value does not include "url_base" value!`
+	NoURLSuffix                        = `Warning: Given "jfa_url"/"External omnifin URL" value does not include "url_base" value!`
 	BadURLBase                         = `Warning: Given reverse proxy subfolder "%s" may conflict with the applications subpaths.`
 	RouteCollision                     = `Route Collision! Given reverse proxy subfolder "%s" or "URL Paths" settings likely conflict with the applications subpaths. Culprit: %v`
-	NoExternalHost                     = `No "External jfa-go URL" provided, set one in Settings > General.`
+	NoExternalHost                     = `No "External omnifin URL" provided, set one in Settings > General.`
 	LoginWontSave                      = ` Logins may not save until you do.`
 	SetExternalHostDespiteUseProxyHost = ` This needs to be set even though use_proxy_host is enabled.`
 	SubpathBlockMessage                = `URLs: Root subfolder = "%s", Admin = "%s", My Account = "%s", Invite forms = "%s"`

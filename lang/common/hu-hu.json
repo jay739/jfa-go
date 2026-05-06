@@ -47,7 +47,7 @@
     },
     "notifications": {
         "errorLoginBlank": "A felhasználónév és/vagy a jelszó üresen lett hagyva.",
-        "errorConnection": "Nem lehet csatlakozni a jfa-go-hoz.",
+        "errorConnection": "Nem lehet csatlakozni a Omnifin-hoz.",
         "errorUnknown": "Ismeretlen hiba.",
         "error401Unauthorized": "Nincs jogosultság. Próbáld frissíteni az oldalt.",
         "errorSaveSettings": "Nem lehet menteni a beállításokat.",

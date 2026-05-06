@@ -19,7 +19,7 @@ func defaultVals(vals map[string]any) map[string]any {
 	return vals
 }
 
-func vendorHeader(config *Config, lang *emailLang) string { return "jfa-go" }
+func vendorHeader(config *Config, lang *emailLang) string { return "omnifin" }
 func serverHeader(config *Config, lang *emailLang) string {
 	if substituteStrings == "" {
 		return "Jellyfin"

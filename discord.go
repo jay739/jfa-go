@@ -8,8 +8,8 @@ import (
 	"time"
 
 	dg "github.com/bwmarrin/discordgo"
-	"github.com/hrfee/jfa-go/common"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	"github.com/jay739/omnifin/common"
+	lm "github.com/jay739/omnifin/logmessages"
 	"github.com/timshannon/badgerhold/v4"
 )
 

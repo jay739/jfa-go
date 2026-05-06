@@ -660,7 +660,7 @@ for (let section in settings) {
 let pages = new PageManager({
     hideOthersOnPageShow: true,
     defaultName: "welcome",
-    defaultTitle: "Setup - jfa-go",
+    defaultTitle: "Setup - Omnifin",
 });
 
 const cards = Array.from(
@@ -680,7 +680,7 @@ const cards = Array.from(
         }
         pages.setPage({
             name: title,
-            title: titleEl.textContent + " - jfa-go",
+            title: titleEl.textContent + " - Omnifin",
             url: "/" + (!title ? "" : "#") + title,
             show: () => {
                 cards[i].classList.remove("ui-hidden");
@@ -711,7 +711,7 @@ const cards = Array.from(
         toggleLoader(button);
         const internalServer = (settings["jellyfin"]["server"].value || "").trim();
         const publicServer = (settings["jellyfin"]["public_server"].value || "").trim();
-        // Test uses the same URL jfa-go uses for API calls: prefer internal, else public (e.g. only a proxy URL filled in).
+        // Test uses the same URL Omnifin uses for API calls: prefer internal, else public (e.g. only a proxy URL filled in).
         const serverForTest = internalServer || publicServer;
         let send = {
             type: settings["jellyfin"]["type"].value,

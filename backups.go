@@ -9,18 +9,31 @@ import (
 	"strings"
 	"time"
 
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 )
 
 const (
-	BACKUP_PREFIX        = "jfa-go-db"
-	BACKUP_PREFIX_OLD    = "jfa-go-db-"
-	BACKUP_COMMIT_PREFIX = "-c-"
-	BACKUP_DATE_PREFIX   = "-d-"
-	BACKUP_UPLOAD_PREFIX = "upload-"
-	BACKUP_DATEFMT       = "2006-01-02T15-04-05"
-	BACKUP_SUFFIX        = ".bak"
+	BACKUP_PREFIX           = "omnifin-db"
+	BACKUP_PREFIX_LEGACY    = "jfa-go-db"
+	BACKUP_PREFIX_OLD       = "jfa-go-db-"
+	BACKUP_COMMIT_PREFIX    = "-c-"
+	BACKUP_DATE_PREFIX      = "-d-"
+	BACKUP_UPLOAD_PREFIX    = "upload-"
+	BACKUP_DATEFMT          = "2006-01-02T15-04-05"
+	BACKUP_SUFFIX           = ".bak"
 )
+
+// backupFilePrefix returns the prefix to use when matching an existing file. New backups are written
+// with BACKUP_PREFIX; legacy "jfa-go-db" files are still readable so old archives stay restorable.
+func backupFilePrefix(name string) (string, bool) {
+	switch {
+	case strings.HasPrefix(name, BACKUP_PREFIX):
+		return BACKUP_PREFIX, true
+	case strings.HasPrefix(name, BACKUP_PREFIX_LEGACY):
+		return BACKUP_PREFIX_LEGACY, true
+	}
+	return "", false
+}
 
 type Backup struct {
 	Date   time.Time
@@ -35,7 +48,8 @@ func (b Backup) Equals(a Backup) bool {
 }
 
 // Pre 21/03/25 format: "{BACKUP_PREFIX_OLD}{date in BACKUP_DATEFMT}{BACKUP_SUFFIX}" = "jfa-go-db-2006-01-02T15-04-05.bak"
-// Post 21/03/25 format: "{BACKUP_PREFIX}-c-{commit}-d-{date in BACKUP_DATEFMT}{BACKUP_SUFFIX}" = "jfa-go-db-c-0b92060-d-2006-01-02T15-04-05.bak"
+// 21/03/25 to omnifin rename: "jfa-go-db-c-{commit}-d-{date in BACKUP_DATEFMT}{BACKUP_SUFFIX}" = "jfa-go-db-c-0b92060-d-2006-01-02T15-04-05.bak"
+// Omnifin format: "{BACKUP_PREFIX}-c-{commit}-d-{date in BACKUP_DATEFMT}{BACKUP_SUFFIX}" = "omnifin-db-c-0b92060-d-2006-01-02T15-04-05.bak"
 
 func (b Backup) String() string {
 	t := b.Date
@@ -59,10 +73,11 @@ func (b *Backup) FromString(f string) error {
 		b.Upload = true
 		f = f[len(BACKUP_UPLOAD_PREFIX):]
 	}
-	if !strings.HasPrefix(f, BACKUP_PREFIX) {
-		return fmt.Errorf("file doesn't have correct prefix (\"%s\")", BACKUP_PREFIX)
+	prefix, ok := backupFilePrefix(f)
+	if !ok {
+		return fmt.Errorf("file doesn't have correct prefix (\"%s\" or legacy \"%s\")", BACKUP_PREFIX, BACKUP_PREFIX_LEGACY)
 	}
-	f = f[len(BACKUP_PREFIX):]
+	f = f[len(prefix):]
 	if !strings.HasSuffix(f, BACKUP_SUFFIX) {
 		return fmt.Errorf("file doesn't have correct suffix (\"%s\")", BACKUP_SUFFIX)
 	}
@@ -102,7 +117,10 @@ func (b *Backup) FromString(f string) error {
 }
 
 func (b *Backup) FromOldString(f string) error {
-	t, err := time.Parse(BACKUP_DATEFMT, strings.TrimSuffix(strings.TrimPrefix(strings.TrimPrefix(f, BACKUP_UPLOAD_PREFIX), BACKUP_PREFIX+"-"), BACKUP_SUFFIX))
+	// Try both new and legacy prefixes when stripping the date-only filename form.
+	stripped := strings.TrimPrefix(f, BACKUP_UPLOAD_PREFIX)
+	stripped = strings.TrimPrefix(strings.TrimPrefix(stripped, BACKUP_PREFIX+"-"), BACKUP_PREFIX_LEGACY+"-")
+	t, err := time.Parse(BACKUP_DATEFMT, strings.TrimSuffix(stripped, BACKUP_SUFFIX))
 	if err != nil {
 		return fmt.Errorf(lm.FailedParseTime, err)
 	}

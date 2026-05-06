@@ -33,7 +33,7 @@
         "edit": "Edytuj"
     },
     "notifications": {
-        "errorConnection": "Nie udało się połączyć z jfa-go.",
+        "errorConnection": "Nie udało się połączyć z Omnifin.",
         "errorUnknown": "Nieznany błąd.",
         "error401Unauthorized": "Nieautoryzowany. Spróbuj odświeżyć stronę."
     },

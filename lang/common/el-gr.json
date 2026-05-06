@@ -30,7 +30,7 @@
     },
     "notifications": {
         "errorLoginBlank": "Το όνομα χρήστη και/ή ο κωδικός ήταν κενά.",
-        "errorConnection": "Δεν μπόρεσε να συνδεθεί με το jfa-go.",
+        "errorConnection": "Δεν μπόρεσε να συνδεθεί με το Omnifin.",
         "errorUnknown": "Άγνωστο σφάλμα.",
         "error401Unauthorized": "Ανεξουσιοδότητος. Προσπαθήστε να κάνετε επαναφόρτωση την σελίδα.",
         "errorSaveSettings": "Αποτυχία αποθήκευσης ρυθμίσεων."

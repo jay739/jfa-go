@@ -1,3 +1,3 @@
-module github.com/hrfee/jfa-go/logmessages
+module github.com/jay739/omnifin/logmessages
 
 go 1.18

@@ -3,7 +3,7 @@
         "name": "Português (BR)"
     },
     "strings": {
-        "pageTitle": "Configuração do jfa-go",
+        "pageTitle": "Configuração do Omnifin",
         "next": "Próximo",
         "back": "Voltar",
         "optional": "Opcional",
@@ -27,7 +27,7 @@
     },
     "startPage": {
         "welcome": "Bem Vindo!",
-        "pressStart": "Você precisará fazer algumas coisas para configurar o jfa-go. Clique em iniciar para progredir.",
+        "pressStart": "Você precisará fazer algumas coisas para configurar o Omnifin. Clique em iniciar para progredir.",
         "httpsNotice": "Certifique-se de que está acessando esta página via HTTPS ou em uma rede privada.",
         "start": "Iniciar"
     },
@@ -38,7 +38,7 @@
     },
     "language": {
         "title": "Idioma",
-        "description": "As traduções da comunidade estão disponíveis para a maior parte do jfa-go. Você pode escolher os idiomas padrão abaixo, mas os usuários ainda podem alterá-los caso desejem. Se você quiser ajudar na tradução, inscreva-se no {n} para contribuir!",
+        "description": "As traduções da comunidade estão disponíveis para a maior parte do Omnifin. Você pode escolher os idiomas padrão abaixo, mas os usuários ainda podem alterá-los caso desejem. Se você quiser ajudar na tradução, inscreva-se no {n} para contribuir!",
         "defaultAdminLang": "Idioma padrão do administrador",
         "defaultFormLang": "Idioma padrão para criação de conta",
         "defaultEmailLang": "Idioma padrão para o email"
@@ -80,12 +80,12 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "Ao se conectar ao Ombi, as contas no Jellyfin e Ombi serão criadas quando um usuário se cadastrar através do jfa-go. Depois de concluída a configuração, vá para Configurações para definir um perfil padrão para novos usuários de ombi.",
+        "description": "Ao se conectar ao Ombi, as contas no Jellyfin e Ombi serão criadas quando um usuário se cadastrar através do Omnifin. Depois de concluída a configuração, vá para Configurações para definir um perfil padrão para novos usuários de ombi.",
         "apiKeyNotice": "Encontre isso na primeira guia nas configurações do Ombi."
     },
     "email": {
         "title": "Email",
-        "description": "jfa-go pode enviar PINs de redefinição de senha e várias notificações por email. Você pode se conectar a um servidor SMTP ou usar a {n} API.",
+        "description": "Omnifin pode enviar PINs de redefinição de senha e várias notificações por email. Você pode se conectar a um servidor SMTP ou usar a {n} API.",
         "method": "Método de envio",
         "useEmailAsUsername": "Usar endereços de email como nome de usuário",
         "useEmailAsUsernameNotice": "Se habilitado, novos usuários farão login no Jellyfin/Emby com seu endereço de email em vez de um nome de usuário.",
@@ -110,7 +110,7 @@
     },
     "passwordResets": {
         "title": "Redefinir Senha",
-        "description": "Quando um usuário tenta redefinir sua senha, o Jellyfin cria um arquivo chamado 'passwordreset-*.json' que contém um PIN. jfa-go lê o arquivo e envia o PIN ao usuário.",
+        "description": "Quando um usuário tenta redefinir sua senha, o Jellyfin cria um arquivo chamado 'passwordreset-*.json' que contém um PIN. Omnifin lê o arquivo e envia o PIN ao usuário.",
         "pathToJellyfin": "Local do diretório de configuração do Jellyfin",
         "pathToJellyfinNotice": "Se você não sabe o local onde fica, tente redefinir sua senha no Jellyfin. Um pop-up com '<path to jellyfin>/passwordreset-*.json' aparecerá.",
         "resetLinks": "Envie um link em vez de um PIN",
@@ -143,17 +143,17 @@
     },
     "updates": {
         "title": "Atualizações",
-        "description": "Ative para ser notificado quando novas atualizações estiverem disponíveis. jfa-go verificará {n} a cada 30 minutos. Nenhum IP ou informação de identificação pessoal é coletada.",
+        "description": "Ative para ser notificado quando novas atualizações estiverem disponíveis. Omnifin verificará {n} a cada 30 minutos. Nenhum IP ou informação de identificação pessoal é coletada.",
         "updateChannel": "Canal de Atualização",
         "stable": "Estável",
         "unstable": "Instável"
     },
     "messages": {
         "title": "Mensagens",
-        "description": "jfa-go pode enviar redefinições de senha e várias mensagens por e-mail, Discord, Telegram e/ou Matrix. Você pode configurar o e-mail abaixo e os outros podem ser configurados em Configurações posteriormente. As instruções podem ser encontradas em {n}. Se você não precisar, pode desativar esses recursos aqui."
+        "description": "Omnifin pode enviar redefinições de senha e várias mensagens por e-mail, Discord, Telegram e/ou Matrix. Você pode configurar o e-mail abaixo e os outros podem ser configurados em Configurações posteriormente. As instruções podem ser encontradas em {n}. Se você não precisar, pode desativar esses recursos aqui."
     },
     "proxy": {
-        "description": "Faça com que o jfa-go faça todas as conexões por meio de um proxy HTTP/SOCKS5. A conexão com o Jellyfin será testada através disso.",
+        "description": "Faça com que o Omnifin faça todas as conexões por meio de um proxy HTTP/SOCKS5. A conexão com o Jellyfin será testada através disso.",
         "title": "Proxy",
         "protocol": "Procedimento",
         "address": "Endereço (incluindo porta)"
@@ -162,6 +162,6 @@
         "description": "A página do usuário (mostrada como “Minha Conta”) permite que os usuários acessem informações sobre sua conta, como métodos de contato e vencimento da conta. Eles também podem alterar sua senha, iniciar uma redefinição de senha e vincular/alterar métodos de contato, sem precisar perguntar a você. Além disso, mensagens Markdown personalizadas podem ser mostradas aos usuários antes e depois do entrar.",
         "title": "Página de usuário",
         "customizeMessages": "Clique no botão de edição próximo a “Página do usuário” nas configurações para defini-las mais tarde.",
-        "requiredSettings": "Ao entra no jfa-go via Jellyfin deve ser configurado. Certifique-se de que \"redefinir senha via link\" esteja selecionado posteriormente para redefinições de senha de autoatendimento."
+        "requiredSettings": "Ao entra no Omnifin via Jellyfin deve ser configurado. Certifique-se de que \"redefinir senha via link\" esteja selecionado posteriormente para redefinições de senha de autoatendimento."
     }
 }

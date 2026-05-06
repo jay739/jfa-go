@@ -5,7 +5,7 @@
 </mj-section>
 <mj-section mj-class="bg-gray" padding="28px 24px 20px">
     <mj-column>
-        <mj-text css-class="eyebrow" font-size="11px" font-weight="600" letter-spacing="0.14em" color="#93c5fd" padding-bottom="8px" text-transform="uppercase">jfa-go</mj-text>
+        <mj-text css-class="eyebrow" font-size="11px" font-weight="600" letter-spacing="0.14em" color="#93c5fd" padding-bottom="8px" text-transform="uppercase">Omnifin</mj-text>
         <mj-text mj-class="text-white" font-size="26px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, Noto Sans, Helvetica, Arial, sans-serif" line-height="1.2" letter-spacing="-0.02em">{{ .header }}</mj-text>
     </mj-column>
 </mj-section>

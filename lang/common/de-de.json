@@ -40,7 +40,7 @@
     },
     "notifications": {
         "errorLoginBlank": "Der Benutzername und/oder das Passwort wurden nicht ausgefüllt.",
-        "errorConnection": "Konnte keine Verbindung zu jfa-go herstellen.",
+        "errorConnection": "Konnte keine Verbindung zu Omnifin herstellen.",
         "errorUnknown": "Unbekannter Fehler.",
         "error401Unauthorized": "Unberechtigt. Versuch, die Seite zu aktualisieren.",
         "errorSaveSettings": "Einstellungen konnten nicht gespeichert werden."

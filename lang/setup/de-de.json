@@ -3,7 +3,7 @@
         "name": "Deutsch (DE)"
     },
     "strings": {
-        "pageTitle": "Setup - jfa-go",
+        "pageTitle": "Setup - Omnifin",
         "next": "Weiter",
         "back": "Zurück",
         "optional": "Optional",
@@ -27,7 +27,7 @@
     },
     "startPage": {
         "welcome": "Willkommen!",
-        "pressStart": "Du musst einige Dinge tun, um jfa-go einzurichten. Drücke Start, um fortzufahren.",
+        "pressStart": "Du musst einige Dinge tun, um Omnifin einzurichten. Drücke Start, um fortzufahren.",
         "httpsNotice": "Stelle sicher, dass du über HTTPS oder in einem privaten Netzwerk auf diese Seite zugreifst.",
         "start": "Start"
     },
@@ -38,7 +38,7 @@
     },
     "language": {
         "title": "Sprache",
-        "description": "Gemeinschaftsübersetzungen sind für die meisten Teile von jfa-go verfügbar. Du kannst unten die Standardsprachen auswählen, aber Benutzer können dies immer noch ändern, wenn sie wollen. Wenn du helfen willst zu übersetzen, melde dich bei {n} an, um anzufangen, etwas beizutragen!",
+        "description": "Gemeinschaftsübersetzungen sind für die meisten Teile von Omnifin verfügbar. Du kannst unten die Standardsprachen auswählen, aber Benutzer können dies immer noch ändern, wenn sie wollen. Wenn du helfen willst zu übersetzen, melde dich bei {n} an, um anzufangen, etwas beizutragen!",
         "defaultAdminLang": "Admin Standardsprache",
         "defaultFormLang": "Kontoerstellung Standardsprache",
         "defaultEmailLang": "E-Mail Standardsprache"
@@ -80,12 +80,12 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "Durch den Anschluss an Ombi wird sowohl ein Jellyfin-Konto als auch ein Ombi-Konto erstellt, wenn ein Benutzer durch jfa-go beitritt. Nachdem das Setup abgeschlossen ist, gehe zu den Einstellungen, um ein Standardprofil für neue Ombi-Benutzer festzulegen.",
+        "description": "Durch den Anschluss an Ombi wird sowohl ein Jellyfin-Konto als auch ein Ombi-Konto erstellt, wenn ein Benutzer durch Omnifin beitritt. Nachdem das Setup abgeschlossen ist, gehe zu den Einstellungen, um ein Standardprofil für neue Ombi-Benutzer festzulegen.",
         "apiKeyNotice": "Finde dies in der ersten Registerkarte der Ombi-Einstellungen."
     },
     "email": {
         "title": "E-Mail",
-        "description": "jfa-go kann Passwortzurücksetzung-PINs und verschiedene Benachrichtigungen per E-Mail senden. Du kannst eine Verbindung zu einem SMTP-Server herstellen, oder die {n} API verwenden.",
+        "description": "Omnifin kann Passwortzurücksetzung-PINs und verschiedene Benachrichtigungen per E-Mail senden. Du kannst eine Verbindung zu einem SMTP-Server herstellen, oder die {n} API verwenden.",
         "method": "Versandmethode",
         "useEmailAsUsername": "E-Mail-Adresse als Benutzernamen verwenden",
         "useEmailAsUsernameNotice": "Wenn aktiviert, werden sich neue Benutzer bei Jellyfin/Emby mit ihrer E-Mail-Adresse anstatt eines Benutzernamens anmelden.",
@@ -110,7 +110,7 @@
     },
     "passwordResets": {
         "title": "Passwortzurücksetzungen",
-        "description": "Wenn ein Benutzer versucht sein Passwort zurückzusetzen, erstellt Jellyfin eine Datei namens 'passwordreset-*.json', welche eine PIN enthält. jfa-go liest die Datei und sendet die PIN an den Benutzer.",
+        "description": "Wenn ein Benutzer versucht sein Passwort zurückzusetzen, erstellt Jellyfin eine Datei namens 'passwordreset-*.json', welche eine PIN enthält. Omnifin liest die Datei und sendet die PIN an den Benutzer.",
         "pathToJellyfin": "Pfad zum Jellyfin-Konfigurationsverzeichnis",
         "pathToJellyfinNotice": "Wenn du nicht weißt, wo das ist, versuche dein Passwort in Jellyfin zurückzusetzen. Ein Popup mit '<Pfad zu Jellyfin>/passwordreset-*.json' wird angezeigt werden.",
         "resetLinks": "Einen Link statt einer PIN senden",
@@ -145,14 +145,14 @@
         "unstable": "Unstable",
         "stable": "Stable",
         "title": "Aktualisierungen",
-        "description": "Aktiviere, um informiert zu werden, wenn neue Aktualisierungen verfügbar sind. jfa-go wird {n} alle 30 Minuten überprüfen. Keine IP-Adressen oder personenbezogene Daten werden gesammelt."
+        "description": "Aktiviere, um informiert zu werden, wenn neue Aktualisierungen verfügbar sind. Omnifin wird {n} alle 30 Minuten überprüfen. Keine IP-Adressen oder personenbezogene Daten werden gesammelt."
     },
     "messages": {
         "title": "Mitteilungen",
-        "description": "jfa-go kann Passwortrücksetzungen und verschiedene Benachrichtigungen per E-Mail, Discord, Telegram und/oder Matrix verschicken. E-Mail kannst du unten einrichten, die Anderen später in den Einstellungen. Anweisungen findest du im {n}. Falls nicht benötigt, kannst du diese Funktionen hier deaktivieren."
+        "description": "Omnifin kann Passwortrücksetzungen und verschiedene Benachrichtigungen per E-Mail, Discord, Telegram und/oder Matrix verschicken. E-Mail kannst du unten einrichten, die Anderen später in den Einstellungen. Anweisungen findest du im {n}. Falls nicht benötigt, kannst du diese Funktionen hier deaktivieren."
     },
     "proxy": {
-        "description": "Lass jfa-go alle Verbindungen über einen HTTP/SOCKS5-Proxy herstellen. Die Verbindung zu Jellyfin wird über diesen Proxy getestet.",
+        "description": "Lass Omnifin alle Verbindungen über einen HTTP/SOCKS5-Proxy herstellen. Die Verbindung zu Jellyfin wird über diesen Proxy getestet.",
         "title": "Proxy",
         "protocol": "Protokoll",
         "address": "Adresse (inkl. Port)"

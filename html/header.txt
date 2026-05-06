@@ -1,7 +1,7 @@
 <link rel="stylesheet" type="text/css" href="{{ .pages.Base }}/css/{{ .cssVersion }}bundle.css">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="Description" content="jfa-go, a better way to manage Jellyfin users.">
+<meta name="Description" content="Omnifin, a unified Jellyfin account/invite/messaging tool (fork of jfa-go).">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">

@@ -45,7 +45,7 @@
     },
     "notifications": {
         "errorLoginBlank": "Brugernavnet og/eller adgangskoden blev efterladt tomme.",
-        "errorConnection": "Kunne ikke oprette forbindelse til jfa-go.",
+        "errorConnection": "Kunne ikke oprette forbindelse til Omnifin.",
         "errorUnknown": "Ukendt fejl.",
         "error401Unauthorized": "Adgang nægtet. Prøv at genindlæse siden.",
         "errorSaveSettings": "Kunne ikke gemme indstillingerne."

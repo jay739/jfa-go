@@ -3,7 +3,7 @@
         "name": "Français (FR)"
     },
     "strings": {
-        "pageTitle": "Installation - jfa-go",
+        "pageTitle": "Installation - Omnifin",
         "next": "Suivant",
         "back": "Retour",
         "optional": "Optionnel",
@@ -27,7 +27,7 @@
     },
     "startPage": {
         "welcome": "Bienvenue !",
-        "pressStart": "Vous devez effectuer quelques opérations pour installer jfa-go. Appuyez sur commencer pour continuer.",
+        "pressStart": "Vous devez effectuer quelques opérations pour installer Omnifin. Appuyez sur commencer pour continuer.",
         "httpsNotice": "Assurez-vous que vous soyez connecté en HTTPS à cette page ou via réseau privé.",
         "start": "Commencer"
     },
@@ -38,7 +38,7 @@
     },
     "language": {
         "title": "Langue",
-        "description": "Des traductions communautaires sont disponibles pour la plupart des parties de jfa-go. Vous pouvez choisir les langues par défaut ci-dessous, mais les utilisateurs peuvent toujours les modifier s'ils le souhaitent. Si vous souhaitez aider à traduire, inscrivez-vous sur {n} pour commencer à contribuer !",
+        "description": "Des traductions communautaires sont disponibles pour la plupart des parties de Omnifin. Vous pouvez choisir les langues par défaut ci-dessous, mais les utilisateurs peuvent toujours les modifier s'ils le souhaitent. Si vous souhaitez aider à traduire, inscrivez-vous sur {n} pour commencer à contribuer !",
         "defaultAdminLang": "Langue administrateur par défaut",
         "defaultFormLang": "Langue par défaut lors d'une création de compte",
         "defaultEmailLang": "Langue par défaut des e-mails"
@@ -80,12 +80,12 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "En connectant Ombi, un compte Jellyfin et un compte Ombi seront créés lorsque l'utilisateur rejoindra via jfa-go. Après la fin de l'installation, allez dans les Paramètres pour définir un profil par défaut pour les nouveaux utilisateurs d'Ombi.",
+        "description": "En connectant Ombi, un compte Jellyfin et un compte Ombi seront créés lorsque l'utilisateur rejoindra via Omnifin. Après la fin de l'installation, allez dans les Paramètres pour définir un profil par défaut pour les nouveaux utilisateurs d'Ombi.",
         "apiKeyNotice": "Trouvez ceci dans le premier onglet des paramètres de Ombi."
     },
     "email": {
         "title": "E-mail",
-        "description": "jfa-go peut envoyer un code PIN de réinitialisation du mot de passe et plusieurs notifications par e-mail. Vous pouvez vous connecter à un serveur SMTP, ou utiliser l'API de {n}.",
+        "description": "Omnifin peut envoyer un code PIN de réinitialisation du mot de passe et plusieurs notifications par e-mail. Vous pouvez vous connecter à un serveur SMTP, ou utiliser l'API de {n}.",
         "method": "Méthode d'envoi",
         "useEmailAsUsername": "Utilisez l'adresse e-mail comme nom d'utilisateur",
         "useEmailAsUsernameNotice": "Si activé, les nouveaux utilisateurs se connecteront à Jellyfin/Emby avec cette adresse e-mail au lieu du nom d'utilisateur.",
@@ -110,7 +110,7 @@
     },
     "passwordResets": {
         "title": "Réinitialisation de mot de passe",
-        "description": "Lorsqu'un utilisateur essaie de réinitialiser son mot de passe, Jellyfin créé un fichier nommé 'passwordreset-*.json' qui contient le code PIN. jfa-go lit le fichier et envoie le code PIN à l'utilisateur. Si vous avez activé la fonctionnalité « Page utilisateur », une réinitialisation peut également y être effectuée, en fonction d'un nom d'utilisateur, d'un e-mail ou d'une méthode de contact.",
+        "description": "Lorsqu'un utilisateur essaie de réinitialiser son mot de passe, Jellyfin créé un fichier nommé 'passwordreset-*.json' qui contient le code PIN. Omnifin lit le fichier et envoie le code PIN à l'utilisateur. Si vous avez activé la fonctionnalité « Page utilisateur », une réinitialisation peut également y être effectuée, en fonction d'un nom d'utilisateur, d'un e-mail ou d'une méthode de contact.",
         "pathToJellyfin": "Chemin du dossier de configuration de Jellyfin",
         "pathToJellyfinNotice": "Si vous ne savez pas où c'est, essayez de réinitialiser votre mot de passe dans Jellyfin. Une popup avec '<path to jellyfin>/passwordreset-*.json' apparaitra. Cela n'est pas nécessaire si vous souhaitez uniquement utiliser la réinitialisation de mot de passe en libre-service via la « Page utilisateur ».",
         "resetLinks": "Envoyer un lien plutôt qu'un PIN",
@@ -143,25 +143,25 @@
     },
     "updates": {
         "title": "Mises à jour",
-        "description": "Activez pour être averti lorsque de nouvelles mises à jour sont disponibles. jfa-go vérifiera {n} toutes les 30 minutes. Aucune adresse IP ou information personnellement identifiable n'est collectée.",
+        "description": "Activez pour être averti lorsque de nouvelles mises à jour sont disponibles. Omnifin vérifiera {n} toutes les 30 minutes. Aucune adresse IP ou information personnellement identifiable n'est collectée.",
         "updateChannel": "Mettre à jour la chaîne",
         "stable": "Stable",
         "unstable": "Instable"
     },
     "messages": {
         "title": "Messages",
-        "description": "jfa-go peut envoyer des réinitialisations de mot de passe et divers messages par e-mail, Discord, Telegram et/ou Matrix. Vous pouvez configurer l'e-mail ci-dessous, et les autres peuvent être configurés dans les paramètres plus tard. Les instructions se trouvent sur le {n}. Si vous n'en avez pas besoin, vous pouvez désactiver ces fonctionnalités ici."
+        "description": "Omnifin peut envoyer des réinitialisations de mot de passe et divers messages par e-mail, Discord, Telegram et/ou Matrix. Vous pouvez configurer l'e-mail ci-dessous, et les autres peuvent être configurés dans les paramètres plus tard. Les instructions se trouvent sur le {n}. Si vous n'en avez pas besoin, vous pouvez désactiver ces fonctionnalités ici."
     },
     "userPage": {
         "title": "Page utilisateur",
         "customizeMessages": "Cliquez sur le bouton Modifier à côté de « Page utilisateur » dans les paramètres pour les définir ultérieurement.",
-        "requiredSettings": "La connexion à jfa-go via Jellyfin doit être définie. Assurez-vous que « Réinitialiser le mot de passe via un lien » est sélectionné ultérieurement pour les réinitialisations de mot de passe par les utilisateurs.",
+        "requiredSettings": "La connexion à Omnifin via Jellyfin doit être définie. Assurez-vous que « Réinitialiser le mot de passe via un lien » est sélectionné ultérieurement pour les réinitialisations de mot de passe par les utilisateurs.",
         "description": "La page utilisateur (affichée sous « Mon compte ») permet aux utilisateurs d'accéder aux informations sur leur compte, telles que leurs méthodes de contact et l'expiration de leur compte. Ils peuvent également modifier leur mot de passe, lancer une réinitialisation de mot de passe et lier/modifier les méthodes de contact, sans avoir à vous le demander. De plus, des messages personnalisés peuvent être affichés aux utilisateurs avant et après la connexion."
     },
     "proxy": {
         "title": "Proxy",
         "protocol": "Protocole",
         "address": "Adresse (y compris le port)",
-        "description": "Demandez à jfa-go d'établir toutes les connexions via un proxy HTTP/SOCKS5. La connexion à Jellyfin sera testée à travers cela."
+        "description": "Demandez à Omnifin d'établir toutes les connexions via un proxy HTTP/SOCKS5. La connexion à Jellyfin sera testée à travers cela."
     }
 }

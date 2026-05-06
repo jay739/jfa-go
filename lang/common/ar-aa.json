@@ -52,7 +52,7 @@
         "error401Unauthorized": "غير مخوّل. حاول تحديث الصفحة.",
         "errorSaveSettings": "تعذر حفظ الإعدادات.",
         "errorLoginBlank": "اسم المستخدم و/أو كلمة المرور تُرِكا فارغَين.",
-        "errorConnection": "تعذر الاتصال بـ jfa-go.",
+        "errorConnection": "تعذر الاتصال بـ Omnifin.",
         "errorSpecialSymbols": "لا يمكن أن يحتوي الحقل على رموز خاصة."
     },
     "quantityStrings": {

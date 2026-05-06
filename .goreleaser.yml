@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 version: 2
-project_name: jfa-go
+project_name: omnifin
 release:
     github:
-        owner: hrfee
-        name: jfa-go
+        owner: jay739
+        name: omnifin
     name_template: "v{{.Version}}"
 before:
   hooks:
@@ -126,18 +126,18 @@ changelog:
 nfpms:
   - id: notray
     file_name_template: '{{ .ProjectName }}{{ if .IsSnapshot }}-git{{ end }}_{{ .Arch }}_{{ if .IsSnapshot }}{{ .ShortCommit }}{{ else }}v{{ .Version }}{{ end }}'
-    package_name: jfa-go
-    homepage: https://github.com/hrfee/jfa-go
+    package_name: omnifin
+    homepage: https://github.com/jay739/omnifin
     description: A web app for managing users on Jellyfin
-    maintainer: Harvey Tindall <hrfee@hrfee.dev>
+    maintainer: Jayakrishna Konda <contact@jay739.dev>
     license: MIT
-    vendor: hrfee.dev
+    vendor: jay739.dev
     version_metadata: git
     ids:
       - notray-e2ee
     contents:
       - src: ./LICENSE
-        dst: /usr/share/licenses/jfa-go
+        dst: /usr/share/licenses/omnifin
     formats:
       - apk
       - deb
@@ -154,18 +154,18 @@ nfpms:
                 - olm
   - id: tray
     file_name_template: '{{ .ProjectName }}{{ if .IsSnapshot }}-git{{ end }}_TrayIcon_{{ .Arch }}_{{ if .IsSnapshot }}{{ .ShortCommit }}{{ else }}v{{ .Version }}{{ end }}'
-    package_name: jfa-go-tray
-    homepage: https://github.com/hrfee/jfa-go
+    package_name: omnifin-tray
+    homepage: https://github.com/jay739/omnifin
     description: A web app for managing users on Jellyfin
-    maintainer: Harvey Tindall <hrfee@hrfee.dev>
+    maintainer: Jayakrishna Konda <contact@jay739.dev>
     license: MIT
-    vendor: hrfee.dev
+    vendor: jay739.dev
     version_metadata: git
     ids:
       - linux-tray
     contents:
       - src: ./LICENSE
-        dst: /usr/share/licenses/jfa-go
+        dst: /usr/share/licenses/omnifin
     formats:
       - apk
       - deb
@@ -173,9 +173,9 @@ nfpms:
     overrides:
         deb:
             conflicts:
-                - jfa-go
+                - omnifin
             replaces:
-                - jfa-go
+                - omnifin
             dependencies:
                 - libolm-dev
         rpm:

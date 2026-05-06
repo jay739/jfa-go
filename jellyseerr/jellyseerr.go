@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	co "github.com/hrfee/jfa-go/common"
+	co "github.com/jay739/omnifin/common"
 )
 
 const (

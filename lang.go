@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/hrfee/jfa-go/common"
+	"github.com/jay739/omnifin/common"
 )
 
 type langMeta struct {

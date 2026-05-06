@@ -47,7 +47,7 @@
     },
     "notifications": {
         "errorLoginBlank": "Kullanıcı adı ve/veya şifre boş bırakıldı.",
-        "errorConnection": "jfa-go'ya bağlanılamadı.",
+        "errorConnection": "Omnifin'ya bağlanılamadı.",
         "errorUnknown": "Bilinmeyen hata.",
         "error401Unauthorized": "Yetkisiz İşlem. Sayfayı yenilemeyi deneyin.",
         "errorSaveSettings": "Ayarlar kaydedilemedi.",

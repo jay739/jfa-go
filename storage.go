@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hrfee/jfa-go/common"
-	"github.com/hrfee/jfa-go/jellyseerr"
-	"github.com/hrfee/jfa-go/logger"
+	"github.com/jay739/omnifin/common"
+	"github.com/jay739/omnifin/jellyseerr"
+	"github.com/jay739/omnifin/logger"
 	"github.com/hrfee/mediabrowser"
 	"github.com/timshannon/badgerhold/v4"
 )
@@ -686,7 +686,7 @@ type EmailAddress struct {
 	Addr                string `badgerhold:"index"`
 	Label               string // User Label.
 	Contact             bool
-	Admin               bool   // Whether or not user is jfa-go admin.
+	Admin               bool   // Whether or not user is omnifin admin.
 	JellyfinID          string `badgerhold:"key"`
 	ReferralTemplateKey string
 }
@@ -716,7 +716,7 @@ const (
 
 type ContentSourceFileInfo struct{ Section, SettingPrefix, DefaultValue string }
 
-// CustomContent stores information needed for creating custom jfa-go content, including emails and user messages.
+// CustomContent stores information needed for creating custom omnifin content, including emails and user messages.
 type CustomContentInfo struct {
 	Name                     string `json:"name" badgerhold:"key"`
 	DisplayName, Description func(dict *Lang, lang string) string
@@ -730,7 +730,7 @@ type CustomContentInfo struct {
 	Placeholders map[string]any       `json:"values,omitempty"`
 }
 
-// CustomContent stores customized versions of jfa-go content, including emails and user messages.
+// CustomContent stores customized versions of omnifin content, including emails and user messages.
 type CustomContent struct {
 	Name    string `json:"name" badgerhold:"key"`
 	Enabled bool   `json:"enabled,omitempty"`

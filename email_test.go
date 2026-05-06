@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/hrfee/jfa-go/logger"
+	"github.com/jay739/omnifin/logger"
 	"github.com/lithammer/shortuuid/v3"
 	"github.com/timshannon/badgerhold/v4"
 )
@@ -52,7 +52,7 @@ func NewTestEmailer() (*Emailer, error) {
 	discordEnabled = true
 	noInfoLS := emailer.LoggerSet
 	noInfoLS.info = logger.NewEmptyLogger()
-	emailer.config, err = NewConfig(dConfig, "/tmp/jfa-go-test", noInfoLS)
+	emailer.config, err = NewConfig(dConfig, "/tmp/omnifin-test", noInfoLS)
 	if err != nil {
 		return emailer, err
 	}
@@ -65,7 +65,7 @@ func NewTestEmailer() (*Emailer, error) {
 	emailer.storage.lang.chosenTelegramLang = emailer.config.Section("telegram").Key("language").MustString("en-us")
 
 	opts := badgerhold.DefaultOptions
-	opts.Dir = "/tmp/jfa-go-test-db"
+	opts.Dir = "/tmp/omnifin-test-db"
 	opts.ValueDir = opts.Dir
 	opts.SyncWrites = false
 	opts.Logger = nil

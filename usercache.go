@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 )
 
 const (

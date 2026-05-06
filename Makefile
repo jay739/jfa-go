@@ -211,8 +211,8 @@ LANG_SRC = $(shell find ./lang)
 LANG_TARGET = $(LANG_SRC:lang/%=$(DATA)/lang/%)
 STATIC_SRC = $(wildcard static/*)
 STATIC_TARGET = $(STATIC_SRC:static/%=$(DATA)/web/%)
-COPY_SRC = images/banner.svg jfa-go.service LICENSE $(LANG_SRC) $(STATIC_SRC)
-COPY_TARGET = $(DATA)/jfa-go.service
+COPY_SRC = images/banner.svg omnifin.service LICENSE $(LANG_SRC) $(STATIC_SRC)
+COPY_TARGET = $(DATA)/omnifin.service
 # $(DATA)/LICENSE $(LANG_TARGET) $(STATIC_TARGET) $(DATA)/web/css/$(CSSVERSION)bundle.css
 $(COPY_TARGET): $(INLINE_TARGET) $(STATIC_SRC) $(LANG_SRC) $(CONFIG_BASE)
 	$(info copying $(CONFIG_BASE))
@@ -223,7 +223,7 @@ $(COPY_TARGET): $(INLINE_TARGET) $(STATIC_SRC) $(LANG_SRC) $(CONFIG_BASE)
 	cp images/banner.svg static/banner.svg
 	cp -r static/* $(DATA)/web/
 	$(info copying systemd service)
-	cp jfa-go.service $(DATA)/
+	cp omnifin.service $(DATA)/
 	$(info copying language files)
 	cp -r lang $(DATA)/
 	cp LICENSE $(DATA)/
@@ -242,7 +242,7 @@ $(rebuildHashFile):
 	touch $(rebuildHashFile)
 
 GO_SRC = $(shell find ./ -name "*.go")
-GO_TARGET = build/jfa-go
+GO_TARGET = build/omnifin
 $(GO_TARGET): $(COMPDEPS) $(SWAGGER_TARGET) $(GO_SRC) go.mod go.sum
 	$(info Downloading deps)
 	$(GOBINARY) mod download
@@ -259,7 +259,7 @@ compress:
 	upx --lzma $(GO_TARGET)
 
 install:
-	cp -r build $(DESTDIR)/jfa-go
+	cp -r build $(DESTDIR)/omnifin
 
 clean:
 	-rm -r $(DATA)

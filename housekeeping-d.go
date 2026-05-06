@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/dgraph-io/badger/v4"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 	"github.com/hrfee/mediabrowser"
 	"github.com/timshannon/badgerhold/v4"
 )
@@ -37,7 +37,7 @@ func (app *appContext) clearDiscord() {
 		// Make sure the user doesn't exist, and no other error has occured
 		switch err.(type) {
 		case mediabrowser.ErrUserNotFound:
-			// Remove role in case their account was deleted oustide of jfa-go
+			// Remove role in case their account was deleted outside of omnifin
 			app.discord.RemoveRole(discordUser.MethodID().(string))
 			app.storage.DeleteDiscordKey(discordUser.JellyfinID)
 		default:

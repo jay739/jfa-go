@@ -30,7 +30,7 @@
         "from": "Từ",
         "user": "Người dùng",
         "userExpiry": "Hết hạn Người dùng",
-        "userExpiryDescription": "Sau một khoảng thời gian nhất định sau khi mỗi đăng ký, jfa-go sẽ xóa/vô hiệu hóa tài khoản. Bạn có thể chỉnh sửa chế độ này trong cài đặt.",
+        "userExpiryDescription": "Sau một khoảng thời gian nhất định sau khi mỗi đăng ký, Omnifin sẽ xóa/vô hiệu hóa tài khoản. Bạn có thể chỉnh sửa chế độ này trong cài đặt.",
         "aboutProgram": "Thông tin",
         "version": "Phiên bản",
         "commitNoun": "Gửi",
@@ -55,7 +55,7 @@
         "sendPWRSuccessManual": "Nếu người dùng chưa nhận được, nhấn chép để lấy đường link có thể gửi đến họ.",
         "sendPWRValidFor": "Link có hiệu lực trong vòng 30 phút.",
         "customizeMessages": "Tùy chỉnh Tin nhắn",
-        "customizeMessagesDescription": "Nếu bạn không muốn sử dụng mẫu tin nhắn của jfa-go, bạn có thể tự tạo mẫu của mình bằng Markdown.",
+        "customizeMessagesDescription": "Nếu bạn không muốn sử dụng mẫu tin nhắn của Omnifin, bạn có thể tự tạo mẫu của mình bằng Markdown.",
         "markdownSupported": "Có hỗ trợ Markdown.",
         "modifySettings": "Chỉnh sửa Cài đặt",
         "modifySettingsDescription": "Áp dụng các cài đặt từ một mẫu có sẵn, hoặc lấy trực tiếp từ một người dùng.",
@@ -73,7 +73,7 @@
         "settingsRequiredOrRestartMessage": "Lưu ý: {n} là những cài đặt cần thiết, {n} là những cài đặt cần khởi động lại nếu chúng được thay đổi.",
         "settingsSave": "Lưu",
         "ombiProfile": "Tài khoản người dùng Ombi",
-        "ombiUserDefaultsDescription": "Tạo và cài đặt một tài khoản người dùng Ombi, sau đó chọn nó bên dưới. Các cài đặt/quyền sẽ được lưu lại và được áp dụng cho các tài khoản Ombi được tạo bởi jfa-go khi tài khoản mẫy này được chọn.",
+        "ombiUserDefaultsDescription": "Tạo và cài đặt một tài khoản người dùng Ombi, sau đó chọn nó bên dưới. Các cài đặt/quyền sẽ được lưu lại và được áp dụng cho các tài khoản Ombi được tạo bởi Omnifin khi tài khoản mẫy này được chọn.",
         "userProfiles": "Thông tin Người dùng",
         "userProfilesDescription": "Mẫu tài khoản được áp dụng cho người dùng khi họ tạo tài khoản. Mẫu tài khoản bao gồm các quyền truy cập thư viện và bốc cục trang chủ.",
         "userProfilesIsDefault": "Mặc định",
@@ -100,7 +100,7 @@
         "deleteTemplate": "Xóa mẫu",
         "templateEnterName": "Nhập tên mẫu để lưu mẫu này.",
         "logs": "Nhật ký",
-        "accessJFA": "Truy cập jfa-go"
+        "accessJFA": "Truy cập Omnifin"
     },
     "notifications": {
         "changedEmailAddress": "Đã đổi địa chỉ email của {n}.",

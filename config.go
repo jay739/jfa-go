@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hrfee/jfa-go/common"
-	"github.com/hrfee/jfa-go/easyproxy"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	"github.com/jay739/omnifin/common"
+	"github.com/jay739/omnifin/easyproxy"
+	lm "github.com/jay739/omnifin/logmessages"
 	"gopkg.in/ini.v1"
 )
 
@@ -36,22 +36,55 @@ var matrixEnabled = false
 var PAGES = PagePaths{}
 
 // dockerConfigMountPrefix is where the optional "config" volume is mounted in the official Docker image.
-const dockerConfigMountPrefix = "/jfa-go/config/"
+const dockerConfigMountPrefix = "/omnifin/config/"
+
+// legacyDockerConfigMountPrefix is preserved so configs from pre-rename installs keep resolving.
+const legacyDockerConfigMountPrefix = "/jfa-go/config/"
+
+// builtinTemplatePrefix marks template paths bundled into the binary.
+const builtinTemplatePrefix = "omnifin:"
+
+// legacyBuiltinTemplatePrefix is the pre-rename namespace prefix; still recognised for back-compat.
+const legacyBuiltinTemplatePrefix = "jfa-go:"
+
+// hasBuiltinPrefix returns true if val begins with either the current or legacy builtin namespace prefix.
+func hasBuiltinPrefix(val string) bool {
+	return strings.HasPrefix(val, builtinTemplatePrefix) || strings.HasPrefix(val, legacyBuiltinTemplatePrefix)
+}
+
+// trimBuiltinPrefix removes whichever builtin prefix is present.
+func trimBuiltinPrefix(val string) string {
+	if strings.HasPrefix(val, builtinTemplatePrefix) {
+		return strings.TrimPrefix(val, builtinTemplatePrefix)
+	}
+	return strings.TrimPrefix(val, legacyBuiltinTemplatePrefix)
+}
 
 // resolveFilesystemTemplatePath maps container paths in config.ini to the host when running outside Docker.
-// Set JFA_GO_CONFIG_HOST to the host directory that corresponds to /jfa-go/config (e.g. .../docker_services/jfa-go/config).
+// Set OMNIFIN_CONFIG_HOST (or legacy JFA_GO_CONFIG_HOST) to the host directory that corresponds to /omnifin/config.
 func resolveFilesystemTemplatePath(val string) string {
-	if val == "" || strings.HasPrefix(val, "jfa-go:") {
+	if val == "" || hasBuiltinPrefix(val) {
 		return val
 	}
 	if _, err := os.Stat(val); err == nil {
 		return val
 	}
-	host := strings.TrimSpace(os.Getenv("JFA_GO_CONFIG_HOST"))
-	if host == "" || !strings.HasPrefix(val, dockerConfigMountPrefix) {
+	host := strings.TrimSpace(os.Getenv("OMNIFIN_CONFIG_HOST"))
+	if host == "" {
+		host = strings.TrimSpace(os.Getenv("JFA_GO_CONFIG_HOST"))
+	}
+	if host == "" {
 		return val
 	}
-	rest := strings.TrimPrefix(val, dockerConfigMountPrefix)
+	var rest string
+	switch {
+	case strings.HasPrefix(val, dockerConfigMountPrefix):
+		rest = strings.TrimPrefix(val, dockerConfigMountPrefix)
+	case strings.HasPrefix(val, legacyDockerConfigMountPrefix):
+		rest = strings.TrimPrefix(val, legacyDockerConfigMountPrefix)
+	default:
+		return val
+	}
 	candidate := filepath.Join(host, rest)
 	if _, err := os.Stat(candidate); err == nil {
 		return filepath.Clean(candidate)
@@ -61,8 +94,8 @@ func resolveFilesystemTemplatePath(val string) string {
 
 func (config *Config) GetPath(sect, key string) (fs.FS, string) {
 	val := config.Section(sect).Key(key).MustString("")
-	if strings.HasPrefix(val, "jfa-go:") {
-		return localFS, strings.TrimPrefix(val, "jfa-go:")
+	if hasBuiltinPrefix(val) {
+		return localFS, trimBuiltinPrefix(val)
 	}
 	val = resolveFilesystemTemplatePath(val)
 	dir, file := filepath.Split(val)
@@ -135,7 +168,7 @@ func (app *appContext) ExternalDomainNoPort(gc *gin.Context) string {
 	return host
 }
 
-// ExternalURI returns the External URI of jfa-go's root directory (by default, where the admin page is), using the fixed externalURI value unless UseProxyHost is true and gc is not nil.
+// ExternalURI returns the External URI of omnifin's root directory (by default, where the admin page is), using the fixed externalURI value unless UseProxyHost is true and gc is not nil.
 // When nil is passed, externalURI is returned.
 func ExternalURI(gc *gin.Context) string {
 	if gc == nil {
@@ -234,45 +267,45 @@ func NewConfig(configPathOrContents any, dataPath string, logs LoggerSet) (*Conf
 	config.Section("email").Key("no_username").SetValue(strconv.FormatBool(config.Section("email").Key("no_username").MustBool(false)))
 
 	// FIXME: Remove all these, eventually
-	// config.MustSetValue("password_resets", "email_html", "jfa-go:"+"password-reset.html")
-	// config.MustSetValue("password_resets", "email_text", "jfa-go:"+"password-reset.txt")
+	// config.MustSetValue("password_resets", "email_html", builtinTemplatePrefix+"password-reset.html")
+	// config.MustSetValue("password_resets", "email_text", builtinTemplatePrefix+"password-reset.txt")
 
-	// config.MustSetValue("invite_emails", "email_html", "jfa-go:"+"invite-email.html")
-	// config.MustSetValue("invite_emails", "email_text", "jfa-go:"+"invite-email.txt")
+	// config.MustSetValue("invite_emails", "email_html", builtinTemplatePrefix+"invite-email.html")
+	// config.MustSetValue("invite_emails", "email_text", builtinTemplatePrefix+"invite-email.txt")
 
-	// config.MustSetValue("email_confirmation", "email_html", "jfa-go:"+"confirmation.html")
-	// config.MustSetValue("email_confirmation", "email_text", "jfa-go:"+"confirmation.txt")
+	// config.MustSetValue("email_confirmation", "email_html", builtinTemplatePrefix+"confirmation.html")
+	// config.MustSetValue("email_confirmation", "email_text", builtinTemplatePrefix+"confirmation.txt")
 
-	// config.MustSetValue("notifications", "expiry_html", "jfa-go:"+"expired.html")
-	// config.MustSetValue("notifications", "expiry_text", "jfa-go:"+"expired.txt")
+	// config.MustSetValue("notifications", "expiry_html", builtinTemplatePrefix+"expired.html")
+	// config.MustSetValue("notifications", "expiry_text", builtinTemplatePrefix+"expired.txt")
 
-	// config.MustSetValue("notifications", "created_html", "jfa-go:"+"created.html")
-	// config.MustSetValue("notifications", "created_text", "jfa-go:"+"created.txt")
+	// config.MustSetValue("notifications", "created_html", builtinTemplatePrefix+"created.html")
+	// config.MustSetValue("notifications", "created_text", builtinTemplatePrefix+"created.txt")
 
-	// config.MustSetValue("deletion", "email_html", "jfa-go:"+"deleted.html")
-	// config.MustSetValue("deletion", "email_text", "jfa-go:"+"deleted.txt")
+	// config.MustSetValue("deletion", "email_html", builtinTemplatePrefix+"deleted.html")
+	// config.MustSetValue("deletion", "email_text", builtinTemplatePrefix+"deleted.txt")
 
 	// Deletion template is good enough for these as well.
-	// config.MustSetValue("disable_enable", "disabled_html", "jfa-go:"+"deleted.html")
-	// config.MustSetValue("disable_enable", "disabled_text", "jfa-go:"+"deleted.txt")
-	// config.MustSetValue("disable_enable", "enabled_html", "jfa-go:"+"deleted.html")
-	// config.MustSetValue("disable_enable", "enabled_text", "jfa-go:"+"deleted.txt")
+	// config.MustSetValue("disable_enable", "disabled_html", builtinTemplatePrefix+"deleted.html")
+	// config.MustSetValue("disable_enable", "disabled_text", builtinTemplatePrefix+"deleted.txt")
+	// config.MustSetValue("disable_enable", "enabled_html", builtinTemplatePrefix+"deleted.html")
+	// config.MustSetValue("disable_enable", "enabled_text", builtinTemplatePrefix+"deleted.txt")
 
-	// config.MustSetValue("welcome_email", "email_html", "jfa-go:"+"welcome.html")
-	// config.MustSetValue("welcome_email", "email_text", "jfa-go:"+"welcome.txt")
+	// config.MustSetValue("welcome_email", "email_html", builtinTemplatePrefix+"welcome.html")
+	// config.MustSetValue("welcome_email", "email_text", builtinTemplatePrefix+"welcome.txt")
 
-	// config.MustSetValue("template_email", "email_html", "jfa-go:"+"template.html")
-	// config.MustSetValue("template_email", "email_text", "jfa-go:"+"template.txt")
+	// config.MustSetValue("template_email", "email_html", builtinTemplatePrefix+"template.html")
+	// config.MustSetValue("template_email", "email_text", builtinTemplatePrefix+"template.txt")
 
 	config.MustSetValue("user_expiry", "behaviour", "disable_user")
-	// config.MustSetValue("user_expiry", "email_html", "jfa-go:"+"user-expired.html")
-	// config.MustSetValue("user_expiry", "email_text", "jfa-go:"+"user-expired.txt")
+	// config.MustSetValue("user_expiry", "email_html", builtinTemplatePrefix+"user-expired.html")
+	// config.MustSetValue("user_expiry", "email_text", builtinTemplatePrefix+"user-expired.txt")
 
-	// config.MustSetValue("user_expiry", "adjustment_email_html", "jfa-go:"+"expiry-adjusted.html")
-	// config.MustSetValue("user_expiry", "adjustment_email_text", "jfa-go:"+"expiry-adjusted.txt")
+	// config.MustSetValue("user_expiry", "adjustment_email_html", builtinTemplatePrefix+"expiry-adjusted.html")
+	// config.MustSetValue("user_expiry", "adjustment_email_text", builtinTemplatePrefix+"expiry-adjusted.txt")
 
-	// config.MustSetValue("user_expiry", "reminder_email_html", "jfa-go:"+"expiry-reminder.html")
-	// config.MustSetValue("user_expiry", "reminder_email_text", "jfa-go:"+"expiry-reminder.txt")
+	// config.MustSetValue("user_expiry", "reminder_email_html", builtinTemplatePrefix+"expiry-reminder.html")
+	// config.MustSetValue("user_expiry", "reminder_email_text", builtinTemplatePrefix+"expiry-reminder.txt")
 
 	fnameSettingSuffix := []string{"html", "text"}
 	fnameExtension := []string{"html", "txt"}
@@ -282,7 +315,7 @@ func NewConfig(configPathOrContents any, dataPath string, logs LoggerSet) (*Conf
 			continue
 		}
 		for i := range fnameSettingSuffix {
-			config.MustSetValue(cc.SourceFile.Section, cc.SourceFile.SettingPrefix+fnameSettingSuffix[i], "jfa-go:"+cc.SourceFile.DefaultValue+"."+fnameExtension[i])
+			config.MustSetValue(cc.SourceFile.Section, cc.SourceFile.SettingPrefix+fnameSettingSuffix[i], builtinTemplatePrefix+cc.SourceFile.DefaultValue+"."+fnameExtension[i])
 		}
 	}
 
@@ -317,8 +350,8 @@ func NewConfig(configPathOrContents any, dataPath string, logs LoggerSet) (*Conf
 	config.MustSetValue("backups", "keep_previous_version_backup", "true")
 
 	config.Section("jellyfin").Key("version").SetValue(version)
-	config.Section("jellyfin").Key("device").SetValue("jfa-go")
-	config.Section("jellyfin").Key("device_id").SetValue(fmt.Sprintf("jfa-go-%s-%s", version, commit))
+	config.Section("jellyfin").Key("device").SetValue("omnifin")
+	config.Section("jellyfin").Key("device_id").SetValue(fmt.Sprintf("omnifin-%s-%s", version, commit))
 
 	config.MustSetValue("jellyfin", "cache_timeout", "30")
 	config.MustSetValue("jellyfin", "web_cache_async_timeout", "1")

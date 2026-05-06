@@ -16,15 +16,15 @@ import (
 	"strings"
 	"time"
 
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 
-	"github.com/hrfee/jfa-go/common"
+	"github.com/jay739/omnifin/common"
 )
 
 const (
 	baseURL   = "https://builds.hrfee.pw"
-	namespace = "hrfee"
-	repo      = "jfa-go"
+	namespace = "jay739"
+	repo      = "omnifin"
 )
 
 type TagEmptyError struct {
@@ -171,7 +171,7 @@ func NewUpdater(buildroneURL, namespace, repo, version, commit, buildType string
 	if version == "git" && bType != docker {
 		tag += "-git"
 	}
-	binary := "jfa-go"
+	binary := "omnifin"
 	if runtime.GOOS == "windows" {
 		binary += ".exe"
 	}

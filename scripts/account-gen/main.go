@@ -67,7 +67,7 @@ func main() {
 	jf, err := mediabrowser.NewServer(
 		mediabrowser.JellyfinServer,
 		server,
-		"jfa-go-account-gen-script",
+		"omnifin-account-gen-script",
 		"0.0.1",
 		"testing",
 		"my_left_foot",
@@ -87,7 +87,7 @@ func main() {
 	jfTemp, err := mediabrowser.NewServer(
 		mediabrowser.JellyfinServer,
 		server,
-		"jfa-go-account-gen-script",
+		"omnifin-account-gen-script",
 		"0.0.1",
 		"fake-activity",
 		"my_left_foot",

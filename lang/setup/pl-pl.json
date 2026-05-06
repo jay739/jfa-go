@@ -3,7 +3,7 @@
         "name": "Polski (PL)"
     },
     "strings": {
-        "pageTitle": "Ustawienia - jfa-go",
+        "pageTitle": "Ustawienia - Omnifin",
         "next": "Dalej",
         "back": "Cofnij",
         "optional": "Opcjonalne",
@@ -27,7 +27,7 @@
     },
     "startPage": {
         "welcome": "Witaj!",
-        "pressStart": "Musisz wykonać kilka czynności, aby skonfigurować jfa-go. Wciśnij start, aby kontynuować.",
+        "pressStart": "Musisz wykonać kilka czynności, aby skonfigurować Omnifin. Wciśnij start, aby kontynuować.",
         "httpsNotice": "Upewnij się, że masz dostęp do strony przy użyciu HTTPS lub sieci LAN.",
         "start": "Start"
     },
@@ -38,7 +38,7 @@
     },
     "language": {
         "title": "Język",
-        "description": "Tłumaczenia społeczności są dostępne dla większości jfa-go. Poniżej możesz wybrać języki domyślne, ale użytkownicy mogą je zmienić, jeśli chcą. Jeśli chcesz pomóc w tłumaczeniu, zarejestruj się do {n}, aby zacząć współtworzyć!",
+        "description": "Tłumaczenia społeczności są dostępne dla większości Omnifin. Poniżej możesz wybrać języki domyślne, ale użytkownicy mogą je zmienić, jeśli chcą. Jeśli chcesz pomóc w tłumaczeniu, zarejestruj się do {n}, aby zacząć współtworzyć!",
         "defaultAdminLang": "Domyślny język administratora",
         "defaultFormLang": "Domyślny język tworzenia konta",
         "defaultEmailLang": "Domyślny język email"
@@ -58,7 +58,7 @@
     },
     "updates": {
         "title": "Aktualizacje",
-        "description": "Włącz, aby otrzymywać powiadomienia o dostępności nowych aktualizacji. jfa-go będzie sprawdzać {n} co 30 minut. Nie są zbierane żadne adresy IP ani dane osobowe.",
+        "description": "Włącz, aby otrzymywać powiadomienia o dostępności nowych aktualizacji. Omnifin będzie sprawdzać {n} co 30 minut. Nie są zbierane żadne adresy IP ani dane osobowe.",
         "updateChannel": "Kanał aktualizacji",
         "stable": "Stabilny",
         "unstable": "Niestabilne"
@@ -152,7 +152,7 @@
         "emailMessageNotice": ""
     },
     "proxy": {
-        "description": "Niech jfa-go wykonuje wszystkie połączenia przez proxy HTTP/SOCKS5. Połączenie z Jellyfin będzie testowane za jego pośrednictwem.",
+        "description": "Niech Omnifin wykonuje wszystkie połączenia przez proxy HTTP/SOCKS5. Połączenie z Jellyfin będzie testowane za jego pośrednictwem.",
         "title": "Proxy",
         "protocol": "Protokół",
         "address": "Adres (wraz z portem)"

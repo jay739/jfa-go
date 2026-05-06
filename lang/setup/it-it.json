@@ -3,7 +3,7 @@
         "name": "Italiano (IT)"
     },
     "strings": {
-        "pageTitle": "Configurazione - jfa-go",
+        "pageTitle": "Configurazione - Omnifin",
         "next": "Avanti",
         "back": "Indietro",
         "optional": "Opzionale",
@@ -26,7 +26,7 @@
     },
     "startPage": {
         "welcome": "Benvenuto!",
-        "pressStart": "Dovrai eseguire un paio di cose per impostare jfa-go. Premi Inizia per continuare.",
+        "pressStart": "Dovrai eseguire un paio di cose per impostare Omnifin. Premi Inizia per continuare.",
         "httpsNotice": "Assicurati di star accedendo a questa pagina tramite HTTPS o una rete privata.",
         "start": "Inizia"
     },
@@ -37,7 +37,7 @@
     },
     "language": {
         "title": "Lingua",
-        "description": "Le traduzioni della community sono disponibili per la maggior parte di jfa-go. Puoi scegliere le lingue di default qui sotto, ma altri utenti possono sempre cambiarle se lo desiderano. Se vuoi aiutare nelle traduzioni, accedi a {n} per iniziare a contribuire!",
+        "description": "Le traduzioni della community sono disponibili per la maggior parte di Omnifin. Puoi scegliere le lingue di default qui sotto, ma altri utenti possono sempre cambiarle se lo desiderano. Se vuoi aiutare nelle traduzioni, accedi a {n} per iniziare a contribuire!",
         "defaultAdminLang": "Lingua default per admin",
         "defaultFormLang": "Lingua default per creazione account",
         "defaultEmailLang": "Lingua default per email"
@@ -57,7 +57,7 @@
     },
     "updates": {
         "title": "Aggiornamenti",
-        "description": "Abilita per ricevere una notifica quando nuovi aggiornamenti sono disponibili. jfa-go controllerà {n} ogni 30 minuti. Non vengono raccolte informazioni di identificazione personale o IP.",
+        "description": "Abilita per ricevere una notifica quando nuovi aggiornamenti sono disponibili. Omnifin controllerà {n} ogni 30 minuti. Non vengono raccolte informazioni di identificazione personale o IP.",
         "updateChannel": "Canale degli aggiornamenti",
         "stable": "Stabile",
         "unstable": "Instabile"
@@ -85,16 +85,16 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "Collegandosi ad Ombi, verrà creato un account sia su Jellyfin che su Ombi quando un utente accede tramite jfa-go. Al termine del setup, accedi alle impostazioni per impostare un profilo di default per i nuovi utenti Ombi.",
+        "description": "Collegandosi ad Ombi, verrà creato un account sia su Jellyfin che su Ombi quando un utente accede tramite Omnifin. Al termine del setup, accedi alle impostazioni per impostare un profilo di default per i nuovi utenti Ombi.",
         "apiKeyNotice": "Presente nella prima scheda delle impostazioni di Ombi."
     },
     "messages": {
         "title": "Messaggi",
-        "description": "jfa-go può inviare reset password e diversi messaggi tramite Email, Discord, Telegram, e/o Matrix. Puoi configurare l'email qui sotto, e gli altri possono essere configurati successivamente nelle impostazioni. Le istruzioni si trovano sugli {n}. Se non ne hai bisogno, puoi disabilitare queste funzionalità qui."
+        "description": "Omnifin può inviare reset password e diversi messaggi tramite Email, Discord, Telegram, e/o Matrix. Puoi configurare l'email qui sotto, e gli altri possono essere configurati successivamente nelle impostazioni. Le istruzioni si trovano sugli {n}. Se non ne hai bisogno, puoi disabilitare queste funzionalità qui."
     },
     "email": {
         "title": "Email",
-        "description": "jfa-go può inviare PIN di reset password e diverse notifiche tramite email. Puoi connetterti ad un server SMTP, o usare le {n} API.",
+        "description": "Omnifin può inviare PIN di reset password e diverse notifiche tramite email. Puoi connetterti ad un server SMTP, o usare le {n} API.",
         "method": "Metodo di invio",
         "useEmailAsUsername": "",
         "useEmailAsUsernameNotice": "",

@@ -45,7 +45,7 @@
     },
     "notifications": {
         "errorLoginBlank": "Le nom d'utilisateur et/ou le mot de passe sont vides.",
-        "errorConnection": "Impossible de se connecter à jfa-go.",
+        "errorConnection": "Impossible de se connecter à Omnifin.",
         "errorUnknown": "Erreur inconnue.",
         "error401Unauthorized": "Non autorisé. Essayez d'actualiser la page.",
         "errorSaveSettings": "Impossible d'enregistrer les paramètres."

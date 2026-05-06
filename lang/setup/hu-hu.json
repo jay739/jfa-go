@@ -3,7 +3,7 @@
         "name": "Magyar (HU)"
     },
     "strings": {
-        "pageTitle": "Telepítés - jfa-go",
+        "pageTitle": "Telepítés - Omnifin",
         "next": "Következő",
         "back": "Vissza",
         "optional": "Opcionális",
@@ -27,7 +27,7 @@
     },
     "startPage": {
         "welcome": "Üdv!",
-        "pressStart": "A jfa-go beállításához néhány dolgot el kell végezned. A folytatáshoz nyomd meg a kezdés gombot.",
+        "pressStart": "A Omnifin beállításához néhány dolgot el kell végezned. A folytatáshoz nyomd meg a kezdés gombot.",
         "httpsNotice": "Győződjön meg róla, hogy HTTPS-en vagy privát hálózaton keresztül éri el ezt az oldalt.",
         "start": "Kezdés"
     },
@@ -36,12 +36,12 @@
         "restartMessage": "",
         "refreshPage": "Újratöltés",
         "moreFeatures": "Rengeteg további funkció, mint például a Discord/Telegram/Matrix botok és az egyéni Markdown üzenetek, megtalálható a Beállításokban, ezért mindenképpen böngészd át őket.",
-        "restartReload": "Kattints ide az újraindításhoz, majd a megadott belső/külső URL-címek egyikén nyisd meg a jfa-go alkalmazást.",
+        "restartReload": "Kattints ide az újraindításhoz, majd a megadott belső/külső URL-címek egyikén nyisd meg a Omnifin alkalmazást.",
         "ifFailedLoad": "Ha nem töltődik be, ellenőrizd az alkalmazás naplóit, hogy miért."
     },
     "language": {
         "title": "Nyelv",
-        "description": "A jfa-go legtöbb részéhez elérhetők közösségi fordítások. Az alábbiakban kiválaszthatod az alapértelmezett nyelveket, de a felhasználók továbbra is módosíthatják azokat, ha akarják. Ha szeretnél segíteni a fordításban, regisztrálj a {n}-re, hogy elkezdhesd a közreműködést!",
+        "description": "A Omnifin legtöbb részéhez elérhetők közösségi fordítások. Az alábbiakban kiválaszthatod az alapértelmezett nyelveket, de a felhasználók továbbra is módosíthatják azokat, ha akarják. Ha szeretnél segíteni a fordításban, regisztrálj a {n}-re, hogy elkezdhesd a közreműködést!",
         "defaultAdminLang": "Alapártelmezett rendszergazda nyelv",
         "defaultFormLang": "Alapértelmezett fiók nyelv",
         "defaultEmailLang": "Alapértelmezett email nyelv"
@@ -58,12 +58,12 @@
         "useHTTPSNotice": "Csak akkor aljánlott ha fordított proxy-t használsz.",
         "pathToCertificate": "Tanúsítvány elérési útja",
         "pathToKeyFile": "Kulcs fájl elérési útja",
-        "externalURLNotice": "Az URL, amelyről a jfa-go címhez fogsz hozzáférni. Linkek generálására szolgál, például jelszó-visszaállításhoz. Ha beállítottál egyet, feltétlenül add meg a fenti alap URL-t is.",
-        "externalURL": "Külső jfa-go URL"
+        "externalURLNotice": "Az URL, amelyről a Omnifin címhez fogsz hozzáférni. Linkek generálására szolgál, például jelszó-visszaállításhoz. Ha beállítottál egyet, feltétlenül add meg a fenti alap URL-t is.",
+        "externalURL": "Külső Omnifin URL"
     },
     "updates": {
         "title": "Frissítések",
-        "description": "Engedélyezd ha szeretnél értesítést az új frissítésekről. A jfa-go 30 percenként ellenőrzi a(z) {n} címet. Nem gyűjt IP-címeket vagy személyes adatokat.",
+        "description": "Engedélyezd ha szeretnél értesítést az új frissítésekről. A Omnifin 30 percenként ellenőrzi a(z) {n} címet. Nem gyűjt IP-címeket vagy személyes adatokat.",
         "updateChannel": "Csatorna frissítése",
         "stable": "Stabil",
         "unstable": "Instabil"
@@ -92,17 +92,17 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "Az Ombihoz való csatlakozással Jellyfin és Ombi fiók is létrejön, amikor a felhasználó a jfa-go-n keresztül csatlakozik. A beállítás befejezése után lépjen a Beállítások menüpontra, hogy alapértelmezett profilt állítson be az új ombi-felhasználók számára.",
+        "description": "Az Ombihoz való csatlakozással Jellyfin és Ombi fiók is létrejön, amikor a felhasználó a Omnifin-n keresztül csatlakozik. A beállítás befejezése után lépjen a Beállítások menüpontra, hogy alapértelmezett profilt állítson be az új ombi-felhasználók számára.",
         "apiKeyNotice": "Ezt az Ombi beállítások első lapján találod.",
         "stabilityWarning": "Figyelmeztetés: Az Ombi integráció instabil, és problémákat okozhat. Helyette a Jellyseerr használata ajánlott. További információkért lásd: {n}."
     },
     "messages": {
         "title": "Üzenetek",
-        "description": "A jfa-go jelszó-visszaállítási információkat és különféle üzeneteket tud küldeni e-mailben, Discordon, Telegramon és/vagy Matrixon keresztül. Az e-mailt alább állíthatod be, a többit pedig később a Beállításokban konfigurálhatod. Az utasításokat a {n} oldalon találod. Ha erre nincs szükséged, itt letilthatod ezeket a funkciókat."
+        "description": "A Omnifin jelszó-visszaállítási információkat és különféle üzeneteket tud küldeni e-mailben, Discordon, Telegramon és/vagy Matrixon keresztül. Az e-mailt alább állíthatod be, a többit pedig később a Beállításokban konfigurálhatod. Az utasításokat a {n} oldalon találod. Ha erre nincs szükséged, itt letilthatod ezeket a funkciókat."
     },
     "email": {
         "title": "Email",
-        "description": "A jfa-go jelszó-visszaállító PIN-kódokat és különféle értesítéseket tud küldeni e-mailben. Csatlakozhatsz egy SMTP-kiszolgálóhoz, vagy használhatod az {n} API-t.",
+        "description": "A Omnifin jelszó-visszaállító PIN-kódokat és különféle értesítéseket tud küldeni e-mailben. Csatlakozhatsz egy SMTP-kiszolgálóhoz, vagy használhatod az {n} API-t.",
         "method": "Küldési mód",
         "useEmailAsUsername": "Email cím használata fehasználónévnek",
         "useEmailAsUsernameNotice": "Ha engedélyezve van, az új felhasználók a Jellyfin/Emby rendszerbe felhasználónév helyett az e-mail címükkel jelentkeznek be.",
@@ -127,7 +127,7 @@
     },
     "passwordResets": {
         "title": "Jelszó visszaállítás",
-        "description": "Amikor egy felhasználó megpróbálja visszaállítani a jelszavát, a Jellyfin létrehoz egy „passwordreset-*.json” nevű fájlt, amely egy PIN-kódot tartalmaz. A jfa-go beolvassa a fájlt, és elküldi a PIN-kódot a felhasználónak. Ha engedélyezte a „Felhasználói oldal” funkciót, a visszaállítás ott is elvégezhető felhasználónév, e-mail cím vagy kapcsolatfelvételi mód megadásával.",
+        "description": "Amikor egy felhasználó megpróbálja visszaállítani a jelszavát, a Jellyfin létrehoz egy „passwordreset-*.json” nevű fájlt, amely egy PIN-kódot tartalmaz. A Omnifin beolvassa a fájlt, és elküldi a PIN-kódot a felhasználónak. Ha engedélyezte a „Felhasználói oldal” funkciót, a visszaállítás ott is elvégezhető felhasználónév, e-mail cím vagy kapcsolatfelvételi mód megadásával.",
         "pathToJellyfin": "Jellyfin konfigurációs könyvtár elérési útja",
         "pathToJellyfinNotice": "Ha nem tudod, hol van ez, próbáld meg visszaállítani a jelszavadat a Jellyfinben. Megjelenik egy felugró ablak a következővel: '<jellyfin elérési útja>/passwordreset-*.json'. Ez nem szükséges, ha csak az önkiszolgáló jelszó-visszaállítást szeretnéd használni a \"Felhasználói oldalon\".",
         "resetLinks": "Link küldése PIN kód helyett",
@@ -161,20 +161,20 @@
         "markdownMessageNotice": "Egyes e-mailek, oldalak és üzenetek tartalma testreszabható a Markdown segítségével a beállításokban."
     },
     "jellyseerr": {
-        "description": "A Jellyseerr az Ombi alternatívája, és jobban integrálódik a jfa-go-val. A beállítás befejezése után a Beállítások menüpontban hozz létre egy profilt, és adj hozzá egy sablont az új Jellyseerr fiókokhoz.",
+        "description": "A Jellyseerr az Ombi alternatívája, és jobban integrálódik a Omnifin-val. A beállítás befejezése után a Beállítások menüpontban hozz létre egy profilt, és adj hozzá egy sablont az új Jellyseerr fiókokhoz.",
         "title": "Jellyseerr",
         "importExisting": "Meglévő fiókok importálása",
-        "importExistingDescription": "Ha engedélyezve van, a meglévő felhasználók elérhetőségi adatai és beállításai szinkronizálva lesznek a jfa-go rendszerből."
+        "importExistingDescription": "Ha engedélyezve van, a meglévő felhasználók elérhetőségi adatai és beállításai szinkronizálva lesznek a Omnifin rendszerből."
     },
     "userPage": {
         "description": "A felhasználói oldal („Fiókom” néven látható) lehetővé teszi a felhasználók számára, hogy hozzáférjenek a fiókjukkal kapcsolatos információkhoz, például a kapcsolatfelvételi módokhoz és a fiók lejáratához. Megváltoztathatják jelszavukat, jelszó-visszaállítást kezdeményezhetnek, és összekapcsolhatják/módosíthatják a kapcsolatfelvételi módokat anélkül, hogy megkérdeznék Önt. Ezenkívül személyre szabott Markdown-üzenetek jeleníthetők meg a felhasználóknak a bejelentkezés előtt és után.",
         "title": "Felhasználói oldal",
         "customizeMessages": "Kattintson a beállításokban a „Felhasználói oldal” melletti szerkesztés gombra a későbbi módosításhoz.",
-        "requiredSettings": "A jfa-go-ba Jellyfinen keresztül történő bejelentkezést be kell állítani. Győződjön meg róla, hogy a „jelszó visszaállítása linken keresztül” lehetőség van kiválasztva később az önkiszolgáló jelszó-visszaállításhoz."
+        "requiredSettings": "A Omnifin-ba Jellyfinen keresztül történő bejelentkezést be kell állítani. Győződjön meg róla, hogy a „jelszó visszaállítása linken keresztül” lehetőség van kiválasztva később az önkiszolgáló jelszó-visszaállításhoz."
     },
     "proxy": {
         "title": "Proxy",
-        "description": "A jfa-go minden kapcsolatot HTTP/SOCKS5 proxyn keresztül hozzon létre. A Jellyfinhez való csatlakozást ezen a proxyn keresztül fogja tesztelni.",
+        "description": "A Omnifin minden kapcsolatot HTTP/SOCKS5 proxyn keresztül hozzon létre. A Jellyfinhez való csatlakozást ezen a proxyn keresztül fogja tesztelni.",
         "protocol": "Protokoll",
         "address": "Cím (Port-al együtt)"
     }

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hrfee/jfa-go/logger"
+	"github.com/jay739/omnifin/logger"
 )
 
 const binaryType = "external"

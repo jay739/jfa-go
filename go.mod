@@ -1,24 +1,24 @@
-module github.com/hrfee/jfa-go
+module github.com/jay739/omnifin
 
 go 1.24.0
 
-replace github.com/hrfee/jfa-go/docs => ./docs
+replace github.com/jay739/omnifin/docs => ./docs
 
-replace github.com/hrfee/jfa-go/common => ./common
+replace github.com/jay739/omnifin/common => ./common
 
-replace github.com/hrfee/jfa-go/ombi => ./ombi
+replace github.com/jay739/omnifin/ombi => ./ombi
 
-replace github.com/hrfee/jfa-go/logger => ./logger
+replace github.com/jay739/omnifin/logger => ./logger
 
-replace github.com/hrfee/jfa-go/logmessages => ./logmessages
+replace github.com/jay739/omnifin/logmessages => ./logmessages
 
-replace github.com/hrfee/jfa-go/linecache => ./linecache
+replace github.com/jay739/omnifin/linecache => ./linecache
 
-replace github.com/hrfee/jfa-go/api => ./api
+replace github.com/jay739/omnifin/api => ./api
 
-replace github.com/hrfee/jfa-go/easyproxy => ./easyproxy
+replace github.com/jay739/omnifin/easyproxy => ./easyproxy
 
-replace github.com/hrfee/jfa-go/jellyseerr => ./jellyseerr
+replace github.com/jay739/omnifin/jellyseerr => ./jellyseerr
 
 // replace github.com/hrfee/mediabrowser => ../mediabrowser
 
@@ -34,14 +34,14 @@ require (
 	github.com/goccy/go-yaml v1.18.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gomarkdown/markdown v0.0.0-20250810172220-2e2c11897d1a
-	github.com/hrfee/jfa-go/common v0.0.0-20251123165523-7c9f91711460
-	github.com/hrfee/jfa-go/docs v0.0.0-20251123165523-7c9f91711460
-	github.com/hrfee/jfa-go/easyproxy v0.0.0-20251123165523-7c9f91711460
-	github.com/hrfee/jfa-go/jellyseerr v0.0.0-20251123165523-7c9f91711460
-	github.com/hrfee/jfa-go/linecache v0.0.0-20251123165523-7c9f91711460
-	github.com/hrfee/jfa-go/logger v0.0.0-20251123165523-7c9f91711460
-	github.com/hrfee/jfa-go/logmessages v0.0.0-20251123165523-7c9f91711460
-	github.com/hrfee/jfa-go/ombi v0.0.0-20251123165523-7c9f91711460
+	github.com/jay739/omnifin/common v0.0.0-20251123165523-7c9f91711460
+	github.com/jay739/omnifin/docs v0.0.0-20251123165523-7c9f91711460
+	github.com/jay739/omnifin/easyproxy v0.0.0-20251123165523-7c9f91711460
+	github.com/jay739/omnifin/jellyseerr v0.0.0-20251123165523-7c9f91711460
+	github.com/jay739/omnifin/linecache v0.0.0-20251123165523-7c9f91711460
+	github.com/jay739/omnifin/logger v0.0.0-20251123165523-7c9f91711460
+	github.com/jay739/omnifin/logmessages v0.0.0-20251123165523-7c9f91711460
+	github.com/jay739/omnifin/ombi v0.0.0-20251123165523-7c9f91711460
 	github.com/hrfee/mediabrowser v0.3.36
 	github.com/hrfee/simple-template v1.1.0
 	github.com/itchyny/timefmt-go v0.1.7

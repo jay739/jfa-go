@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 )
 
 func (app *appContext) loadArgs(firstCall bool) {
@@ -113,11 +113,11 @@ becomes:
 		prints this message.
 */
 func helpFunc() {
-	fmt.Fprint(stderr, `Usage of jfa-go:
+	fmt.Fprint(stderr, `Usage of omnifin:
   start
-	start jfa-go as a daemon and run in the background.
+	start omnifin as a daemon and run in the background.
   stop
-	stop a daemonized instance of jfa-go.
+	stop a daemonized instance of omnifin.
   systemd
 	generate a systemd .service file.
 `)
@@ -180,8 +180,8 @@ func helpFunc() {
 	fmt.Fprint(stderr, out)
 	fmt.Fprint(stderr, `
 Environment:
-  JFA_GO_CONFIG_HOST
-	If set, paths under /jfa-go/config/... in config.ini are read from this directory instead
+  OMNIFIN_CONFIG_HOST  (legacy: JFA_GO_CONFIG_HOST)
+	If set, paths under /omnifin/config/... in config.ini are read from this directory instead
 	(useful when running the binary on the host while config still uses Docker-style paths).
 `)
 }

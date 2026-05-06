@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hrfee/jfa-go/common"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	"github.com/jay739/omnifin/common"
+	lm "github.com/jay739/omnifin/logmessages"
 	"github.com/hrfee/mediabrowser"
 	"github.com/itchyny/timefmt-go"
 	"github.com/lithammer/shortuuid/v3"
@@ -231,7 +231,7 @@ func (app *appContext) ResetSetPassword(gc *gin.Context) {
 	respondBool(200, true, gc)
 }
 
-// @Summary Get jfa-go configuration.
+// @Summary Get omnifin configuration.
 // @Produce json
 // @Success 200 {object} common.Config "Uses the same format as config-base.json"
 // @Router /config [get]

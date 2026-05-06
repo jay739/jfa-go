@@ -45,7 +45,7 @@
     },
     "notifications": {
         "errorLoginBlank": "O nome de usuário e/ou senha foram deixados em branco.",
-        "errorConnection": "Não foi possível conectar ao jfa-go.",
+        "errorConnection": "Não foi possível conectar ao Omnifin.",
         "errorUnknown": "Erro desconhecido.",
         "error401Unauthorized": "Não autorizado. Tente atualizar a página.",
         "errorSaveSettings": "Não foi possível salvar as configurações."

@@ -36,7 +36,7 @@ type crashPageLabels struct {
 func defaultCrashLabels() crashPageLabels {
 	return crashPageLabels{
 		Title:           "Crash report",
-		Heading:         "Crash report for jfa-go",
+		Heading:         "Crash report for omnifin",
 		CreateIssue:     "Create an Issue",
 		FullLog:         "Full Log",
 		Copy:            "Copy",
@@ -177,7 +177,7 @@ func Exit(err interface{}) {
 		"pageDirection":     "ltr",
 	}
 	// Use dashes for time rather than colons for Windows
-	fpath := filepath.Join(temp, "jfa-go-crash-"+time.Now().Local().Format("2006-01-02T15-04-05"))
+	fpath := filepath.Join(temp, "omnifin-crash-"+time.Now().Local().Format("2006-01-02T15-04-05"))
 	err2 = os.WriteFile(fpath+".txt", []byte(logCache), 0666)
 	if err2 != nil {
 		log.Fatalf("Failed to write crash dump file: %v", err2)

@@ -5,9 +5,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/hrfee/jfa-go/common"
-	"github.com/hrfee/jfa-go/logger"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	"github.com/jay739/omnifin/common"
+	"github.com/jay739/omnifin/logger"
+	lm "github.com/jay739/omnifin/logmessages"
 )
 
 type WebhookSender struct {

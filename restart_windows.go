@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	lm "github.com/hrfee/jfa-go/logmessages"
+	lm "github.com/jay739/omnifin/logmessages"
 )
 
 func (app *appContext) HardRestart() error {

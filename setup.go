@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hrfee/jfa-go/easyproxy"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	"github.com/jay739/omnifin/easyproxy"
+	lm "github.com/jay739/omnifin/logmessages"
 	"github.com/hrfee/mediabrowser"
 )
 
@@ -89,7 +89,7 @@ func (app *appContext) TestJF(gc *gin.Context) {
 	if req.ServerType == "emby" {
 		serverType = mediabrowser.EmbyServer
 	}
-	tempjf, _ := mediabrowser.NewServer(serverType, req.Server, "jfa-go-setup", app.version, "auth", "auth", mediabrowser.NewNamedTimeoutHandler("authJF", req.Server, true), 30)
+	tempjf, _ := mediabrowser.NewServer(serverType, req.Server, "omnifin-setup", app.version, "auth", "auth", mediabrowser.NewNamedTimeoutHandler("authJF", req.Server, true), 30)
 
 	if req.Proxy {
 		conf := easyproxy.ProxyConfig{

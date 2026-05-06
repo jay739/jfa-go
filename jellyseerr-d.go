@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hrfee/jfa-go/jellyseerr"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	"github.com/jay739/omnifin/jellyseerr"
+	lm "github.com/jay739/omnifin/logmessages"
 )
 
 type JellyseerrInitialSyncStatus struct {

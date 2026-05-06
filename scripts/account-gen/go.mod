@@ -1,4 +1,4 @@
-module github.com/hrfee/jfa-go/scripts/account-gen
+module github.com/jay739/omnifin/scripts/account-gen
 
 go 1.18
 

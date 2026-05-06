@@ -44,7 +44,7 @@
     "notifications": {
         "errorUnknown": "Errore sconosciuto.",
         "errorLoginBlank": "L'username o password sono stati lasciati vuoti.",
-        "errorConnection": "Non riesco a connettermi a jfa-go.",
+        "errorConnection": "Non riesco a connettermi a Omnifin.",
         "error401Unauthorized": "Non autorizzato. Prova a ricaricare la pagina.",
         "errorSaveSettings": "Impossibile salvare impostazione."
     },

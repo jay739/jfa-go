@@ -1,4 +1,4 @@
-module github.com/hrfee/jfa-go/docs
+module github.com/jay739/omnifin/docs
 
 go 1.15
 

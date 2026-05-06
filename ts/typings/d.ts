@@ -23,7 +23,7 @@ declare interface PagePaths {
     Admin: string;
     MyAccount: string;
     Form: string;
-    // The "External jfa-go URL"
+    // The "External Omnifin URL"
     ExternalURI: string;
 }
 

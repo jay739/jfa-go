@@ -4,7 +4,7 @@
     },
     "strings": {
         "title": "Crash report",
-        "heading": "Crash report for jfa-go",
+        "heading": "Crash report for Omnifin",
         "createIssue": "Create an Issue",
         "fullLog": "Full Log",
         "copy": "Copy",

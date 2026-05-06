@@ -6,8 +6,8 @@ package main
 import (
 	"context"
 
-	"github.com/hrfee/jfa-go/logger"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	"github.com/jay739/omnifin/logger"
+	lm "github.com/jay739/omnifin/logmessages"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -42,12 +42,12 @@ func InitMatrixCrypto(d *MatrixDaemon, logger *logger.Logger) error {
 	// 	return err
 	// }
 	// d.bot.StateStore = bmss
-	d.crypto.helper, err = cryptohelper.NewCryptoHelper(d.bot, []byte("jfa-go"), dbPath)
+	d.crypto.helper, err = cryptohelper.NewCryptoHelper(d.bot, []byte("omnifin"), dbPath)
 	// bms, err := NewBackedMemoryStore(d.app.storage.db)
 	// if err != nil {
 	// 	return err
 	// }
-	// d.crypto.helper, err = cryptohelper.NewCryptoHelper(d.bot, []byte("jfa-go"), bms)
+	// d.crypto.helper, err = cryptohelper.NewCryptoHelper(d.bot, []byte("omnifin"), bms)
 	if err != nil {
 		return err
 	}

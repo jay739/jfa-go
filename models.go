@@ -170,7 +170,7 @@ type respUser struct {
 	Matrix                string `json:"matrix"` // Matrix ID (if known)
 	NotifyThroughMatrix   bool   `json:"notify_matrix"`
 	Label                 string `json:"label"`          // Label of user, shown next to their name.
-	AccountsAdmin         bool   `json:"accounts_admin"` // Whether or not the user is a jfa-go admin.
+	AccountsAdmin         bool   `json:"accounts_admin"` // Whether or not the user is a omnifin admin.
 	ReferralsEnabled      bool   `json:"referrals_enabled"`
 }
 

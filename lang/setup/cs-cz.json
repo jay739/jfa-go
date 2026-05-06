@@ -3,7 +3,7 @@
         "name": "Čeština (CZ)"
     },
     "strings": {
-        "pageTitle": "Nastavení - jfa-go",
+        "pageTitle": "Nastavení - Omnifin",
         "next": "Další",
         "back": "Zpět",
         "optional": "Volitelný",
@@ -26,7 +26,7 @@
     },
     "startPage": {
         "welcome": "Vítejte!",
-        "pressStart": "Chcete-li nastavit jfa-go, budete muset udělat několik věcí. Pokračujte stisknutím tlačítka start.",
+        "pressStart": "Chcete-li nastavit Omnifin, budete muset udělat několik věcí. Pokračujte stisknutím tlačítka start.",
         "httpsNotice": "Ujistěte se, že na tuto stránku přistupujete přes HTTPS nebo v privátní síti.",
         "start": "Start"
     },
@@ -37,7 +37,7 @@
     },
     "language": {
         "title": "Jazyk",
-        "description": "Komunitní překlady jsou k dispozici pro většinu částí jfa-go. Níže si můžete vybrat výchozí jazyky, ale uživatelé je stále mohou změnit, pokud si to přejí. Pokud chcete pomoci s překladem, přihlaste se k {n} a začněte přispívat!",
+        "description": "Komunitní překlady jsou k dispozici pro většinu částí Omnifin. Níže si můžete vybrat výchozí jazyky, ale uživatelé je stále mohou změnit, pokud si to přejí. Pokud chcete pomoci s překladem, přihlaste se k {n} a začněte přispívat!",
         "defaultAdminLang": "Výchozí jazyk správce",
         "defaultFormLang": "Výchozí jazyk vytváření účtu",
         "defaultEmailLang": "Výchozí jazyk e-mailu"
@@ -57,7 +57,7 @@
     },
     "updates": {
         "title": "Aktualizace",
-        "description": "Povolte, abyste byli informováni, když jsou k dispozici nové aktualizace. jfa-go bude kontrolovat {n} každých 30 minut. Nejsou shromažďovány žádné IP adresy ani osobní údaje.",
+        "description": "Povolte, abyste byli informováni, když jsou k dispozici nové aktualizace. Omnifin bude kontrolovat {n} každých 30 minut. Nejsou shromažďovány žádné IP adresy ani osobní údaje.",
         "updateChannel": "Aktualizovat kanál",
         "stable": "Stabilní",
         "unstable": "Nestabilní"
@@ -86,16 +86,16 @@
     },
     "ombi": {
         "title": "Ombi",
-        "description": "Připojením k Ombi se vytvoří účet Jellyfin i Ombi, když se uživatel připojí přes jfa-go. Po dokončení nastavení přejděte do Nastavení a nastavte výchozí profil pro nové uživatele ombi.",
+        "description": "Připojením k Ombi se vytvoří účet Jellyfin i Ombi, když se uživatel připojí přes Omnifin. Po dokončení nastavení přejděte do Nastavení a nastavte výchozí profil pro nové uživatele ombi.",
         "apiKeyNotice": "Najdete to na první kartě nastavení Ombi."
     },
     "messages": {
         "title": "Zprávy",
-        "description": "jfa-go může odesílat resetování hesla a různé zprávy prostřednictvím e-mailu, Discordu, telegramu a/nebo Matrixu. Níže si můžete nastavit e-mail a ostatní můžete nakonfigurovat v Nastavení později. Pokyny naleznete na {n}. Pokud to nepotřebujete, můžete zde tyto funkce zakázat."
+        "description": "Omnifin může odesílat resetování hesla a různé zprávy prostřednictvím e-mailu, Discordu, telegramu a/nebo Matrixu. Níže si můžete nastavit e-mail a ostatní můžete nakonfigurovat v Nastavení později. Pokyny naleznete na {n}. Pokud to nepotřebujete, můžete zde tyto funkce zakázat."
     },
     "email": {
         "title": "Email",
-        "description": "jfa-go může posílat PINy pro resetování hesla a různá upozornění prostřednictvím e-mailu. Můžete se připojit k serveru SMTP nebo použít {n} API.",
+        "description": "Omnifin může posílat PINy pro resetování hesla a různá upozornění prostřednictvím e-mailu. Můžete se připojit k serveru SMTP nebo použít {n} API.",
         "method": "Způsob odeslání",
         "useEmailAsUsername": "Jako uživatelské jméno použijte e-mailové adresy",
         "useEmailAsUsernameNotice": "Pokud je povoleno, noví uživatelé se budou přihlašovat do Jellyfin/Emby pomocí své e-mailové adresy namísto uživatelského jména.",
@@ -114,7 +114,7 @@
         "title": "Uživatelská stránka",
         "description": "Uživatelská stránka (zobrazená jako \"Můj účet\") umožňuje uživatelům přístup k informacím o jejich účtu, jako jsou jejich způsoby kontaktu a vypršení platnosti účtu. Mohou si také změnit heslo, zahájit resetování hesla a propojit/změnit způsoby kontaktu, aniž by se vás museli ptát. Kromě toho mohou být uživatelům před a po přihlášení zobrazeny přizpůsobené zprávy Markdown.",
         "customizeMessages": "Chcete-li je nastavit později, klikněte v nastavení na tlačítko Upravit vedle položky \"Stránka uživatele\".",
-        "requiredSettings": "Musí být nastaveno přihlášení do jfa-go přes Jellyfin. Zajistěte, aby bylo později pro samoobslužné resetování hesla vybráno \"resetovat heslo přes odkaz\"."
+        "requiredSettings": "Musí být nastaveno přihlášení do Omnifin přes Jellyfin. Zajistěte, aby bylo později pro samoobslužné resetování hesla vybráno \"resetovat heslo přes odkaz\"."
     },
     "welcomeEmails": {
         "title": "Uvítací zprávy",
@@ -126,7 +126,7 @@
     },
     "passwordResets": {
         "title": "Obnovení hesla",
-        "description": "Když se uživatel pokusí resetovat své heslo, Jellyfin vytvoří soubor s názvem 'passwordreset-*.json', který obsahuje PIN. jfa-go přečte soubor a odešle PIN uživateli. Pokud jste povolili funkci \"Uživatelská stránka\", lze reset provést také tam, zadáte-li uživatelské jméno, e-mail nebo způsob kontaktu.",
+        "description": "Když se uživatel pokusí resetovat své heslo, Jellyfin vytvoří soubor s názvem 'passwordreset-*.json', který obsahuje PIN. Omnifin přečte soubor a odešle PIN uživateli. Pokud jste povolili funkci \"Uživatelská stránka\", lze reset provést také tam, zadáte-li uživatelské jméno, e-mail nebo způsob kontaktu.",
         "pathToJellyfin": "Cesta ke konfiguračnímu adresáři Jellyfin",
         "pathToJellyfinNotice": "Pokud nevíte, kde to je, zkuste resetovat heslo v Jellyfin. Objeví se vyskakovací okno s '<cesta k jellyfin>/passwordreset-*.json'. Toto není nutné, pokud chcete používat pouze samoobslužné resetování hesla prostřednictvím \"Uživatelské stránky\".",
         "resetLinks": "Místo PINu pošlete odkaz",

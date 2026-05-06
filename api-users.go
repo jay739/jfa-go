@@ -10,8 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/hrfee/jfa-go/common"
-	lm "github.com/hrfee/jfa-go/logmessages"
+	"github.com/jay739/omnifin/common"
+	lm "github.com/jay739/omnifin/logmessages"
 	"github.com/hrfee/mediabrowser"
 	"github.com/lithammer/shortuuid/v3"
 	"github.com/timshannon/badgerhold/v4"
@@ -1152,7 +1152,7 @@ func (app *appContext) GetFilteredUserCount(gc *gin.Context) {
 	gc.JSON(200, resp)
 }
 
-// @Summary Set whether or not a user can access jfa-go. Redundant if the user is a Jellyfin admin.
+// @Summary Set whether or not a user can access omnifin. Redundant if the user is a Jellyfin admin.
 // @Produce json
 // @Param setAccountsAdminDTO body setAccountsAdminDTO true "Map of userIDs to whether or not they have access."
 // @Success 204 {object} boolResponse
@@ -1451,7 +1451,7 @@ func (app *appContext) ApplySettings(gc *gin.Context) {
 	gc.JSON(code, errors)
 }
 
-// @Summary Gets the number of Jellyfin/Emby activities stored by jfa-go related to the given user ID. As the total collected by jfa-go is limited, this may not include all those held by Jellyfin.
+// @Summary Gets the number of Jellyfin/Emby activities stored by omnifin related to the given user ID. As the total collected by omnifin is limited, this may not include all those held by Jellyfin.
 // @Produce json
 // @Success 200 {object} PageCountDTO
 // @Failure 400 {object} boolResponse
@@ -1474,7 +1474,7 @@ func (app *appContext) CountJFActivitesForUser(gc *gin.Context) {
 	gc.JSON(200, PageCountDTO{Count: uint64(len(activities))})
 }
 
-// @Summary Get the latest Jellyfin/Emby activities related to the given user ID. Returns as many as the server has recorded. As the total collected by jfa-go is limited, this may not include all those held by Jellyfin.
+// @Summary Get the latest Jellyfin/Emby activities related to the given user ID. Returns as many as the server has recorded. As the total collected by omnifin is limited, this may not include all those held by Jellyfin.
 // @Produce json
 // @Success 200 {object} ActivityLogEntriesDTO
 // @Failure 400 {object} boolResponse
@@ -1505,7 +1505,7 @@ func (app *appContext) GetJFActivitesForUser(gc *gin.Context) {
 	gc.JSON(200, out)
 }
 
-// @Summary Get the latest Jellyfin/Emby activities related to the given user ID, paginated. As the total collected by jfa-go is limited, this may not include all those held by Jellyfin.
+// @Summary Get the latest Jellyfin/Emby activities related to the given user ID, paginated. As the total collected by omnifin is limited, this may not include all those held by Jellyfin.
 // @Produce json
 // @Param PaginatedReqDTO body PaginatedReqDTO true "pagination parameters"
 // @Success 200 {object} PaginatedActivityLogEntriesDTO

@@ -1,70 +1,93 @@
 ![Omnifin](images/banner.svg)
 
-[![Docker Hub](https://img.shields.io/docker/pulls/jayakrishnakonda/omnifin?label=docker)](https://hub.docker.com/r/jayakrishnakonda/omnifin)
+[![Docker Hub](https://img.shields.io/docker/pulls/jayakrishnakonda/omnifin?label=docker%20pulls)](https://hub.docker.com/r/jayakrishnakonda/omnifin)
+[![GitHub release](https://img.shields.io/github/v/release/jay739/omnifin)](https://github.com/jay739/omnifin/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Based on jfa-go](https://img.shields.io/badge/based%20on-hrfee%2Fjfa--go-6366f1)](https://github.com/hrfee/jfa-go)
 
-##### Downloads:
-##### [docker](#docker) | [build from source](#build-from-source)
-
----
-
-## About
-
-**Omnifin** is a unified Jellyfin user-management toolkit. It bundles invites, account lifecycle, password resets, multi-channel notifications, and tight integration with the surrounding self-hosted stack (Jellyseerr, Ombi, Telegram, Discord, Matrix, Authentik) into a single binary.
-
-> **Hard fork of [hrfee/jfa-go](https://github.com/hrfee/jfa-go).**
-> All credit for the original design and the vast majority of the code belongs to Harvey Tindall and the jfa-go contributors. Omnifin diverges to focus on tighter integration with a "single pane of glass for Jellyfin" stack and may follow a different release cadence and feature roadmap.
+> **Hard fork of [hrfee/jfa-go](https://github.com/hrfee/jfa-go) by Harvey Tindall.**
+> The original design, architecture, and the vast majority of the codebase belong to Harvey Tindall and the jfa-go contributors. Omnifin exists to extend it with tighter Jellyfin integration, a redesigned UI/email system, and homelab-focused features. All original copyright is preserved — see [Credits](#credits--acknowledgements).
 
 ---
 
-## Project Status: Active
+**Omnifin** is a unified Jellyfin user-management toolkit — invites, account lifecycle, password resets, multi-channel notifications, and deep Jellyfin integration, packaged into a single self-hosted binary.
 
-Built and used in production in the maintainer's homelab. Expect the cadence to vary; this is a single-maintainer project. Issues and pull requests are welcome.
-
-#### Compatibility
-
-Targets Jellyfin 10.11.x (inherited from jfa-go upstream). Compatibility with future Jellyfin releases will be maintained on a best-effort basis.
-
-#### Alternatives
-
-- [Wizarr](https://github.com/Wizarrrr/wizarr) — simpler invite-focused tool, supports Jellyfin/Plex/Emby, Discord-based invites.
-- [hrfee/jfa-go](https://github.com/hrfee/jfa-go) — the upstream this is forked from. If you want a more conservative, generic-purpose tool with a wider user base, prefer upstream.
+##### Quick links: [Docker](#docker) · [Build from source](#build-from-source) · [Migrate from jfa-go](#migration-from-jfa-go) · [Credits](#credits--acknowledgements)
 
 ---
 
-## Features
+## What's new in Omnifin vs jfa-go
 
-- **Invites** — single- or multi-use signup links with per-invite expiry, library access via Jellyfin profiles, captcha support, and email-the-invite-directly.
-- **Account lifecycle** — set per-user expiry windows. On expiry: auto-disable, auto-delete, or disable-then-delete after N days. Send reminders before expiry.
-- **Password resets** — bridges Jellyfin's PIN-based reset so users get a normal "forgot password" email flow. Also offers a self-service reset button on the My Account page.
-- **My Account page** — users update their own password, email, or contact channels. Optional referral system: users can invite friends with a limited-use link.
-- **Multi-channel messaging** — email (SMTP / Mailgun), Telegram bot, Discord bot, Matrix bot. Each lifecycle event (welcome, expiry, deletion, password reset, custom announcement) has its own template.
-- **Bulk admin tools** — manage all users from one page: enable/disable, delete, send Markdown announcements, apply profile/library settings.
-- **Integrations** — Jellyseerr & Ombi account provisioning, Discord role assignment, Telegram contact linking.
-- **Customizable** — full Markdown support in user-facing messages, invite forms, and email templates.
-- **Backups** — built-in scheduled BadgerDB snapshots with retention policy.
-- **Activity log** — auditable record of admin actions and user lifecycle events.
+These features are exclusive to this fork and are not (yet) in upstream jfa-go.
 
-## Planned features
+### Jellyfin-powered announcement variables
 
-These are the next features on the roadmap. Subject to change.
+Announcement emails and markdown templates can embed live Jellyfin library data using `{{double-brace}}` placeholders. On send, Omnifin queries Jellyfin and substitutes real values:
 
-- **Markdown-folder announcement templates** — drop a `.md` file into a watched folder and have it auto-loaded as an announcement template.
-- **Jellystat integration** — show per-user "last watched" and total watch time as a column on the accounts page.
-- **Bulk announcement filters** — target announcements by criteria like "users expiring in N days" or "users inactive for N days."
-- **Storage-per-user metric** — pull Jellyfin library size attributable to each user.
-- **Telegram broadcast button** — send announcements via Telegram for users who linked it, alongside (or instead of) email.
-- **Activity-based expiry auto-extend** — bump expiry when a user has watched something recently.
-- **Jellyseerr request-approval webhook** — fire a templated message to the user when their request is approved.
-- **Authentik SSO option** — log into the admin panel via your existing OIDC provider.
+| Variable | Output |
+|---|---|
+| `{{recent_movies_grid}}` | 3-column poster grid of the 6 most recently added movies, each linked to the Jellyfin detail page |
+| `{{recent_shows_grid}}` | Same for TV series |
+| `{{featured_movie}}` | Full card — large poster, title, year, rating, genres, overview excerpt, "Watch Now" button |
+| `{{featured_show}}` | Same for the most recently added show |
+| `{{recent_movies}}` | Plain markdown bullet list (title + year + rating) |
+| `{{recent_shows}}` | Same for shows |
+| `{{recent_episodes}}` | Same for individual episodes |
+| `{{top_genres}}` | Top 5 genres from recent movie additions |
+| `{{longest_movie}}` | Title and runtime of the longest newly added movie |
+| `{{user_count}}` | Total user count |
+| `{{active_users_30d}}` | Users active in the last 30 days |
+| `{{date}}` / `{{weekday}}` / `{{month_year}}` | Formatted date strings |
+| `{{server_name}}` / `{{server_url}}` | Jellyfin server name and URL |
+
+The **announcement preview** in the admin panel live-substitutes all variables — including poster images — so you see the final rendered result before sending.
+
+### Redesigned email templates
+
+All transactional emails (welcome, invite, password reset, expiry reminder, account expired, deletion, and more) have been rebuilt in MJML with:
+
+- Per-email-type accent colour strips (green = welcome, amber = warning, red = critical, indigo = account update, blue = invite/confirmation)
+- Eyebrow labels, info cards with left-border highlights, and dark-mode metadata
+- "Open Jellyfin" CTA button in the welcome email
+- Email-client-safe HTML with tested inline-style rendering
+
+### Security hardening
+
+- **Rate limiting** on all public-facing endpoints: login (10 req/min), invite signup (5 req/min), password reset (5 req/min)
+- **Security response headers** on every response: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security` (when behind TLS proxy)
+- **Swagger UI** moved behind authentication
+- **XSS fix** in the invite form — username HTML-escaped before DOM insertion
+- **Auth header panic fix** — malformed `Authorization` headers no longer crash the server
+- **Backup upload cap** — 100 MB limit on restore file uploads
+
+### UI / UX
+
+- Dark design system with consistent color tokens
+- Dashboard activity widget
+- Announcement draft auto-saved to `localStorage`
+- Drag-and-drop `.md` file loading into the announcement editor
+- Variable chips in the announcement editor — click to insert `{{varname}}` at cursor
+- Sidebar locked before login — cannot interact with navigation before authentication completes
+
+---
+
+## Core features (inherited from jfa-go)
+
+- **Invites** — single- or multi-use signup links with per-invite expiry, library profiles, captcha, and email-the-invite
+- **Account lifecycle** — per-user expiry with auto-disable / auto-delete; expiry reminder emails
+- **Password resets** — email-based flow bridging Jellyfin's PIN system; self-service reset on the My Account page
+- **My Account page** — users update password, email, notification contacts; optional referral invite links
+- **Multi-channel messaging** — SMTP / Mailgun, Telegram, Discord, Matrix; per-event templates
+- **Bulk admin tools** — enable/disable, delete, apply profiles, send Markdown announcements
+- **Integrations** — Jellyseerr & Ombi provisioning, Discord role assignment, Telegram/Matrix contact linking
+- **Backups** — scheduled BadgerDB snapshots with configurable retention
+- **Activity log** — auditable record of all admin and lifecycle events
 
 ---
 
 ## Install
 
 ### Docker
-
-A prebuilt image is published on Docker Hub at [`jayakrishnakonda/omnifin`](https://hub.docker.com/r/jayakrishnakonda/omnifin).
 
 ```sh
 docker run -d \
@@ -80,7 +103,7 @@ docker run -d \
   jayakrishnakonda/omnifin:latest
 ```
 
-Then open `http://localhost:8056` for the setup wizard.
+Then open `http://localhost:8056` for the first-run setup wizard.
 
 #### Docker Compose
 
@@ -97,8 +120,8 @@ services:
     ports:
       - "8056:8056"
     volumes:
-      - ./omnifin/data:/data
-      - ./omnifin/config:/omnifin/config
+      - ./data:/data
+      - ./config:/omnifin/config
       - /etc/localtime:/etc/localtime:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8056 || exit 1"]
@@ -110,80 +133,63 @@ services:
 
 #### Volumes
 
-| Mount point inside the container | Purpose |
+| Container path | Purpose |
 |---|---|
-| `/data` | Database, generated config, backups. Persistent. |
-| `/omnifin/config` | Optional: custom HTML templates, custom email templates, announcement template directory. |
-| `/etc/localtime` (ro) | Keeps the container's timezone aligned with the host. |
-
-> **Migrating from jfa-go?** Omnifin transparently reads the legacy `/jfa-go/config` mount path, the `jfa-go:` template namespace prefix, the `JFA_GO_CONFIG_HOST` environment variable, and `jfa-go-db-*.bak` backup files. You can rename in-place at your own pace.
+| `/data` | Database, generated config, backups. Must be persistent. |
+| `/omnifin/config` | Optional: custom HTML/email templates, announcement template directory. |
+| `/etc/localtime` (ro) | Keeps container timezone aligned with host. |
 
 ### Build from source
 
 #### Prerequisites
 
-- Go 1.24 or later
-- Node.js 20 or later, with `npm`
-- `swag` (`go install github.com/swaggo/swag/cmd/swag@v1.16.4`)
-- `upx` (binary compression, optional but used by default)
-- Standard build tools (`make`)
+- Go 1.24+
+- Node.js 20+, npm
+- `swag` — `go install github.com/swaggo/swag/cmd/swag@v1.16.4`
+- `make`
 
-#### Build
+#### Steps
 
 ```sh
 git clone https://github.com/jay739/omnifin.git
 cd omnifin
 make all
+# Binary: build/omnifin   Assets: build/data/
 ```
 
-Outputs `build/omnifin` (the binary) and `build/data/` (web assets, default config, language files, license, systemd unit).
-
-#### Build and package as a Docker image
+#### Build a local Docker image
 
 ```sh
 make all
 docker build -f Dockerfile.local -t omnifin:local .
 ```
 
-`Dockerfile.local` packages the freshly built binary and data tree into a `debian:bookworm-slim` image with `curl` for compose healthchecks.
-
 ---
 
-## Usage
+## Migration from jfa-go
 
-```
-Usage of omnifin:
-  start              start omnifin as a daemon and run in the background.
-  stop               stop a daemonized instance of omnifin.
-  systemd            generate an omnifin.service file in the working directory.
+> The old `jayakrishnakonda/jfa-go:custom` image is **deprecated** and will receive no further updates. Migrate to `jayakrishnakonda/omnifin`.
 
-Flags (excerpt):
-  -config, -c        path to config file (default: $XDG_CONFIG_HOME/omnifin/config.ini)
-  -data, -d          path to data directory  (default: $XDG_CONFIG_HOME/omnifin)
-  -debug             enable debug logging and expose pprof at /debug/pprof
-  -host              listen address override
-  -port, -p          listen port override
-  -restore           path to a database backup .bak file to restore from
-  -swagger           expose Swagger UI at /swagger/index.html
-  -help, -h          print this help
+**Change your image reference:**
+
+```yaml
+# Before
+image: hrfee/jfa-go:latest
+# or
+image: jayakrishnakonda/jfa-go:custom
+
+# After
+image: jayakrishnakonda/omnifin:latest
 ```
 
-A first-run setup wizard binds to `0.0.0.0:8056` until the configuration is saved. After that, the regular admin panel takes over.
+**Everything else carries over unchanged:**
 
----
+- Existing `/data` directory — same BadgerDB schema
+- Existing `config.ini` — `jfa-go:` template prefix and `/jfa-go/config/...` paths are still resolved
+- Existing backups (`jfa-go-db-*.bak`) — restorable via `-restore`
+- All user accounts, invites, profiles, custom emails, announcement templates
 
-## Systemd
-
-Omnifin does not run as a daemon by default. To install as a per-user systemd service:
-
-```sh
-omnifin systemd                           # writes ./omnifin.service in the cwd
-mv omnifin.service ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable --now omnifin
-```
-
-For a system-wide install, place the generated unit in `/etc/systemd/system/` and use plain `systemctl` (without `--user`).
+The legacy `/jfa-go/config` bind-mount target is still recognised, so existing Compose files keep working without changes.
 
 ---
 
@@ -191,47 +197,81 @@ For a system-wide install, place the generated unit in `/etc/systemd/system/` an
 
 | Variable | Purpose |
 |---|---|
-| `OMNIFIN_CONFIG_HOST` | When the binary runs on the host but config still uses container-style `/omnifin/config/...` paths, set this to the host directory those paths should map to. |
-| `JFA_GO_CONFIG_HOST` | Legacy alias for `OMNIFIN_CONFIG_HOST`; honored if the new variable is unset. |
-| `PUID` / `PGID` (Docker) | UID/GID the process runs as. |
-| `TZ` (Docker) | Timezone (e.g. `America/New_York`). |
+| `OMNIFIN_CONFIG_HOST` | Map container-style `/omnifin/config/...` paths to a host directory when running the binary directly. |
+| `JFA_GO_CONFIG_HOST` | Legacy alias for `OMNIFIN_CONFIG_HOST`. |
+| `PUID` / `PGID` | UID/GID the process runs as (Docker). |
+| `TZ` | Timezone, e.g. `America/New_York` (Docker). |
 
 ---
 
-## Migration notes (from jfa-go)
+## Usage
 
-Omnifin is drop-in compatible with an existing jfa-go installation, with two operational changes:
+```
+omnifin [command] [flags]
 
-1. **Image / binary name** — `jayakrishnakonda/omnifin:latest` instead of `hrfee/jfa-go:latest`.
-2. **Container internal paths** — the conventional bind-mount target is `/omnifin/config` (the legacy `/jfa-go/config` mount target is still recognised, so existing compose files keep working).
+Commands:
+  start       Start as a daemon
+  stop        Stop a daemonised instance
+  systemd     Write an omnifin.service unit file to the current directory
 
-The following continue to work unchanged:
+Flags (excerpt):
+  -config, -c   Path to config file
+  -data, -d     Path to data directory
+  -debug        Enable debug logging and pprof
+  -host         Listen address override
+  -port, -p     Listen port override
+  -restore      Path to a .bak file to restore from
+  -swagger      Expose Swagger UI (requires authentication)
+  -help, -h     Print help
+```
 
-- Existing `data/` directories — same BadgerDB schema, just point Omnifin at them.
-- Existing `config.ini` files — `jfa-go:` template prefix and `/jfa-go/config/...` paths are still resolved.
-- Existing `data/backups/jfa-go-db-*.bak` files — restorable via `-restore`.
-- All existing user accounts, invites, profiles, custom emails, announcement templates.
+---
 
-When you next save your config from the admin UI, paths will be rewritten to the `omnifin:` prefix automatically (provided the in-app save runs through the normal config-write path).
+## Roadmap
+
+- Jellystat integration — per-user watch time column on the accounts page
+- Bulk announcement filters — target by "expiring in N days" or "inactive N days"
+- Telegram broadcast alongside email announcements
+- Activity-based expiry auto-extension
+- Authentik OIDC login for the admin panel
+- Jellyseerr request-approval webhook notifications
 
 ---
 
 ## Contributing
 
-Pull requests are welcome. For substantial changes, please open an issue first to discuss the direction.
+Pull requests are welcome. For substantial changes, open an issue first.
 
-For features and bug reports that aren't specific to Omnifin's divergence from upstream, consider opening them at [hrfee/jfa-go](https://github.com/hrfee/jfa-go) where they are likely to benefit a wider audience.
+For bugs or features that are not specific to Omnifin's divergence from upstream, consider opening them at [hrfee/jfa-go](https://github.com/hrfee/jfa-go) where they benefit a wider audience.
+
+---
+
+## Credits & Acknowledgements
+
+### Original author — Harvey Tindall (hrfee)
+
+**[jfa-go](https://github.com/hrfee/jfa-go)** was created and is maintained by **[Harvey Tindall](https://github.com/hrfee)**. The core architecture, user management engine, multi-channel notification system, invite system, MJML pipeline, and the vast majority of the Go and TypeScript code in this repository are Harvey's work.
+
+Omnifin is a personal fork. If you want a mature, well-supported tool with a wider community, **use upstream jfa-go**. The original MIT license and copyright notice are preserved verbatim in [LICENSE](LICENSE).
+
+All jfa-go contributors: [hrfee/jfa-go/graphs/contributors](https://github.com/hrfee/jfa-go/graphs/contributors)
+
+### Omnifin maintainer
+
+Jayakrishna Konda — [github.com/jay739](https://github.com/jay739)
+
+### Stack this builds on
+
+- **[Jellyfin](https://github.com/jellyfin/jellyfin)** — open-source media server
+- **[gin-gonic/gin](https://github.com/gin-gonic/gin)** — HTTP framework
+- **[MJML](https://mjml.io/)** — responsive email framework
+- **[BadgerDB](https://github.com/dgraph-io/badger)** — embedded key-value store
+- Jellyseerr, Ombi, Authentik, Tailscale, and the broader self-hosting community
 
 ---
 
 ## License
 
-MIT. Both the original [jfa-go](https://github.com/hrfee/jfa-go) license (Copyright 2025 Harvey Tindall) and the Omnifin license (Copyright 2026 Jayakrishna Konda) are preserved verbatim in [LICENSE](LICENSE).
+MIT.
 
----
-
-## Acknowledgements
-
-- **[hrfee/jfa-go](https://github.com/hrfee/jfa-go)** — Harvey Tindall and contributors. Omnifin would not exist without their work.
-- **[Jellyfin](https://github.com/jellyfin/jellyfin)** — the media server this entire ecosystem is built around.
-- The wider self-hosting community that maintains the surrounding stack: Jellyseerr, Ombi, Authentik, Tailscale, and many others.
+Both the original jfa-go license (Copyright 2025 Harvey Tindall) and the Omnifin additions (Copyright 2026 Jayakrishna Konda) are preserved in [LICENSE](LICENSE).

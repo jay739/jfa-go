@@ -79,7 +79,7 @@ func CreateToken(userId, jfId string, admin bool) (string, string, error) {
 func (app *appContext) decodeValidateAuthHeader(gc *gin.Context) (claims jwt.MapClaims, ok bool) {
 	ok = false
 	header := strings.SplitN(gc.Request.Header.Get("Authorization"), " ", 2)
-	if header[0] != "Bearer" {
+	if len(header) < 2 || header[0] != "Bearer" {
 		app.authLog(lm.InvalidAuthHeader)
 		respond(401, "Unauthorized", gc)
 		return
@@ -157,11 +157,16 @@ func checkToken(token *jwt.Token) (interface{}, error) {
 }
 
 type getTokenDTO struct {
-	Token string `json:"token" example:"kjsdklsfdkljfsjsdfklsdfkldsfjdfskjsdfjklsdf"` // API token for use with everything else.
+	Token   string `json:"token" example:"kjsdklsfdkljfsjsdfklsdfkldsfjdfskjsdfjklsdf"`   // API token for use with everything else.
+	Refresh string `json:"refresh,omitempty" example:"eyJhbGciOiJIUzI1NiJ9...refresh_jwt"` // Refresh token (also set as HttpOnly cookie). Returned for clients that can't rely on cookies.
 }
 
 func (app *appContext) decodeValidateLoginHeader(gc *gin.Context, userpage bool) (username, password string, ok bool) {
 	header := strings.SplitN(gc.Request.Header.Get("Authorization"), " ", 2)
+	if len(header) < 2 {
+		respond(401, "Unauthorized", gc)
+		return
+	}
 	auth, _ := base64.StdEncoding.DecodeString(header[1])
 	creds := strings.SplitN(string(auth), ":", 2)
 	username = creds[0]
@@ -281,16 +286,23 @@ func (app *appContext) getTokenLogin(gc *gin.Context) {
 
 	// Before you think this is broken: the first "true" arg is for "secure", i.e. only HTTPS!
 	gc.SetCookie("refresh", refresh, REFRESH_TOKEN_VALIDITY_SEC, "/", host, true, true)
-	gc.JSON(200, getTokenDTO{token})
+	gc.JSON(200, getTokenDTO{Token: token, Refresh: refresh})
 }
 
 func (app *appContext) decodeValidateRefreshCookie(gc *gin.Context, cookieName string) (claims jwt.MapClaims, ok bool) {
 	ok = false
 	cookie, err := gc.Cookie(cookieName)
 	if err != nil || cookie == "" {
-		app.authLog(fmt.Sprintf(lm.FailedGetCookies, cookieName, err))
-		respond(400, "Couldn't get token", gc)
-		return
+		// Fallback: accept refresh JWT via Authorization: Bearer <token> header for clients
+		// where the HttpOnly cookie isn't usable (e.g. cross-context navigation, third-party-cookie blocking).
+		header := strings.SplitN(gc.Request.Header.Get("Authorization"), " ", 2)
+		if len(header) == 2 && header[0] == "Bearer" && header[1] != "" {
+			cookie = header[1]
+		} else {
+			app.authLog(fmt.Sprintf(lm.FailedGetCookies, cookieName, err))
+			respond(400, "Couldn't get token", gc)
+			return
+		}
 	}
 	for _, token := range app.invalidTokens {
 		if cookie == token {
@@ -341,5 +353,5 @@ func (app *appContext) getTokenRefresh(gc *gin.Context) {
 	// host := gc.Request.URL.Hostname()
 	host := app.ExternalDomainNoPort(gc)
 	gc.SetCookie("refresh", refresh, REFRESH_TOKEN_VALIDITY_SEC, "/", host, true, true)
-	gc.JSON(200, getTokenDTO{jwt})
+	gc.JSON(200, getTokenDTO{Token: jwt, Refresh: refresh})
 }

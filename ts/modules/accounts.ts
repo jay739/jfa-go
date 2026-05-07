@@ -992,6 +992,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
     private _announceNameLabel = document.getElementById("announce-name") as HTMLLabelElement;
     private _announcePreview: HTMLElement;
     private _previewLoaded = false;
+    private _announceVars: Record<string, string> = {};
     private _announceTextarea = document.getElementById("textarea-announce") as HTMLTextAreaElement;
     private _deleteUser = document.getElementById("accounts-delete-user") as HTMLSpanElement;
     private _disableEnable = document.getElementById("accounts-disable-enable") as HTMLSpanElement;
@@ -1364,6 +1365,71 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         }*/
 
         this._announceTextarea.onkeyup = this.loadPreview;
+
+        // Markdown file drag-and-drop on the announce editor
+        const dropzone = document.getElementById("announce-dropzone");
+        if (dropzone) {
+            const subjectInput = document.getElementById("announce-subject") as HTMLInputElement;
+            let dragDepth = 0;
+            const isMarkdownFile = (f: File) =>
+                /\.(md|markdown|txt)$/i.test(f.name) || f.type === "text/markdown" || f.type === "text/plain";
+
+            dropzone.addEventListener("dragenter", (e: DragEvent) => {
+                if (!e.dataTransfer || !Array.from(e.dataTransfer.types).includes("Files")) return;
+                e.preventDefault();
+                dragDepth++;
+                dropzone.classList.add("dragging");
+            });
+            dropzone.addEventListener("dragover", (e: DragEvent) => {
+                if (!e.dataTransfer || !Array.from(e.dataTransfer.types).includes("Files")) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "copy";
+            });
+            dropzone.addEventListener("dragleave", (e: DragEvent) => {
+                e.preventDefault();
+                dragDepth = Math.max(0, dragDepth - 1);
+                if (dragDepth === 0) dropzone.classList.remove("dragging");
+            });
+            dropzone.addEventListener("drop", (e: DragEvent) => {
+                e.preventDefault();
+                dragDepth = 0;
+                dropzone.classList.remove("dragging");
+                const file = e.dataTransfer?.files?.[0];
+                if (!file) return;
+                if (!isMarkdownFile(file)) {
+                    window.notifications.customError(
+                        "announceDropError",
+                        "Only .md / .markdown / .txt files are supported.",
+                    );
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const text = String(reader.result || "");
+                    // Extract first H1 as subject (lines starting with "# ")
+                    let body = text;
+                    const firstHeadingMatch = text.match(/^#\s+(.+)$/m);
+                    if (firstHeadingMatch && subjectInput && !subjectInput.value.trim()) {
+                        subjectInput.value = firstHeadingMatch[1].trim();
+                        // Strip the heading line from the body (only the first one)
+                        body = text.replace(firstHeadingMatch[0], "").replace(/^\s*\n/, "");
+                    }
+                    this._announceTextarea.value = body;
+                    this.loadPreview();
+                    window.notifications.customSuccess(
+                        "announceDropLoaded",
+                        `Loaded "${file.name}" as template.`,
+                    );
+                };
+                reader.onerror = () => {
+                    window.notifications.customError(
+                        "announceDropError",
+                        "Failed to read the dropped file.",
+                    );
+                };
+                reader.readAsText(file);
+            });
+        }
         addDiscord = newDiscordSearch(
             window.lang.strings("linkDiscord"),
             window.lang.strings("searchDiscordUser"),
@@ -1392,6 +1458,64 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             insertText(this._announceTextarea, announceVarUsername.children[0].textContent);
             this.loadPreview();
         };
+
+        // Wire up the new variable chips so clicking inserts a {{ name }} placeholder at the cursor.
+        const varChips = document.querySelectorAll<HTMLSpanElement>(".announce-var-chip");
+        varChips.forEach((chip) => {
+            chip.onclick = () => {
+                const name = chip.dataset.name || "";
+                if (!name) return;
+                insertText(this._announceTextarea, "{{ " + name + " }}");
+                this.loadPreview();
+            };
+        });
+
+        // Auto-save announcement draft to localStorage so accidental close/refresh doesn't lose work.
+        const draftKey = "omnifin_announcement_draft";
+        const subjectInput = document.getElementById("announce-subject") as HTMLInputElement;
+        const saveDraft = () => {
+            const subj = subjectInput?.value || "";
+            const body = this._announceTextarea.value || "";
+            if (!subj && !body) {
+                localStorage.removeItem(draftKey);
+                return;
+            }
+            try {
+                localStorage.setItem(draftKey, JSON.stringify({ subject: subj, body, ts: Date.now() }));
+            } catch { /* quota exceeded — silently skip */ }
+        };
+        const restoreDraft = () => {
+            const raw = localStorage.getItem(draftKey);
+            if (!raw) return false;
+            try {
+                const d = JSON.parse(raw);
+                // Only auto-restore drafts younger than 24h.
+                if (!d || (Date.now() - (d.ts || 0)) > 24 * 60 * 60 * 1000) {
+                    localStorage.removeItem(draftKey);
+                    return false;
+                }
+                if (subjectInput && !subjectInput.value) subjectInput.value = d.subject || "";
+                if (!this._announceTextarea.value) this._announceTextarea.value = d.body || "";
+                return Boolean(d.subject || d.body);
+            } catch {
+                return false;
+            }
+        };
+        this._announceTextarea.addEventListener("input", saveDraft);
+        if (subjectInput) subjectInput.addEventListener("input", saveDraft);
+
+        // Restore the draft when the announce modal opens (and we don't already have a template loaded).
+        document.addEventListener("modal-open-modal-announce", () => {
+            if (restoreDraft()) {
+                this.loadPreview();
+                window.notifications.customSuccess(
+                    "announceDraftRestored",
+                    "Restored your previous draft.",
+                );
+            }
+        });
+        // Drop the draft after a successful send.
+        document.addEventListener("announcement-sent", () => localStorage.removeItem(draftKey));
 
         const headerNames: string[] = [
             "username",
@@ -1519,6 +1643,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
     reload = (callback?: (resp: PaginatedDTO) => void) => {
         this._reload(callback);
         this.loadTemplates();
+        this.loadAnnouncementFiles();
     };
 
     loadMore = (loadAll: boolean = false, callback?: (resp?: PaginatedDTO) => void) => {
@@ -1849,6 +1974,15 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             true,
         );
     };
+    private _substituteAnnounceVars = (content: string): string => {
+        let out = content;
+        for (const [key, val] of Object.entries(this._announceVars)) {
+            out = out.split(`{{${key}}}`).join(val);
+            out = out.split(`{{ ${key} }}`).join(val);
+        }
+        return out;
+    };
+
     loadPreview = () => {
         if (!this._announcePreview) return;
         let content = this._announceTextarea.value;
@@ -1856,6 +1990,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
             content = stripMarkdown(content);
             this._announcePreview.textContent = content;
         } else {
+            content = this._substituteAnnounceVars(content);
             content = Marked.parse(content);
             this._announcePreview.innerHTML = content;
         }
@@ -1941,6 +2076,7 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                             "announcementSuccess",
                             window.lang.notif("sentAnnouncement"),
                         );
+                        document.dispatchEvent(new CustomEvent("announcement-sent"));
                     }
                 }
             });
@@ -1970,6 +2106,14 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 this._announcePreview = preview.getElementsByClassName("preview-content")[0] as HTMLElement;
                 this.loadPreview();
                 window.modals.announce.show();
+                // Fetch Jellyfin-derived vars for live preview substitution.
+                _get("/users/announce-vars", null, (vreq: XMLHttpRequest) => {
+                    if (vreq.readyState == 4 && vreq.status == 200) {
+                        const dto = vreq.response as { vars: Record<string, string> };
+                        this._announceVars = dto.vars || {};
+                        this.loadPreview();
+                    }
+                });
             }
         });
     };
@@ -2033,6 +2177,48 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                     };
                     dList.appendChild(el);
                 }
+            }
+        });
+
+    loadAnnouncementFiles = () =>
+        _get("/users/announce-files", null, (req: XMLHttpRequest) => {
+            if (req.readyState != 4) return;
+            const section = document.getElementById("accounts-announce-files-section");
+            const dList = document.getElementById("accounts-announce-files") as HTMLDivElement;
+            if (!section || !dList) return;
+            if (req.status != 200) {
+                section.classList.add("ui-hidden");
+                return;
+            }
+            const files = (req.response?.files || []) as { name: string }[];
+            if (!files.length) {
+                section.classList.add("ui-hidden");
+                return;
+            }
+            section.classList.remove("ui-hidden");
+            this._announceButton.innerHTML = `${window.lang.strings("announce")} <i class="ri-arrow-drop-down-line"></i>`;
+            this._announceButton.nextElementSibling.children[0].classList.remove("ui-hidden");
+            dList.textContent = "";
+            for (const file of files) {
+                const el = document.createElement("div");
+                el.classList.add("flex", "flex-row", "gap-2", "justify-between", "truncate");
+                el.innerHTML = `<span class="button ~info sm full-width truncate" title="${file.name}"><i class="ri-file-text-line mr-1"></i>${file.name.replace(/\.(md|markdown|txt)$/i, "")}</span>`;
+                const safeName = encodeURIComponent(file.name);
+                (el.querySelector("span.button") as HTMLSpanElement).onclick = () => {
+                    _get("/users/announce-files/" + safeName + "?fill=1", null, (r: XMLHttpRequest) => {
+                        if (r.readyState != 4) return;
+                        if (r.status != 200) {
+                            window.notifications.customError(
+                                "loadAnnouncementFileError",
+                                "Failed to load template file.",
+                            );
+                            return;
+                        }
+                        const data = r.response as { name: string; subject: string; content: string };
+                        this.announce(null, { name: "", subject: data.subject || "", message: data.content || "" });
+                    });
+                };
+                dList.appendChild(el);
             }
         });
 

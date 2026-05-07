@@ -355,7 +355,8 @@ const create = (event: SubmitEvent) => {
                 } else {
                     if (window.customSuccessCard) {
                         const content = window.successModal.asElement().querySelector(".card");
-                        content.innerHTML = content.innerHTML.replace(new RegExp("{username}", "g"), send.username);
+                        const safeUsername = send.username.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+                        content.innerHTML = content.innerHTML.replace(new RegExp("\\{username\\}", "g"), safeUsername);
                     } else if (window.userPageEnabled) {
                         const userPageNoticeArea = document.getElementById("modal-success-user-page-area");
                         const link = `<a href="${window.userPageAddress}" target="_blank">${userPageNoticeArea.getAttribute("my-account-term")}</a>`;

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -107,9 +108,15 @@ func (app *appContext) RestoreLocalBackup(gc *gin.Context) {
 // @Security Bearer
 // @tags Backups
 func (app *appContext) RestoreBackup(gc *gin.Context) {
+	const maxBackupBytes = 100 << 20 // 100 MB
+	gc.Request.Body = http.MaxBytesReader(gc.Writer, gc.Request.Body, maxBackupBytes)
 	file, err := gc.FormFile("backups-file")
 	if err != nil {
 		app.err.Printf(lm.FailedGetUpload, err)
+		respondBool(400, false, gc)
+		return
+	}
+	if file.Size > maxBackupBytes {
 		respondBool(400, false, gc)
 		return
 	}

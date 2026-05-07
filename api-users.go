@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"time"
@@ -814,6 +815,113 @@ func (app *appContext) GetAnnounceTemplate(gc *gin.Context) {
 		return
 	}
 	respondBool(400, false, gc)
+}
+
+// announcementFileEntry represents a markdown announcement template loaded from disk.
+type announcementFileEntry struct {
+	Name string `json:"name"`
+}
+
+// announcementFileListDTO is the response for listing on-disk announcement templates.
+type announcementFileListDTO struct {
+	Files []announcementFileEntry `json:"files"`
+}
+
+// announcementFileDTO is the response for reading a single on-disk announcement template.
+type announcementFileDTO struct {
+	Name    string `json:"name"`
+	Subject string `json:"subject"`
+	Content string `json:"content"`
+}
+
+// announcementsDir returns the directory containing on-disk markdown announcement templates.
+func (app *appContext) announcementsDir() string {
+	return filepath.Join(app.dataPath, "announcements")
+}
+
+// @Summary List on-disk announcement template files.
+// @Produce json
+// @Success 200 {object} announcementFileListDTO
+// @Router /users/announce/files [get]
+// @Security Bearer
+// @tags Users
+func (app *appContext) GetAnnounceFiles(gc *gin.Context) {
+	out := announcementFileListDTO{Files: []announcementFileEntry{}}
+	dir := app.announcementsDir()
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		// Directory missing or unreadable — return empty list, not an error.
+		gc.JSON(200, out)
+		return
+	}
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		name := e.Name()
+		lower := strings.ToLower(name)
+		if !strings.HasSuffix(lower, ".md") && !strings.HasSuffix(lower, ".markdown") && !strings.HasSuffix(lower, ".txt") {
+			continue
+		}
+		out.Files = append(out.Files, announcementFileEntry{Name: name})
+	}
+	gc.JSON(200, out)
+}
+
+// @Summary Read a single on-disk announcement template file.
+// @Produce json
+// @Param name path string true "filename (url encoded if necessary)"
+// @Success 200 {object} announcementFileDTO
+// @Failure 400 {object} boolResponse
+// @Failure 404 {object} boolResponse
+// @Router /users/announce/files/{name} [get]
+// @Security Bearer
+// @tags Users
+func (app *appContext) GetAnnounceFile(gc *gin.Context) {
+	escaped := gc.Param("name")
+	name, err := url.QueryUnescape(escaped)
+	if err != nil {
+		respondBool(400, false, gc)
+		return
+	}
+	// Reject any path traversal attempts.
+	if strings.ContainsAny(name, "/\\") || name == ".." || name == "." || strings.Contains(name, "..") {
+		respondBool(400, false, gc)
+		return
+	}
+	lower := strings.ToLower(name)
+	if !strings.HasSuffix(lower, ".md") && !strings.HasSuffix(lower, ".markdown") && !strings.HasSuffix(lower, ".txt") {
+		respondBool(400, false, gc)
+		return
+	}
+	full := filepath.Join(app.announcementsDir(), name)
+	data, err := os.ReadFile(full)
+	if err != nil {
+		respondBool(404, false, gc)
+		return
+	}
+	content := string(data)
+
+	// Optional: substitute {{var}} placeholders with live Jellyfin data when ?fill=1 is passed.
+	if gc.Query("fill") == "1" {
+		content = substituteAnnounceVars(content, buildAnnounceVars(app))
+	}
+
+	// Extract the first H1 line ("# ...") as the subject and strip it from the body.
+	subject := ""
+	body := content
+	for i, line := range strings.Split(content, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "# ") {
+			subject = strings.TrimSpace(strings.TrimPrefix(trimmed, "#"))
+			lines := strings.Split(content, "\n")
+			lines = append(lines[:i], lines[i+1:]...)
+			body = strings.TrimLeft(strings.Join(lines, "\n"), "\n")
+			break
+		}
+	}
+
+	gc.JSON(200, announcementFileDTO{Name: name, Subject: subject, Content: body})
 }
 
 // @Summary Delete an announcement template.

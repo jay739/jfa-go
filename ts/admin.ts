@@ -197,13 +197,137 @@ if (!matchedTab) {
 }
 
 const login = new Login(window.modals.login as Modal, "/", window.loginAppearance);
+
+const setJellyfinStatus = (state: "online" | "offline" | "checking") => {
+    const wrap = document.querySelector(".of-jf-status") as HTMLElement;
+    const label = document.querySelector(".of-status-label") as HTMLElement;
+    if (!wrap || !label) return;
+    wrap.classList.remove("offline", "checking");
+    if (state === "online") {
+        label.textContent = "Jellyfin Online";
+    } else if (state === "offline") {
+        wrap.classList.add("offline");
+        label.textContent = "Jellyfin Offline";
+    } else {
+        wrap.classList.add("checking");
+        label.textContent = "Checking...";
+    }
+};
+
+const checkJellyfinStatus = () => {
+    _get("/users/count", null, (req: XMLHttpRequest) => {
+        if (req.readyState != 4) return;
+        setJellyfinStatus(req.status === 200 ? "online" : "offline");
+    });
+};
+
+const activityTypeIcon = (t: string): string => {
+    switch (t) {
+        case "creation":
+        case "accountCreation":
+            return "ri-user-add-line";
+        case "deletion":
+            return "ri-user-unfollow-line";
+        case "disabled":
+            return "ri-user-forbid-line";
+        case "enabled":
+            return "ri-user-follow-line";
+        case "contactLinked":
+            return "ri-link";
+        case "contactUnlinked":
+            return "ri-link-unlink";
+        case "changePassword":
+        case "resetPassword":
+            return "ri-lock-password-line";
+        default:
+            return "ri-history-line";
+    }
+};
+
+const renderActivityWidget = () => {
+    const list = document.getElementById("of-activity-widget-list");
+    if (!list) return;
+    _post(
+        "/activity",
+        {
+            page: 0,
+            limit: 5,
+            sortByField: "time",
+            ascending: false,
+            searchTerms: [],
+            queries: [],
+        },
+        (req: XMLHttpRequest) => {
+            if (req.readyState != 4) return;
+            if (req.status != 200) return;
+            const acts = (req.response?.activities || []) as Array<{
+                type: string;
+                username: string;
+                source_username: string;
+                value: string;
+                time: number;
+            }>;
+            if (!acts.length) {
+                list.innerHTML = `<span class="opacity-60 italic">No activity yet.</span>`;
+                return;
+            }
+            list.innerHTML = "";
+            const fmt = (ts: number) => {
+                const d = new Date(ts * 1000);
+                const diff = (Date.now() - d.getTime()) / 1000;
+                if (diff < 60) return `${Math.floor(diff)}s ago`;
+                if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+                return `${Math.floor(diff / 86400)}d ago`;
+            };
+            const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+            for (const a of acts) {
+                const row = document.createElement("div");
+                row.className = "flex flex-row items-center gap-2";
+                const who = esc(a.username || a.source_username || "—");
+                const type = esc(a.type);
+                const value = a.value ? ` <span class="opacity-50">(${esc(a.value)})</span>` : "";
+                row.innerHTML = `
+                    <i class="${activityTypeIcon(a.type)} opacity-70"></i>
+                    <span class="font-mono text-xs opacity-60 w-16">${fmt(a.time)}</span>
+                    <span class="truncate"><strong>${who}</strong> · <span class="opacity-70">${type}</span>${value}</span>
+                `;
+                list.appendChild(row);
+            }
+        },
+        true,
+    );
+};
+
+const wireActivityWidgetLink = () => {
+    const more = document.getElementById("of-activity-widget-more");
+    if (more && !more.dataset.wired) {
+        more.dataset.wired = "1";
+        more.addEventListener("click", (e) => {
+            e.preventDefault();
+            (window as any).tabs?.switch?.("activity");
+        });
+    }
+};
+
+const sidebarNav = document.querySelector(".of-sidebar-nav") as HTMLElement | null;
+const lockSidebar = () => sidebarNav?.classList.add("of-nav-locked");
+const unlockSidebar = () => sidebarNav?.classList.remove("of-nav-locked");
+lockSidebar();
+
 login.onLogin = () => {
+    unlockSidebar();
     window.updater = new Updater();
     // FIXME: Decide whether to autoload activity or not
     reloadProfileNames();
+    checkJellyfinStatus();
+    renderActivityWidget();
+    wireActivityWidgetLink();
     setInterval(() => {
         window.invites.reload();
         accounts.reloadIfNotInScroll();
+        checkJellyfinStatus();
+        renderActivityWidget();
     }, 30 * 1000);
     // Triggers pre and post funcs, even though we're already on that page
     window.tabs.switch(window.tabs.current);
@@ -212,5 +336,59 @@ login.onLogin = () => {
 bindManualDropdowns();
 
 login.bindLogout(document.getElementById("logout-button"));
+
+const showShortcutHelp = () => {
+    let panel = document.getElementById("of-shortcut-help");
+    if (!panel) {
+        panel = document.createElement("div");
+        panel.id = "of-shortcut-help";
+        panel.className = "modal";
+        panel.innerHTML = `
+            <div class="card mx-auto my-[15%] w-11/12 sm:w-2/3 lg:w-1/3 flex flex-col gap-2">
+                <div class="flex flex-row justify-between items-center">
+                    <span class="heading mb-0">Keyboard shortcuts</span>
+                    <span class="modal-close cursor-pointer text-2xl leading-none">&times;</span>
+                </div>
+                <table class="table">
+                    <tbody>
+                        <tr><td><kbd class="font-mono px-2 py-0.5 rounded bg-black/10 dark:bg-white/10">Cmd / Ctrl + K</kbd></td><td>Focus search</td></tr>
+                        <tr><td><kbd class="font-mono px-2 py-0.5 rounded bg-black/10 dark:bg-white/10">Esc</kbd></td><td>Close any open modal</td></tr>
+                        <tr><td><kbd class="font-mono px-2 py-0.5 rounded bg-black/10 dark:bg-white/10">?</kbd></td><td>Show this help</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+        document.body.appendChild(panel);
+        const close = () => panel?.classList.remove("block", "animate-fade-in");
+        panel.querySelector(".modal-close")?.addEventListener("click", close);
+        panel.addEventListener("click", (e) => { if (e.target === panel) close(); });
+    }
+    panel.classList.add("block", "animate-fade-in");
+};
+
+document.addEventListener("keydown", (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement;
+    const isTyping = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+
+    // Cmd/Ctrl+K — focus the current tab's search input
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        const current = (window as any).tabs?.current;
+        const search = current ? (document.getElementById(current + "-search") as HTMLInputElement | null) : null;
+        if (search) {
+            e.preventDefault();
+            search.focus();
+            search.select();
+        }
+        return;
+    }
+
+    if (isTyping) return;
+
+    // Shift+/ produces "?" — show shortcut help (Esc handled by Modal class itself)
+    if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        showShortcutHelp();
+    }
+});
 
 login.login("", "");

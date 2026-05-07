@@ -4,7 +4,7 @@ const dark = require("../css/dark");
 export const colorSet = {
       neutral: colors.slate,
       positive: colors.green,
-      urge: colors.violet,
+      urge: colors.indigo,
       warning: colors.yellow,
       info: colors.blue,
       critical: colors.red,

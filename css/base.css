@@ -4,6 +4,7 @@
 @import "./tooltip.css";
 @import "./loader.css";
 @import "./fonts.css";
+@import "./omnifin.css";
 
 @tailwind base;
 @tailwind components;
@@ -14,10 +15,20 @@
     --border-width-2: 3px;
     --border-width-4: 5px;
     --border-width-8: 8px;
-    font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: 'Inter', 'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
-    --bg-light: #fff;
-    --bg-dark: #101010;
+    --bg-light: #ffffff;
+    --bg-dark: #09090b;
+
+    /* Omnifin design tokens */
+    --primary: #4f46e5;
+    --background: #ffffff;
+    --foreground: #0f172a;
+    --muted: #f8fafc;
+    --muted-foreground: #64748b;
+    --border-color: #e2e8f0;
+    --card-bg: #ffffff;
+    --sidebar-bg: #f8fafc;
 
     color-scheme: light;
 }
@@ -29,6 +40,16 @@
 .dark {
     --settings-section-button-filter: 80%;
     color-scheme: dark !important;
+
+    /* Omnifin dark design tokens */
+    --primary: #4f46e5;
+    --background: #09090b;
+    --foreground: #f8fafc;
+    --muted: #111114;
+    --muted-foreground: #94a3b8;
+    --border-color: #1e293b;
+    --card-bg: #111114;
+    --sidebar-bg: #0e0e11;
 }
 
 .dark body {
@@ -40,7 +61,7 @@ html:not(.dark) body {
 }
 
 .dark select, .dark option, .dark input {
-    background: #202020;
+    background: #1a1a1e;
 }
 
 html:not(.dark) .card.\@low:not(.\~neutral):not(.\~positive):not(.\~urge):not(.\~warning):not(.\~info):not(.\~critical),
@@ -496,4 +517,67 @@ section.section:not(.\~neutral) {
 
 .input {
     font-size: 16px !important;
+}
+
+/* ============================================================
+   Omnifin visual identity overrides
+   ============================================================ */
+
+/* Selection highlight */
+::selection {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+/* Focus ring — indigo instead of browser default */
+*:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Thin, minimal scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 10px;
+    opacity: 0.4;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    opacity: 0.7;
+}
+
+/* Card visual upgrade — rounder corners, subtle shadow */
+.card {
+    border-radius: 0.75rem !important;
+}
+
+/* Theme-color header meta update is in header.txt; update body background for dark to match */
+.dark body {
+    background-color: #09090b;
+}
+
+/* Mono font for code/version numbers */
+.font-mono, code, pre:not(code-input *) {
+    font-family: 'JetBrains Mono', 'Fira Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Make notification dots use emerald for online/positive states */
+.circle.\~positive {
+    background-color: #10b981;
+}
+
+/* Tighten card padding on mobile */
+@media (max-width: 640px) {
+    .card {
+        padding: 1rem;
+    }
 }

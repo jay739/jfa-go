@@ -1,24 +1,37 @@
 <mjml>
     <mj-include path="./layout/header.mjml" />
     <mj-body background-color="#08080a">
-        <mj-include path="./layout/body-start.mjml" />
-        <mj-section mj-class="body" padding="8px 24px 12px">
+        <!-- Indigo stripe: admin notification -->
+        <mj-section padding="0" background-color="#6366f1">
+            <mj-column padding="0"><mj-spacer height="4px" /></mj-column>
+        </mj-section>
+        <mj-section mj-class="bg-gray" padding="28px 24px 20px">
             <mj-column>
-                <mj-text font-size="16px" line-height="1.65" padding-bottom="16px">{{ .aUserWasCreated }}</mj-text>
+                <mj-text css-class="eyebrow" font-size="11px" font-weight="600" letter-spacing="0.14em" color="#a5b4fc" padding-bottom="8px">OMNIFIN · ADMIN NOTIFICATION</mj-text>
+                <mj-text mj-class="text-white" font-size="26px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, Noto Sans, Helvetica, Arial, sans-serif" line-height="1.2" letter-spacing="-0.02em">{{ .header }}</mj-text>
             </mj-column>
         </mj-section>
+        <!-- Notification message -->
+        <mj-section mj-class="body" padding="24px 24px 16px">
+            <mj-column>
+                <mj-text font-size="15px" line-height="1.65">{{ .aUserWasCreated }}</mj-text>
+            </mj-column>
+        </mj-section>
+        <!-- User details card -->
         <mj-section mj-class="body" padding="0 24px 28px">
-            <mj-column css-class="inner-card" padding="4px 4px 4px 4px">
-                <mj-table cellpadding="12px" color="#e5e7eb" font-size="14px">
-                    <tr style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.1);">
-                        <th style="padding:10px 12px;font-weight:600;color:#9ca3af;">{{ .nameString }}</th>
-                        <th style="padding:10px 12px;font-weight:600;color:#9ca3af;">{{ .addressString }}</th>
-                        <th style="padding:10px 12px;font-weight:600;color:#9ca3af;">{{ .timeString }}</th>
+            <mj-column css-class="inner-card" padding="0">
+                <mj-table color="#e5e7eb" font-size="14px">
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <td style="padding:10px 16px;font-weight:600;color:#a5b4fc;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;">{{ .nameString }}</td>
+                        <td style="padding:10px 16px;color:#f3f4f6;font-weight:500;">{{ .name }}</td>
                     </tr>
-                    <tr style="text-align:left;font-style:italic;">
-                        <td style="padding:12px;color:#f3f4f6;">{{ .name }}</td>
-                        <td style="padding:12px;color:#f3f4f6;">{{ .address }}</td>
-                        <td style="padding:12px;color:#d1d5db;">{{ .time }}</td>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <td style="padding:10px 16px;font-weight:600;color:#a5b4fc;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;">{{ .addressString }}</td>
+                        <td style="padding:10px 16px;color:#f3f4f6;font-weight:500;">{{ .address }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 16px;font-weight:600;color:#a5b4fc;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;">{{ .timeString }}</td>
+                        <td style="padding:10px 16px;color:#d1d5db;">{{ .time }}</td>
                     </tr>
                 </mj-table>
             </mj-column>

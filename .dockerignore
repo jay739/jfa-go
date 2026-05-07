@@ -1,0 +1,58 @@
+# Dev dependencies — never needed in the image
+node_modules/
+site/node_modules/
+site/out/
+
+# Test artifacts
+*_test.go
+testdata/
+
+# Documentation & guides
+docs/
+*.md
+!README.md
+
+# Dev configs and secrets
+.env
+.env.*
+*.local
+config-payload.json
+tinyproxy.conf
+server.key
+server.pem
+server.crt
+*.pem
+*.key
+*.crt
+
+# Local tooling & scripts
+scripts/
+notes/
+tempts/
+matacc.txt
+cl.md
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.travis.yml
+.circleci/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Compiled MJML output already copied via make; exclude source mjml
+mail/
+
+# Build artifacts not needed at image build time
+dist/
+ts/*.tsbuildinfo
+ts/**/*.tsbuildinfo
+js/

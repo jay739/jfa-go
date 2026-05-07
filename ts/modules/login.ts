@@ -41,6 +41,8 @@ export class Login {
         };
     }
 
+    private _refreshKey = () => "omnifin_refresh_" + this._endpoint;
+
     bindLogout = (button: HTMLElement) => {
         this._logoutButton = button;
         this._logoutButton.classList.add("ui-hidden");
@@ -51,6 +53,7 @@ export class Login {
                 (req: XMLHttpRequest): boolean => {
                     if (req.readyState == 4 && req.status == 200) {
                         window.token = "";
+                        localStorage.removeItem(this._refreshKey());
                         location.reload();
                         return false;
                     }
@@ -81,10 +84,20 @@ export class Login {
         req.open("GET", this._url + (refresh ? "token/refresh" : "token/login"), true);
         if (!refresh) {
             req.setRequestHeader("Authorization", "Basic " + unicodeB64Encode(username + ":" + password));
+        } else {
+            // On refresh, fall back to a stored refresh JWT (Bearer header) when the HttpOnly
+            // cookie isn't sent (e.g. cross-context navigation, third-party-cookie blocking).
+            const storedRefresh = localStorage.getItem(this._refreshKey());
+            if (storedRefresh) {
+                req.setRequestHeader("Authorization", "Bearer " + storedRefresh);
+            }
         }
         req.onreadystatechange = ((req: XMLHttpRequest, _: Event): any => {
             if (req.readyState == 4) {
                 if (req.status != 200) {
+                    if (refresh) {
+                        localStorage.removeItem(this._refreshKey());
+                    }
                     if (!refresh) {
                         window.notifications.customError(
                             "loginError",
@@ -96,6 +109,9 @@ export class Login {
                 } else {
                     const data = req.response;
                     window.token = data["token"];
+                    if (data["refresh"]) {
+                        localStorage.setItem(this._refreshKey(), data["refresh"]);
+                    }
                     this.loggedIn = true;
                     if (this._onLogin) {
                         this._onLogin(username, password);

@@ -5,13 +5,12 @@
         <title>Invalid Code - Omnifin</title>
     </head>
     <body class="section">
-        <div class="page-container m-2 lg:my-20 lg:mx-64">
-            <div class="card">
-                <h1 class="text-3xl font-semibold">Invalid invite code.</h1>
-                <p class="content">The code above was either incorrect, or has expired.</p>
-                <p class="content">
-                    {{ .contactMessage }}
-                </p>
+        <div class="page-container m-2 lg:my-20 lg:mx-64 max-w-2xl mx-auto">
+            <div class="card flex flex-col items-center text-center gap-3 py-10">
+                <span class="of-login-logo-icon"><i class="ri-error-warning-fill"></i></span>
+                <h1 class="text-3xl font-bold tracking-tight">Invalid invite code</h1>
+                <p class="content opacity-80">The code above was either incorrect, or has expired.</p>
+                <p class="content opacity-70">{{ .contactMessage }}</p>
             </div>
         </div>
     </body>

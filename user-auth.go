@@ -72,7 +72,7 @@ func (app *appContext) getUserTokenLogin(gc *gin.Context) {
 	// 	uri = "/accounts/my"
 	// }
 	gc.SetCookie("user-refresh", refresh, REFRESH_TOKEN_VALIDITY_SEC, uri, host, true, true)
-	gc.JSON(200, getTokenDTO{token})
+	gc.JSON(200, getTokenDTO{Token: token, Refresh: refresh})
 }
 
 // @Summary Grabs an user-access token using a refresh token from cookies.
@@ -107,5 +107,5 @@ func (app *appContext) getUserTokenRefresh(gc *gin.Context) {
 	// host := gc.Request.URL.Hostname()
 	host := app.ExternalDomainNoPort(gc)
 	gc.SetCookie("user-refresh", refresh, REFRESH_TOKEN_VALIDITY_SEC, "/my", host, true, true)
-	gc.JSON(200, getTokenDTO{jwt})
+	gc.JSON(200, getTokenDTO{Token: jwt, Refresh: refresh})
 }

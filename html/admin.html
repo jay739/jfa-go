@@ -257,12 +257,34 @@
                             <span class="label supra" for="editor-variables" id="label-editor-variables">{{ .strings.variables }}</span>
                             <div id="announce-variables" class="flex flex-row flex-wrap gap-2">
                                 <span class="button ~urge @low" id="announce-variables-username"><span class="font-mono bg-inherit">{username}</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="recent_movies"><span class="font-mono bg-inherit text-xs"><i class="ri-film-line mr-1"></i>recent_movies</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="recent_movies_grid"><span class="font-mono bg-inherit text-xs"><i class="ri-layout-grid-line mr-1"></i>recent_movies_grid</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="featured_movie"><span class="font-mono bg-inherit text-xs"><i class="ri-movie-2-line mr-1"></i>featured_movie</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="recent_shows"><span class="font-mono bg-inherit text-xs"><i class="ri-tv-line mr-1"></i>recent_shows</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="recent_shows_grid"><span class="font-mono bg-inherit text-xs"><i class="ri-layout-grid-line mr-1"></i>recent_shows_grid</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="featured_show"><span class="font-mono bg-inherit text-xs"><i class="ri-tv-2-line mr-1"></i>featured_show</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="recent_episodes"><span class="font-mono bg-inherit text-xs"><i class="ri-play-list-line mr-1"></i>recent_episodes</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="top_genres"><span class="font-mono bg-inherit text-xs"><i class="ri-price-tag-3-line mr-1"></i>top_genres</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="server_url"><span class="font-mono bg-inherit text-xs">server_url</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="server_name"><span class="font-mono bg-inherit text-xs">server_name</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="user_count"><span class="font-mono bg-inherit text-xs">user_count</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="active_users_30d"><span class="font-mono bg-inherit text-xs">active_users_30d</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="longest_movie"><span class="font-mono bg-inherit text-xs">longest_movie</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="date"><span class="font-mono bg-inherit text-xs">date</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="weekday"><span class="font-mono bg-inherit text-xs">weekday</span></span>
+                                <span class="button ~info @low announce-var-chip" data-name="month_year"><span class="font-mono bg-inherit text-xs">month_year</span></span>
                             </div>
                             <label class="label supra" for="announce-subject"> {{ .strings.subject }}</label>
                             <input type="text" id="announce-subject" class="input ~neutral @low">
                             <label class="label supra" for="textarea-announce">{{ .strings.message }}</label>
-                            <textarea id="textarea-announce" class="textarea full-width ~neutral @low font-mono"></textarea>
-                            <p class="support">{{ .strings.markdownSupported }}</p>
+                            <div id="announce-dropzone" class="of-dropzone">
+                                <textarea id="textarea-announce" class="textarea full-width ~neutral @low font-mono"></textarea>
+                                <div class="of-dropzone-overlay">
+                                    <i class="ri-upload-cloud-2-line text-3xl"></i>
+                                    <span>Drop a Markdown (.md) file to load it as a template</span>
+                                </div>
+                            </div>
+                            <p class="support">{{ .strings.markdownSupported }} · <span class="opacity-70">tip: drag &amp; drop a <code class="font-mono text-xs">.md</code> file here</span></p>
                             <p class="support editor-syntax-description">{{ .strings.syntaxDescription }}</p>
 
                         </div>
@@ -548,30 +570,50 @@
             </form>
         </div>
         <div id="notification-box"></div>
-        <div class="page-container relative m-2 lg:my-8 lg:mx-auto lg:max-w-[min(100%,88rem)] flex flex-col gap-5">
-            <div class="top-2 inset-x-2 lg:absolute flex flex-row justify-between gap-2">
-                <div class="flex flex-row gap-2">
-                    {{ template "lang-select.html" . }}
-                    <span class="button ~warning h-min" alt="{{ .strings.theme }}" id="button-theme"><i class="ri-sun-line"></i></span>
+        <div class="of-layout">
+            <aside class="of-sidebar" id="omnifin-sidebar">
+                <div class="of-sidebar-brand">
+                    <span class="of-sidebar-logo-icon"><i class="ri-play-circle-fill"></i></span>
+                    <span class="of-sidebar-wordmark">Omnifin</span>
                 </div>
-                <div class="flex flex-row gap-2">
-                    <span class="button ~critical @low ui-hidden" id="logout-button">{{ .strings.logout }}</span>
-                    {{ if .userPageEnabled }}
-                        <div class="">
-                            <a class="button ~info flex flex-row gap-2" href="{{ .pages.Base }}{{ .pages.MyAccount }}/"><i class="ri-account-circle-fill"></i>{{ .strings.myAccount }}</a>
-                        </div>
-                    {{ end }}
+                <nav class="of-sidebar-nav">
+                    <button type="button" id="button-tab-invites" class="of-nav-item">
+                        <i class="ri-mail-send-line"></i><span>{{ .strings.invites }}</span>
+                    </button>
+                    <button type="button" id="button-tab-accounts" class="of-nav-item">
+                        <i class="ri-group-line"></i><span>{{ .strings.accounts }}</span>
+                    </button>
+                    <button type="button" id="button-tab-activity" class="of-nav-item">
+                        <i class="ri-history-line"></i><span>{{ .strings.activity }}</span>
+                    </button>
+                    <button type="button" id="button-tab-settings" class="of-nav-item">
+                        <i class="ri-settings-3-line"></i><span>{{ .strings.settings }}</span>
+                    </button>
+                </nav>
+                <div class="of-sidebar-footer">
+                    <div class="of-jf-status">
+                        <span class="of-status-dot"></span>
+                        <span class="of-status-label">Jellyfin Online</span>
+                    </div>
+                    <div class="of-sidebar-actions">
+                        {{ template "lang-select.html" . }}
+                        <span class="button ~warning h-min" alt="{{ .strings.theme }}" id="button-theme"><i class="ri-sun-line"></i></span>
+                        <span class="button ~critical @low ui-hidden text-sm px-2 py-1" id="logout-button">{{ .strings.logout }}</span>
+                        {{ if .userPageEnabled }}
+                            <a class="button ~info" href="{{ .pages.Base }}{{ .pages.MyAccount }}/"><i class="ri-account-circle-fill"></i></a>
+                        {{ end }}
+                    </div>
                 </div>
-            </div>
-            <header class="sticky top-0 z-30 border-b border-black/10 pb-3 pt-1 backdrop-blur-md dark:border-white/10">
-                <div class="flex flex-row items-center gap-2 overflow-x-auto scroll-smooth rounded-xl bg-slate-100/90 px-2 py-2 dark:bg-slate-900/85">
-                    <button type="button" id="button-tab-invites" class="shrink-0 rounded-lg px-4 py-2 text-lg font-semibold tracking-tight button portal ~neutral dark:~d_neutral @low sm:px-5 sm:text-2xl">{{ .strings.invites }}</button>
-                    <button type="button" id="button-tab-accounts" class="shrink-0 rounded-lg px-4 py-2 text-lg font-semibold tracking-tight button portal ~neutral dark:~d_neutral @low sm:px-5 sm:text-2xl">{{ .strings.accounts }}</button>
-                    <button type="button" id="button-tab-activity" class="shrink-0 rounded-lg px-4 py-2 text-lg font-semibold tracking-tight button portal ~neutral dark:~d_neutral @low sm:px-5 sm:text-2xl">{{ .strings.activity }}</button>
-                    <button type="button" id="button-tab-settings" class="shrink-0 rounded-lg px-4 py-2 text-lg font-semibold tracking-tight button portal ~neutral dark:~d_neutral @low sm:px-5 sm:text-2xl">{{ .strings.settings }}</button>
-                </div>
-            </header>
+            </aside>
+            <main class="of-main">
             <div id="tab-invites" class="flex flex-col gap-4">
+                <div class="card @low dark:~d_neutral flex flex-col gap-2" id="of-activity-widget">
+                    <div class="flex flex-row justify-between items-center">
+                        <span class="heading flex flex-row items-center gap-2"><i class="ri-pulse-line text-base"></i>Recent activity</span>
+                        <a class="opacity-70 hover:opacity-100 text-sm flex flex-row items-center gap-1" href="#" id="of-activity-widget-more"><span>View all</span><i class="ri-arrow-right-line"></i></a>
+                    </div>
+                    <div id="of-activity-widget-list" class="flex flex-col gap-1 text-sm opacity-80"></div>
+                </div>
                 <div class="card @low dark:~d_neutral flex flex-col gap-2 overflow-visible invites">
                     <span class="heading">{{ .strings.invites }}</span>
                     <div id="invites" class="flex flex-col gap-2"></div>
@@ -745,9 +787,15 @@
                         <div id="accounts-announce-dropdown" class="dropdown pb-0i " tabindex="0">
                             <span class="w-full button ~info @low center items-baseline flex flex-row gap-2" id="accounts-announce">{{ .strings.announce }}</span>
                             <div class="dropdown-display">
-                                <div class="card ~neutral @low">
-                                    <span class="supra sm">{{ .strings.templates }}</span>
-                                    <div id="accounts-announce-templates" class="flex flex-col gap-2"></div>
+                                <div class="card ~neutral @low flex flex-col gap-3">
+                                    <div class="flex flex-col gap-2">
+                                        <span class="supra sm">{{ .strings.templates }}</span>
+                                        <div id="accounts-announce-templates" class="flex flex-col gap-2"></div>
+                                    </div>
+                                    <div class="flex flex-col gap-2" id="accounts-announce-files-section">
+                                        <span class="supra sm flex flex-row items-center gap-1"><i class="ri-file-text-line"></i>File templates</span>
+                                        <div id="accounts-announce-files" class="flex flex-col gap-2"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -908,6 +956,7 @@
                 </div>
             </div>
         </div>
+        </main>
         <script src="{{ .pages.Base }}/js/admin.js" type="module"></script>
     </div></body>
 </html>

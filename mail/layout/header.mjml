@@ -28,6 +28,8 @@
         .email-content-html table { border-collapse: collapse !important; width: 100% !important; margin: 0 0 14px !important; font-size: 15px !important; }
         .email-content-html th, .email-content-html td { border: 1px solid rgba(255,255,255,0.1) !important; padding: 8px 10px !important; text-align: left !important; }
         .email-content-html th { background: rgba(255,255,255,0.05) !important; font-weight: 600 !important; }
+        .email-content-html table[role="presentation"] td { border: none !important; padding: 6px !important; }
+        .email-content-html img { max-width: 100% !important; border-radius: 6px !important; display: block !important; }
         .eyebrow { text-transform: uppercase !important; letter-spacing: 0.12em !important; font-size: 11px !important; font-weight: 600 !important; color: #93c5fd !important; margin-bottom: 8px !important; }
     </mj-style>
     <mj-attributes>

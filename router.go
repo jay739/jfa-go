@@ -134,6 +134,7 @@ func (app *appContext) loadRouter(address string, debug bool) *gin.Engine {
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		c.Abort()
 	}))
+	router.Use(securityHeaders())
 	app.loadHTML(router)
 	router.Use(serveTaggedStatic("/", app.webFS))
 	router.NoRoute(app.NoRouteHandler)
@@ -169,9 +170,9 @@ func (app *appContext) loadRoutes(router *gin.Engine) {
 		router.GET(p+PAGES.Admin, app.AdminPage)
 
 		if app.config.Section("password_resets").Key("link_reset").MustBool(false) {
-			router.GET(p+"/reset", app.ResetPassword)
+			router.GET(p+"/reset", rateLimitMiddleware(5, 60), app.ResetPassword)
 			if app.config.Section("password_resets").Key("set_password").MustBool(false) {
-				router.POST(p+"/reset", app.ResetSetPassword)
+				router.POST(p+"/reset", rateLimitMiddleware(5, 60), app.ResetSetPassword)
 			}
 		}
 
@@ -184,9 +185,9 @@ func (app *appContext) loadRoutes(router *gin.Engine) {
 		router.GET(p+PAGES.Admin+"/accounts/user/:userID", app.AdminPage)
 		router.GET(p+PAGES.Admin+"/invites/:code", app.AdminPage)
 		router.GET(p+"/lang/:page/:file", app.ServeLang)
-		router.GET(p+"/token/login", app.getTokenLogin)
-		router.GET(p+"/token/refresh", app.getTokenRefresh)
-		router.POST(p+"/user/invite", app.NewUserFromInvite)
+		router.GET(p+"/token/login", rateLimitMiddleware(10, 60), app.getTokenLogin)
+		router.GET(p+"/token/refresh", rateLimitMiddleware(20, 60), app.getTokenRefresh)
+		router.POST(p+"/user/invite", rateLimitMiddleware(5, 60), app.NewUserFromInvite)
 		router.Use(serveTaggedStatic(p+PAGES.Form+"/", app.webFS))
 		router.GET(p+PAGES.Form+"/:invCode", app.InviteProxy)
 		if app.config.Section("captcha").Key("enabled").MustBool(false) {
@@ -217,15 +218,15 @@ func (app *appContext) loadRoutes(router *gin.Engine) {
 			router.POST(p+"/my/password/reset/:address", app.ResetMyPassword)
 		}
 	}
+	var api *gin.RouterGroup
+	api = router.Group("/", app.webAuth())
+
 	if *SWAGGER {
 		app.info.Print(warning(lm.SwaggerWarning))
 		for _, p := range routePrefixes {
-			router.GET(p+"/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+			api.GET(p+"/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}
 	}
-
-	var api *gin.RouterGroup
-	api = router.Group("/", app.webAuth())
 
 	for _, p := range routePrefixes {
 		var user *gin.RouterGroup
@@ -270,6 +271,9 @@ func (app *appContext) loadRoutes(router *gin.Engine) {
 
 		api.GET(p+"/users/announce", app.GetAnnounceTemplates)
 		api.POST(p+"/users/announce/template", app.SaveAnnounceTemplate)
+		api.GET(p+"/users/announce-files", app.GetAnnounceFiles)
+		api.GET(p+"/users/announce-files/:name", app.GetAnnounceFile)
+		api.GET(p+"/users/announce-vars", app.GetAnnounceVars)
 		api.GET(p+"/users/announce/:name", app.GetAnnounceTemplate)
 		api.DELETE(p+"/users/announce/:name", app.DeleteAnnounceTemplate)
 

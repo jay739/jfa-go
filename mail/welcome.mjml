@@ -1,25 +1,43 @@
 <mjml>
     <mj-include path="./layout/header.mjml" />
     <mj-body background-color="#08080a">
-        <mj-include path="./layout/body-start.mjml" />
-        <mj-section mj-class="body" padding="8px 24px 12px">
+        <!-- Green stripe: success/welcome -->
+        <mj-section padding="0" background-color="#10b981">
+            <mj-column padding="0"><mj-spacer height="4px" /></mj-column>
+        </mj-section>
+        <mj-section mj-class="bg-gray" padding="28px 24px 20px">
             <mj-column>
-                <mj-text font-size="17px" line-height="1.6" padding-bottom="8px">{{ .welcome }}</mj-text>
-                <mj-text mj-class="text-gray" font-size="15px" padding-bottom="16px">{{ .youCanLoginWith }}:</mj-text>
+                <mj-text css-class="eyebrow" font-size="11px" font-weight="600" letter-spacing="0.14em" color="#6ee7b7" padding-bottom="8px">OMNIFIN · WELCOME</mj-text>
+                <mj-text mj-class="text-white" font-size="26px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, Noto Sans, Helvetica, Arial, sans-serif" line-height="1.2" letter-spacing="-0.02em">{{ .header }}</mj-text>
             </mj-column>
         </mj-section>
-        <mj-section mj-class="body" padding="0 24px 20px">
-            <mj-column css-class="inner-card" padding="20px 22px">
-                <mj-text font-size="14px" mj-class="text-gray" padding-bottom="6px">{{ .jellyfinURLString }}</mj-text>
-                <mj-text font-size="16px" padding-bottom="14px"><a href="{{ .jellyfinURL }}" style="color:#7dd3fc;">{{ .jellyfinURL }}</a></mj-text>
-                <mj-divider border-color="rgba(255,255,255,0.08)" padding="4px 0 12px" />
-                <mj-text font-size="14px" mj-class="text-gray" padding-bottom="6px">{{ .usernameString }}</mj-text>
-                <mj-text font-size="18px" font-weight="600" font-family="Plus Jakarta Sans, Hanken Grotesk, sans-serif" padding-bottom="4px">{{ .username }}</mj-text>
+        <!-- Welcome message -->
+        <mj-section mj-class="body" padding="24px 24px 16px">
+            <mj-column>
+                <mj-text font-size="16px" line-height="1.65" padding-bottom="10px">{{ .welcome }}</mj-text>
+                <mj-text mj-class="text-gray" font-size="15px" line-height="1.6">{{ .youCanLoginWith }}:</mj-text>
             </mj-column>
         </mj-section>
+        <!-- Account credentials card -->
+        <mj-section mj-class="body" padding="0 24px 16px">
+            <mj-column css-class="inner-card" padding="22px 24px">
+                <mj-text font-size="11px" font-weight="600" color="#6ee7b7" letter-spacing="0.1em" padding-bottom="6px">JELLYFIN SERVER</mj-text>
+                <mj-text font-size="15px" padding-bottom="16px"><a href="{{ .jellyfinURL }}" style="color:#7dd3fc;text-decoration:none;font-weight:500;">{{ .jellyfinURL }}</a></mj-text>
+                <mj-divider border-color="rgba(255,255,255,0.07)" padding="0 0 16px" />
+                <mj-text font-size="11px" font-weight="600" color="#9ca3af" letter-spacing="0.1em" padding-bottom="6px">{{ .usernameString }}</mj-text>
+                <mj-text font-size="20px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, sans-serif" color="#f9fafb" padding-bottom="0">{{ .username }}</mj-text>
+            </mj-column>
+        </mj-section>
+        <!-- Launch Jellyfin CTA -->
+        <mj-section mj-class="body" padding="0 24px 16px">
+            <mj-column>
+                <mj-button background-color="#10b981" color="#fff" href="{{ .jellyfinURL }}" border-radius="10px" inner-padding="14px 32px" font-size="15px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, sans-serif" width="100%">Open Jellyfin</mj-button>
+            </mj-column>
+        </mj-section>
+        <!-- Expiry notice (only shown when set) -->
         <mj-section mj-class="body" padding="0 24px 28px">
             <mj-column>
-                <mj-text mj-class="text-gray" font-size="14px" line-height="1.55">{{ .yourAccountWillExpire }}</mj-text>
+                <mj-text mj-class="text-gray" font-size="13px" line-height="1.55">{{ .yourAccountWillExpire }}</mj-text>
             </mj-column>
         </mj-section>
         <mj-include path="./layout/body-end.mjml" />

@@ -1,7 +1,7 @@
 import { colorSet } from "./css/colors";
 
 module.exports = {
-  content: ["./data/html/*.html", "./build/data/html/*.html", "./ts/*.ts", "./ts/modules/*.ts"],
+  content: ["./data/html/*.html", "./build/data/html/*.html", "./html/*.html", "./ts/*.ts", "./ts/modules/*.ts", "./css/*.css"],
   darkMode: 'class',
   theme: {
       extend: {

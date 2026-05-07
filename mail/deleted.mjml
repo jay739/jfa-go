@@ -1,12 +1,27 @@
 <mjml>
     <mj-include path="./layout/header.mjml" />
     <mj-body background-color="#08080a">
-        <mj-include path="./layout/body-start.mjml" />
-        <mj-section mj-class="body" padding="8px 24px 28px">
+        <!-- Red stripe: account action -->
+        <mj-section padding="0" background-color="#ef4444">
+            <mj-column padding="0"><mj-spacer height="4px" /></mj-column>
+        </mj-section>
+        <mj-section mj-class="bg-gray" padding="28px 24px 20px">
+            <mj-column>
+                <mj-text css-class="eyebrow" font-size="11px" font-weight="600" letter-spacing="0.14em" color="#fca5a5" padding-bottom="8px">OMNIFIN · ACCOUNT NOTICE</mj-text>
+                <mj-text mj-class="text-white" font-size="26px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, Noto Sans, Helvetica, Arial, sans-serif" line-height="1.2" letter-spacing="-0.02em">{{ .header }}</mj-text>
+            </mj-column>
+        </mj-section>
+        <!-- Greeting -->
+        <mj-section mj-class="body" padding="24px 24px 16px">
             <mj-column>
                 <mj-text font-size="16px" line-height="1.65" padding-bottom="12px">{{ .helloUser }}</mj-text>
-                <mj-text font-size="20px" font-weight="700" font-family="Plus Jakarta Sans, Hanken Grotesk, sans-serif" padding-bottom="10px">{{ .yourAccountWas }}</mj-text>
-                <mj-text font-size="15px" line-height="1.6" mj-class="text-gray">{{ .reasonString }}: <span style="font-style:italic;color:#e5e7eb;">{{ .reason }}</span></mj-text>
+                <mj-text font-size="18px" font-weight="600" font-family="Plus Jakarta Sans, Hanken Grotesk, sans-serif" color="#fca5a5" line-height="1.4">{{ .yourAccountWas }}</mj-text>
+            </mj-column>
+        </mj-section>
+        <!-- Reason card (only shown when reason is set) -->
+        <mj-section mj-class="body" padding="0 24px 28px">
+            <mj-column>
+                <mj-text padding="0"><div style="background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid rgba(255,255,255,0.1);padding:16px 18px;font-size:14px;line-height:1.6;color:#9ca3af;">{{ .reasonString }}: <span style="font-style:italic;color:#e5e7eb;">{{ .reason }}</span></div></mj-text>
             </mj-column>
         </mj-section>
         <mj-include path="./layout/body-end.mjml" />

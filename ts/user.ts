@@ -787,9 +787,14 @@ document.addEventListener("details-reload", () => {
                     contactCard.parentElement.insertBefore(messageCard, contactCard);
                 }
                 if (!messageCard.textContent) {
+                    const adminURL = window.pages.Base + window.pages.Admin + "/";
                     messageCard.innerHTML = `
-                    <span class="heading mb-2">${window.lang.strings("customMessagePlaceholderHeader")} ✏ </span>
-                    <span class="block">${window.lang.strings("customMessagePlaceholderContent")}</span>
+                    <div class="flex flex-row items-center gap-2 mb-2">
+                        <span class="chip ~urge text-xs">ADMIN PREVIEW</span>
+                        <span class="heading">${window.lang.strings("customMessagePlaceholderHeader")} ✏</span>
+                    </div>
+                    <span class="block opacity-70 text-sm">${window.lang.strings("customMessagePlaceholderContent")}</span>
+                    <a class="button ~info @low mt-3 inline-flex flex-row gap-1" href="${adminURL}"><i class="ri-settings-3-line"></i>Open Settings</a>
                     `;
                 }
             }
@@ -880,6 +885,8 @@ const setCardOrder = (messageCard: HTMLElement) => {
 const login = new Login(window.modals.login as Modal, "/my/", "opaque");
 login.onLogin = () => {
     document.querySelector(".page-container").classList.remove("ui-hidden");
+    const logoutBtn = document.getElementById("logout-button");
+    if (logoutBtn) logoutBtn.classList.remove("ui-hidden");
     document.dispatchEvent(new CustomEvent("details-reload"));
 };
 

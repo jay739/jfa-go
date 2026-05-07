@@ -15,6 +15,9 @@ config-payload.json
 server.key
 server.pem
 server.crt
+*.pem
+*.key
+*.crt
 instructions-debian.txt
 cl.md
 ./telegram/
@@ -30,3 +33,18 @@ start.sh
 ts/*.tsbuildinfo
 ts/**/*.tsbuildinfo
 js/
+
+# Environment / secrets
+.env
+.env.*
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

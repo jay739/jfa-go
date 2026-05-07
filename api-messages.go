@@ -184,7 +184,13 @@ func (app *appContext) GetCustomMessageTemplate(gc *gin.Context) {
 	}
 
 	var mail *Message = nil
-	if contentInfo.ContentType == CustomMessage {
+	// Special-case IDs that aren't registered in customContent (so contentInfo is zero-valued).
+	// Their zero ContentType happens to equal CustomMessage, which would otherwise mis-route them.
+	isSpecialNoSample := id == "Announcement" || id == "UserPage" || id == "UserLogin" || id == "PreSignupCard"
+
+	if isSpecialNoSample {
+		mail = &Message{HTML: "<div class=\"preview-content\"></div>"}
+	} else if contentInfo.ContentType == CustomMessage {
 		mail, err = app.email.construct(EmptyCustomContent, CustomContent{
 			Name:    EmptyCustomContent.Name,
 			Enabled: true,
@@ -216,6 +222,11 @@ func (app *appContext) GetCustomMessageTemplate(gc *gin.Context) {
 		mail.Markdown = mail.HTML
 	} else {
 		app.err.Printf("unknown custom content type %d", contentInfo.ContentType)
+	}
+	// Some IDs (Announcement, UserLogin, etc.) don't produce a sample message — fall back to an empty preview shell.
+	if mail == nil {
+		mail = &Message{HTML: "<div class=\"preview-content\"></div>"}
+		mail.Text = ""
 	}
 	gc.JSON(200, customEmailDTO{Content: content.Content, Variables: contentInfo.Variables, Conditionals: contentInfo.Conditionals, Values: contentInfo.Placeholders, HTML: mail.HTML, Plaintext: mail.Text})
 }

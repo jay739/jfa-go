@@ -889,10 +889,10 @@ export class DOMInviteList implements InviteList {
             this._list.classList.add("empty");
             this._list.innerHTML = `
             <div class="inv inv-empty">
-                <div class="card dark:~d_neutral @low inv-header">
-                    <div class="justify-start">
-                        <span class="text-black dark:text-white font-mono bg-inherit">${window.lang.strings("inviteNoInvites")}</span>
-                    </div>
+                <div class="card dark:~d_neutral @low inv-header flex flex-col items-center justify-center text-center gap-3 py-12">
+                    <span class="of-login-logo-icon"><i class="ri-mail-send-line"></i></span>
+                    <span class="text-lg font-semibold">${window.lang.strings("inviteNoInvites")}</span>
+                    <span class="opacity-70 text-sm max-w-md">Create an invite to share a sign-up link with someone. Invites can be set to expire, restrict profile, or limit total uses.</span>
                 </div>
             </div>
             `;

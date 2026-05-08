@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -34,6 +35,10 @@ type jfLatestItem struct {
 
 type jfLatestResp struct {
 	Items []jfLatestItem `json:"Items"`
+}
+
+type announceStatsResp struct {
+	Vars map[string]string `json:"vars"`
 }
 
 // jfFetchLatest queries Jellyfin's /Items endpoint for items of the given type, sorted by date added.
@@ -250,7 +255,7 @@ func renderFeaturedCard(item jfLatestItem, publicServer string) string {
 		overviewHTML = fmt.Sprintf(`<p style="font-size:13px;line-height:1.6;color:#9ca3af;margin:10px 0 0;">%s</p>`, html.EscapeString(ov))
 	}
 
-	return fmt.Sprintf(`<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:rgba(255,255,255,0.03);border-radius:10px;overflow:hidden;">
+	return fmt.Sprintf(`<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%%;border-collapse:collapse;background:rgba(255,255,255,0.03);border-radius:10px;overflow:hidden;">
 <tr>
 <td style="width:120px;vertical-align:top;padding:0;" valign="top">
 <a href="%s"><img src="%s" alt="%s" width="120" style="display:block;width:120px;border-radius:8px 0 0 8px;aspect-ratio:2/3;object-fit:cover;background:#1f2937;" /></a>
@@ -346,7 +351,44 @@ func buildAnnounceVars(app *appContext) map[string]string {
 		vars["active_users_30d"] = fmt.Sprintf("%d", active)
 	}
 
+	for key, val := range app.fetchAnnouncementStatsVars(30) {
+		if val != "" {
+			vars[key] = val
+		}
+	}
+
 	return vars
+}
+
+func (app *appContext) fetchAnnouncementStatsVars(days int) map[string]string {
+	baseURL := os.Getenv("JELLYFIN_STATS_API_URL")
+	if baseURL == "" {
+		baseURL = "http://jellyfin-stats-api:3020"
+	}
+	endpoint := fmt.Sprintf("%s/api/announcement-summary?days=%d", strings.TrimRight(baseURL, "/"), days)
+	req, err := http.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return map[string]string{}
+	}
+	req.Header.Set("Accept", "application/json")
+	client := &http.Client{Timeout: 4 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		app.debug.Printf("Failed to fetch announcement stats from %s: %v", endpoint, err)
+		return map[string]string{}
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		body, _ := io.ReadAll(resp.Body)
+		app.debug.Printf("Announcement stats API returned %d: %s", resp.StatusCode, string(body))
+		return map[string]string{}
+	}
+	var parsed announceStatsResp
+	if err := json.NewDecoder(resp.Body).Decode(&parsed); err != nil {
+		app.debug.Printf("Failed to decode announcement stats response: %v", err)
+		return map[string]string{}
+	}
+	return parsed.Vars
 }
 
 // substituteAnnounceVars replaces {{var}} placeholders in `content` with values from `vars`.

@@ -59,3 +59,38 @@ jobs:
           INTERNAL: "off"
           UPDATER: "off"
         run: ./scripts/version.sh goreleaser release --clean --skip=validate
+
+      # Bundle each macOS binary into a basic .dmg via mkisofs and attach to
+      # the GitHub Release that goreleaser just created. The DMG is read-only,
+      # contains the binary + LICENSE + README, and works with macOS's
+      # built-in Disk Utility / Finder. For a fancier installer (volume icon,
+      # background image, Applications drag-link) macOS-runner builds are
+      # needed; this is the cross-platform-friendly baseline.
+      - name: Package macOS binaries as .dmg and upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          MKISOFS="$(command -v mkisofs || command -v genisoimage)"
+          if [ -z "${MKISOFS}" ]; then
+            echo "mkisofs/genisoimage not found — skipping DMG creation"
+            exit 0
+          fi
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}"
+          shopt -s nullglob
+          for bin_dir in dist/notray_darwin_*; do
+            ARCH=$(basename "$bin_dir" | sed 's/^notray_darwin_//')
+            STAGE="dmg-stage-${ARCH}"
+            DMG="dist/omnifin_${VERSION}_macOS_${ARCH}.dmg"
+            rm -rf "$STAGE" "$DMG"
+            mkdir -p "$STAGE/Omnifin"
+            cp "$bin_dir"/* "$STAGE/Omnifin/omnifin"
+            cp LICENSE "$STAGE/Omnifin/" 2>/dev/null || true
+            cp README.md "$STAGE/Omnifin/" 2>/dev/null || true
+            chmod +x "$STAGE/Omnifin/omnifin"
+            "$MKISOFS" -V "Omnifin ${VERSION}" -r -apple -no-pad -o "$DMG" "$STAGE"
+            echo "Built: $DMG"
+            gh release upload "$TAG" "$DMG" --clobber
+            rm -rf "$STAGE"
+          done

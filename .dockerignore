@@ -25,8 +25,8 @@ server.crt
 *.key
 *.crt
 
-# Local tooling & scripts
-scripts/
+# Local-only tooling (scripts/ is needed for the main Dockerfile's goreleaser build,
+# so don't exclude it). Just exclude private/scratch dirs.
 notes/
 tempts/
 matacc.txt

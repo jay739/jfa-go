@@ -36,3 +36,35 @@ func (ws *WebhookSender) Send(uri string, payload any) (int, error) {
 	ws.log.Printf(lm.WebhookRequest, uri, status, err)
 	return status, err
 }
+
+// fireWebhook reads `[webhooks].<event>` from the config (one or more pipe-separated URIs)
+// and POSTs the given payload to each, asynchronously and best-effort. Failures are logged
+// but do not block the caller.
+//
+// Supported events (any [webhooks].<key> in config.ini becomes an emission target):
+//   - created          (existing) user successfully created via invite
+//   - user_disabled    user disabled by admin or by expiry
+//   - user_enabled     user re-enabled
+//   - user_deleted     user removed
+//   - user_expired     expiry daemon disabled or deleted a user
+//   - expiry_extended  expiry daemon auto-extended a user's expiry
+//   - invite_used      a user successfully completed signup via invite
+//   - announcement_sent admin sent an announcement to one or more users
+func (app *appContext) fireWebhook(event string, payload any) {
+	uris := app.config.Section("webhooks").Key(event).StringsWithShadows("|")
+	if len(uris) == 0 {
+		return
+	}
+	for _, uri := range uris {
+		uri := uri
+		go func() {
+			if _, err := app.webhooks.Send(uri, map[string]any{
+				"event":   event,
+				"payload": payload,
+				"sent_at": time.Now().UTC().Format(time.RFC3339),
+			}); err != nil {
+				app.debug.Printf("webhook %s -> %s failed: %v", event, uri, err)
+			}
+		}()
+	}
+}

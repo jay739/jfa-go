@@ -151,6 +151,13 @@ func (app *appContext) NewUserPostVerification(p NewUserParams) (out NewUserData
 		}
 	}
 
+	// Fire the generic invite_used event in addition to the legacy [webhooks].created
+	// so admins can subscribe to invites separately without losing the per-user details.
+	app.fireWebhook("invite_used", map[string]any{
+		"user_id":  out.User.ID,
+		"username": out.User.Name,
+	})
+
 	// Welcome email is sent by each user of this method separately.
 
 	out.Status = 200

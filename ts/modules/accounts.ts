@@ -2111,6 +2111,43 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         form.onsubmit = (event: Event) => {
             event.preventDefault();
             toggleLoader(button);
+            const scheduleInput = document.getElementById("announce-schedule-at") as HTMLInputElement | null;
+            const scheduleVal = scheduleInput?.value || "";
+            // If a future datetime was picked, POST to the scheduled endpoint instead of sending immediately.
+            if (scheduleVal) {
+                const when = new Date(scheduleVal);
+                if (isNaN(when.getTime()) || when.getTime() <= Date.now()) {
+                    toggleLoader(button);
+                    window.notifications.customError(
+                        "announceScheduleInvalid",
+                        "Scheduled time must be in the future.",
+                    );
+                    return;
+                }
+                _post("/users/announce/scheduled", {
+                    users: list,
+                    subject: subject.value,
+                    message: this._announceTextarea.value,
+                    send_at: when.toISOString(),
+                }, (req: XMLHttpRequest) => {
+                    if (req.readyState != 4) return;
+                    toggleLoader(button);
+                    window.modals.announce.close();
+                    if (req.status != 200 && req.status != 204) {
+                        window.notifications.customError(
+                            "announceScheduleError",
+                            formatApiFailure(req, "Failed to schedule announcement."),
+                        );
+                    } else {
+                        window.notifications.customSuccess(
+                            "announceScheduleSuccess",
+                            `Announcement queued for ${when.toLocaleString()}.`,
+                        );
+                        document.dispatchEvent(new CustomEvent("announcement-sent"));
+                    }
+                });
+                return;
+            }
             let send = {
                 users: list,
                 subject: subject.value,

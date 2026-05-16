@@ -292,13 +292,22 @@
                             <input type="text" class="input ~neutral @low">
                             <p class="support">{{ .strings.templateEnterName }}</p>
                         </label>
-                        <div class="flex flex-row justify-between flex-wrap gap-2">
-                            <label>
-                                <input type="submit" class="ui-hidden">
-                                <span class="button ~urge @low center supra submit">{{ .strings.send }}</span>
-                            </label>
-                            <span class="button ~info @low center supra" id="test-announce" title="Send this announcement only to your own admin account so you can preview the final email">Send test to me</span>
-                            <span class="button ~info @low center supra" id="save-announce">{{ .strings.saveAsTemplate }}</span>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex flex-row flex-wrap gap-2 items-center">
+                                <label class="text-xs opacity-70 flex flex-row items-center gap-2">
+                                    Send at:
+                                    <input type="datetime-local" id="announce-schedule-at" class="input ~neutral @low text-xs" />
+                                </label>
+                                <span class="text-xs opacity-50">Leave blank to send now</span>
+                            </div>
+                            <div class="flex flex-row justify-between flex-wrap gap-2">
+                                <label>
+                                    <input type="submit" class="ui-hidden">
+                                    <span class="button ~urge @low center supra submit">{{ .strings.send }}</span>
+                                </label>
+                                <span class="button ~info @low center supra" id="test-announce" title="Send this announcement only to your own admin account so you can preview the final email">Send test to me</span>
+                                <span class="button ~info @low center supra" id="save-announce">{{ .strings.saveAsTemplate }}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="card ~neutral @low flex flex-col gap-2 basis-[24rem] grow">

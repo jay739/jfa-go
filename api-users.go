@@ -767,6 +767,12 @@ func (app *appContext) Announce(gc *gin.Context) {
 		// app.info.Printf(lm.SentAnnouncementMessage, "*", "?")
 	}
 	app.info.Printf(lm.SentAnnouncementMessage, "*", "?")
+	app.fireWebhook("announcement_sent", map[string]any{
+		"subject":     req.Subject,
+		"recipients":  len(req.Users),
+		"test":        req.Test,
+		"sent_by":     gc.GetString("jfId"),
+	})
 	respondBool(200, true, gc)
 }
 

@@ -526,6 +526,10 @@ func start(asDaemon, firstCall bool) {
 		go app.userDaemon.run()
 		defer app.userDaemon.Shutdown()
 
+		scheduledAnnounceDaemon := newScheduledAnnounceDaemon(app)
+		go scheduledAnnounceDaemon.run()
+		defer scheduledAnnounceDaemon.Shutdown()
+
 		if app.config.Section("jellyseerr").Key("enabled").MustBool(false) {
 			// import_existing_users setting is deprecated, now it'll run when jellyseerr is enabled, or when triggered manually.
 			// jellyseerrDaemon = newJellyseerrDaemon(time.Duration(30*time.Second), app)

@@ -60,6 +60,14 @@ func (app *appContext) checkUsers(remindBeforeExpiry *DayTimerSet) {
 
 	shouldInvalidateCache := false
 
+	// Activity-based expiry auto-extension. If enabled, when a user has logged into
+	// Jellyfin within `auto_extend_if_active_within_days` and their expiry is within
+	// `auto_extend_window_days`, push the expiry out by `auto_extend_by_days`.
+	autoExtendEnabled := app.config.Section("user_expiry").Key("auto_extend_on_activity").MustBool(false)
+	autoExtendActiveWithinDays := app.config.Section("user_expiry").Key("auto_extend_if_active_within_days").MustInt(7)
+	autoExtendWindowDays := app.config.Section("user_expiry").Key("auto_extend_window_days").MustInt(14)
+	autoExtendByDays := app.config.Section("user_expiry").Key("auto_extend_by_days").MustInt(30)
+
 	for _, expiry := range app.storage.GetUserExpiries() {
 		id := expiry.JellyfinID
 		user, ok := userExists[id]
@@ -67,6 +75,28 @@ func (app *appContext) checkUsers(remindBeforeExpiry *DayTimerSet) {
 			app.info.Printf(lm.DeleteExpiryForOldUser, id)
 			app.storage.DeleteUserExpiryKey(expiry.JellyfinID)
 			continue
+		}
+
+		// Auto-extend before checking whether expired: a recently active user shouldn't
+		// be marked expired and disabled in the same daemon tick.
+		if autoExtendEnabled && !expiry.DeleteAfterPeriod && !user.LastActivityDate.Time.IsZero() {
+			activeCutoff := time.Now().Add(-time.Duration(autoExtendActiveWithinDays) * 24 * time.Hour)
+			expiryWindow := time.Now().Add(time.Duration(autoExtendWindowDays) * 24 * time.Hour)
+			if user.LastActivityDate.Time.After(activeCutoff) && expiry.Expiry.Before(expiryWindow) && expiry.Expiry.After(time.Now()) {
+				oldExpiry := expiry.Expiry
+				expiry.Expiry = expiry.Expiry.AddDate(0, 0, autoExtendByDays)
+				expiry.LastNotified = time.Time{} // reset reminder window so the user gets a fresh notice
+				app.storage.SetUserExpiryKey(user.ID, expiry)
+				app.info.Printf("auto-extended expiry for %s: %s -> %s (active within %dd)", user.Name, oldExpiry.Format("2006-01-02"), expiry.Expiry.Format("2006-01-02"), autoExtendActiveWithinDays)
+				app.fireWebhook("expiry_extended", map[string]any{
+					"user_id":    user.ID,
+					"username":   user.Name,
+					"old_expiry": oldExpiry.Format(time.RFC3339),
+					"new_expiry": expiry.Expiry.Format(time.RFC3339),
+					"reason":     "activity_auto_extend",
+				})
+				shouldInvalidateCache = true
+			}
 		}
 
 		if !time.Now().After(expiry.Expiry) {
@@ -150,6 +180,13 @@ func (app *appContext) checkUsers(remindBeforeExpiry *DayTimerSet) {
 		if activity.Type != ActivityUnknown {
 			app.storage.SetActivityKey(shortuuid.New(), activity, nil, false)
 		}
+
+		// Outbound webhook for downstream automation (n8n, Home Assistant, etc.)
+		app.fireWebhook("user_expired", map[string]any{
+			"user_id":  user.ID,
+			"username": user.Name,
+			"action":   map[bool]string{true: "deleted", false: "disabled"}[activity.Type == ActivityDeletion],
+		})
 
 		// If we're not gonna be deleting the user later, we don't need the expiry stored anymore:
 		// 1. Delete after N days is disabled, or Expiry mode is set to delete.

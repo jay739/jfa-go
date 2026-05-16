@@ -43,6 +43,15 @@ jobs:
       - name: Mark workspace safe for git inside container
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+      - name: Install genisoimage (mkisofs) for DMG creation
+        run: |
+          if command -v apt-get >/dev/null; then
+            apt-get update && apt-get install -y --no-install-recommends genisoimage
+          elif command -v apk >/dev/null; then
+            apk add --no-cache cdrkit
+          fi
+          command -v mkisofs || command -v genisoimage || echo "mkisofs not available — DMG step may fail"
+
       - name: Run goreleaser
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -73,30 +73,37 @@ builds:
       goarch:
         - amd64
 archives:
+  # Windows binaries ship as raw .exe (no zip wrapper) — what users expect.
+  # The tray-icon variant is the recommended desktop install.
   - id: windows-tray
     ids:
         - windows-tray
-    formats: [ "zip" ]
+    formats: [ "binary" ]
     name_template: >-
-      {{ .ProjectName }}_{{ .Version }}_TrayIcon_
-      {{- if eq .Os "darwin" }}macOS
-      {{- else }}{{- title .Os }}{{ end }}_
+      {{ .ProjectName }}-tray_{{ .Version }}_windows_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else }}{{ .Arch }}{{ end }}
+  # Linux tray-icon variant: ship as tar.gz for users who don't use deb/rpm/apk
+  # (those package formats are produced by the nfpms block below).
   - id: linux-tray
     ids:
         - linux-tray
-    formats: [ "zip" ]
+    formats: [ "tar.gz" ]
     name_template: >-
-      {{ .ProjectName }}_{{ .Version }}_TrayIcon_
-      {{- if eq .Os "darwin" }}macOS
-      {{- else }}{{- title .Os }}{{ end }}_
+      {{ .ProjectName }}-tray_{{ .Version }}_linux_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else }}{{ .Arch }}{{ end }}
+  # Server-only builds (no tray):
+  #   - Windows: .exe
+  #   - macOS: tar.gz (DMG produced separately in the dmg block below)
+  #   - Linux: tar.gz (deb/rpm/apk via nfpms)
   - id: notray
     ids:
         - notray
-    formats: [ "zip" ]
+    formats: [ "tar.gz" ]
+    format_overrides:
+      - goos: windows
+        formats: [ "binary" ]
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_
       {{- if eq .Os "darwin" }}macOS
@@ -106,13 +113,27 @@ archives:
   - id: notray-e2ee
     ids:
         - notray-e2ee
-    formats: [ "zip" ]
+    formats: [ "tar.gz" ]
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_MatrixE2EE_
       {{- if eq .Os "darwin" }}macOS
       {{- else }}{{- title .Os }}{{ end }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else }}{{ .Arch }}{{ end }}
+
+# macOS .dmg disk images built from the notray darwin binaries.
+# Goreleaser uses mkisofs/genisoimage internally on Linux, hdiutil on macOS.
+dmg:
+  - id: macos-dmg
+    ids:
+      - notray
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_macOS_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+    extra_files:
+      - LICENSE
+      - README.md
 checksum:
     name_template: 'checksums.txt'
 snapshot:

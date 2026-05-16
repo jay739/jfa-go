@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Need full history + tags so `git describe --tags` (used by the Makefile
+          # to derive CSSVERSION) produces a real version instead of an empty string.
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Set up Go
         uses: actions/setup-go@v5

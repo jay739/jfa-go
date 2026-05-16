@@ -40,12 +40,13 @@ jobs:
         run: npm ci || npm install
 
       - name: Install swag
-        run: go install github.com/swaggo/swag/cmd/swag@v1.16.4
+        run: |
+          go install github.com/swaggo/swag/cmd/swag@v1.16.4
+          # setup-go adds ~/go/bin to PATH for subsequent steps, but be explicit:
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
 
       - name: Build all (docs + web assets + binary)
         run: make all
-        env:
-          PATH: ${{ env.PATH }}:${{ env.HOME }}/go/bin
 
       - name: Go vet
         run: go vet -tags "e2ee goolm" ./...

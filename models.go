@@ -231,9 +231,22 @@ type userSettingsDTO struct {
 }
 
 type announcementDTO struct {
-	Users   []string `json:"users"`   // List of User IDs to send announcement to
-	Subject string   `json:"subject"` // Email subject
-	Message string   `json:"message"` // Email content (markdown supported)
+	Users   []string `json:"users"`             // List of User IDs to send announcement to
+	Subject string   `json:"subject"`           // Email subject
+	Message string   `json:"message"`           // Email content (markdown supported)
+	Test    bool     `json:"test,omitempty"`    // If true, ignore Users and send only to the currently logged-in admin
+}
+
+// userFilterDTO is used by /users/filter to request a list of Jellyfin user IDs matching
+// the given criteria. All fields are optional and apply as AND filters.
+type userFilterDTO struct {
+	InactiveDays       int  `json:"inactive_days,omitempty"`        // Match users whose LastActivityDate is older than this many days.
+	NeverLoggedIn      bool `json:"never_logged_in,omitempty"`      // Match users who have never logged in (zero LastActivityDate).
+	ExpiringWithinDays int  `json:"expiring_within_days,omitempty"` // Match users with an Expiry within the next N days.
+}
+
+type userFilterResultDTO struct {
+	UserIDs []string `json:"user_ids"`
 }
 
 type announcementTemplate struct {

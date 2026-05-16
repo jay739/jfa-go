@@ -292,11 +292,12 @@
                             <input type="text" class="input ~neutral @low">
                             <p class="support">{{ .strings.templateEnterName }}</p>
                         </label>
-                        <div class="flex flex-row justify-between">
+                        <div class="flex flex-row justify-between flex-wrap gap-2">
                             <label>
                                 <input type="submit" class="ui-hidden">
                                 <span class="button ~urge @low center supra submit">{{ .strings.send }}</span>
                             </label>
+                            <span class="button ~info @low center supra" id="test-announce" title="Send this announcement only to your own admin account so you can preview the final email">Send test to me</span>
                             <span class="button ~info @low center supra" id="save-announce">{{ .strings.saveAsTemplate }}</span>
                         </div>
                     </div>
@@ -614,6 +615,23 @@
                     </div>
                     <div id="of-activity-widget-list" class="flex flex-col gap-1 text-sm opacity-80"></div>
                 </div>
+                <div class="card @low dark:~d_neutral flex flex-col gap-3" id="of-watch-widget">
+                    <div class="flex flex-row justify-between items-center">
+                        <span class="heading flex flex-row items-center gap-2"><i class="ri-bar-chart-2-line text-base"></i>Watch stats (last 30 days)</span>
+                        <span class="text-xs opacity-50">via Jellystat</span>
+                    </div>
+                    <div id="of-watch-widget-summary" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="flex flex-col gap-1">
+                            <span class="supra sm opacity-60">Most active watchers</span>
+                            <div id="of-watch-widget-users" class="text-sm opacity-90"></div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="supra sm opacity-60">Most watched titles</span>
+                            <div id="of-watch-widget-titles" class="text-sm opacity-90"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card @low dark:~d_neutral flex flex-col gap-2 overflow-visible invites">
                     <span class="heading">{{ .strings.invites }}</span>
                     <div id="invites" class="flex flex-col gap-2"></div>
@@ -781,6 +799,21 @@
                     <div class="flex flex-row flex-wrap gap-3">
                         <button type="button" title="{{ .strings.back }}" class="button ~neutral @low inline-flex gap-1 ui-hidden" id="user-details-back" aria-label="{{ .strings.back }}"><i class="icon ri-arrow-left-fill"></i>{{ .strings.back }}</button>
                         <button class="button ~neutral @low center accounts-load-all">{{ .strings.loadAll }}</button>
+                        <div id="accounts-smart-select-dropdown" class="dropdown pb-0i" tabindex="0">
+                            <span class="w-full button ~info @low center items-baseline flex flex-row gap-2" id="accounts-smart-select-button" title="Auto-select users matching a criterion">Smart select <i class="ri-arrow-down-s-line"></i></span>
+                            <div class="dropdown-display">
+                                <div class="card ~neutral @low flex flex-col gap-2 w-72">
+                                    <span class="supra sm">Auto-select by</span>
+                                    <span class="button ~neutral full-width @low" data-smart="inactive_7">Inactive 7+ days</span>
+                                    <span class="button ~neutral full-width @low" data-smart="inactive_30">Inactive 30+ days</span>
+                                    <span class="button ~neutral full-width @low" data-smart="inactive_90">Inactive 90+ days</span>
+                                    <span class="button ~neutral full-width @low" data-smart="expiring_7">Expiring in 7 days</span>
+                                    <span class="button ~neutral full-width @low" data-smart="expiring_30">Expiring in 30 days</span>
+                                    <span class="button ~neutral full-width @low" data-smart="never_logged_in">Never logged in</span>
+                                    <span class="button ~warning full-width @low" data-smart="clear">Clear selection</span>
+                                </div>
+                            </div>
+                        </div>
                         <span class="button ~neutral @low center " id="accounts-add-user">{{ .quantityStrings.addUser.Singular }}</span>
                         <span class="button ~neutral @low center action-unavailable" id="accounts-copy-ids" title="{{ .strings.copyUserIdsHint }}">{{ .strings.copyUserIds }}</span>
                         <span class="button ~neutral @low center action-unavailable" id="accounts-open-jellyfin" title="{{ .strings.openInJellyfinHint }}">{{ .strings.openInJellyfin }}</span>

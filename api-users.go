@@ -717,6 +717,15 @@ func (app *appContext) Announce(gc *gin.Context) {
 		respondAPIError(400, "errorMessagesDisabled", "MESSAGES_DISABLED", "", gc)
 		return
 	}
+	// Test mode: ignore selected users and send only to the logged-in admin.
+	if req.Test {
+		adminID := gc.GetString("jfId")
+		if adminID == "" {
+			respondAPIError(401, "errorUnauthorized", "UNAUTHORIZED", "", gc)
+			return
+		}
+		req.Users = []string{adminID}
+	}
 	// Generally, we only need to construct once. If {username} is included, however, this needs to be done for each user.
 	unique := strings.Contains(req.Message, "{username}")
 	if unique {
@@ -1095,6 +1104,55 @@ func (app *appContext) GetUserSummary(jfUser mediabrowser.User) respUser {
 		// 2. performed by userSummaryFixme
 	}
 	return app.userSummary(jfUser, emailPtr, expiryPtr, discordPtr, telegramPtr, matrixPtr, referralsActive)
+}
+
+// @Summary Filter Jellyfin users by activity / expiry criteria. Returns matching user IDs.
+// @Produce json
+// @Param userFilterDTO body userFilterDTO true "Filter criteria"
+// @Success 200 {object} userFilterResultDTO
+// @Router /users/filter [post]
+// @Security Bearer
+// @tags Users
+func (app *appContext) FilterUsers(gc *gin.Context) {
+	var req userFilterDTO
+	gc.BindJSON(&req)
+	users, err := app.jf.GetUsers(false)
+	if err != nil {
+		app.err.Printf(lm.FailedGetUsers, lm.Jellyfin, err)
+		respondAPIError(500, "errorJellyfin", "JELLYFIN_USERS", err.Error(), gc)
+		return
+	}
+	now := time.Now()
+	out := []string{}
+	for _, u := range users {
+		match := true
+		if req.NeverLoggedIn {
+			if !u.LastActivityDate.Time.IsZero() {
+				match = false
+			}
+		} else if req.InactiveDays > 0 {
+			cutoff := now.Add(-time.Duration(req.InactiveDays) * 24 * time.Hour)
+			// Treat never-logged-in users as inactive by default for "inactive N+ days" queries.
+			if !u.LastActivityDate.Time.IsZero() && u.LastActivityDate.Time.After(cutoff) {
+				match = false
+			}
+		}
+		if match && req.ExpiringWithinDays > 0 {
+			expiry, hasExpiry := app.storage.GetUserExpiryKey(u.ID)
+			if !hasExpiry || expiry.Expiry.IsZero() {
+				match = false
+			} else {
+				cutoff := now.Add(time.Duration(req.ExpiringWithinDays) * 24 * time.Hour)
+				if expiry.Expiry.Before(now) || expiry.Expiry.After(cutoff) {
+					match = false
+				}
+			}
+		}
+		if match {
+			out = append(out, u.ID)
+		}
+	}
+	gc.JSON(200, userFilterResultDTO{UserIDs: out})
 }
 
 // @Summary Returns the total number of Jellyfin users.

@@ -1290,6 +1290,60 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
         this._copyUserIds.onclick = () => this.copySelectedUserIds();
         this._openJellyfin.onclick = () => this.openSelectedInJellyfin();
 
+        // Wire "Smart select" buttons. Each carries data-smart="<criterion>".
+        const smartButtons = document.querySelectorAll<HTMLSpanElement>("#accounts-smart-select-dropdown [data-smart]");
+        const applySmartSelection = (matchingIDs: string[]) => {
+            // Clear current selection first so smart select is exclusive.
+            for (const id of this._visible) {
+                const u = this.users.get(id);
+                if (u && u.selected) u.selected = false;
+            }
+            let applied = 0;
+            for (const id of matchingIDs) {
+                const u = this.users.get(id);
+                if (u) {
+                    u.selected = true;
+                    applied++;
+                }
+            }
+            window.notifications.customSuccess(
+                "smartSelectApplied",
+                `Selected ${applied} of ${matchingIDs.length} matching users (others not loaded).`,
+            );
+        };
+        smartButtons.forEach((btn) => {
+            btn.onclick = () => {
+                const smart = btn.dataset.smart || "";
+                if (smart === "clear") {
+                    for (const id of this._visible) {
+                        const u = this.users.get(id);
+                        if (u && u.selected) u.selected = false;
+                    }
+                    return;
+                }
+                let body: { [k: string]: number | boolean } = {};
+                if (smart === "inactive_7") body = { inactive_days: 7 };
+                else if (smart === "inactive_30") body = { inactive_days: 30 };
+                else if (smart === "inactive_90") body = { inactive_days: 90 };
+                else if (smart === "expiring_7") body = { expiring_within_days: 7 };
+                else if (smart === "expiring_30") body = { expiring_within_days: 30 };
+                else if (smart === "never_logged_in") body = { never_logged_in: true };
+                else return;
+                _post("/users/filter", body, (req: XMLHttpRequest) => {
+                    if (req.readyState != 4) return;
+                    if (req.status != 200) {
+                        window.notifications.customError(
+                            "smartSelectError",
+                            formatApiFailure(req, "Failed to fetch matching users."),
+                        );
+                        return;
+                    }
+                    const resp = req.response as { user_ids: string[] };
+                    applySmartSelection(resp.user_ids || []);
+                });
+            };
+        });
+
         this._announceButton.onclick = this.announce;
         this._announceButton.parentElement.classList.add("action-unavailable");
 
@@ -2081,6 +2135,40 @@ export class accountsList extends PaginatedList implements Navigatable, AsTab {
                 }
             });
         };
+        // Wire "Send test to me" — POSTs with test=true so the server delivers only to the logged-in admin.
+        const testButton = document.getElementById("test-announce") as HTMLSpanElement;
+        if (testButton) {
+            testButton.onclick = () => {
+                if (!subject.value || !this._announceTextarea.value) {
+                    window.notifications.customError(
+                        "announceTestEmpty",
+                        "Subject and message are required for a test send.",
+                    );
+                    return;
+                }
+                toggleLoader(testButton);
+                _post("/users/announce", {
+                    users: [],
+                    subject: subject.value,
+                    message: this._announceTextarea.value,
+                    test: true,
+                }, (req: XMLHttpRequest) => {
+                    if (req.readyState != 4) return;
+                    toggleLoader(testButton);
+                    if (req.status != 200 && req.status != 204) {
+                        window.notifications.customError(
+                            "announceTestError",
+                            formatApiFailure(req, "Test send failed — check logs."),
+                        );
+                    } else {
+                        window.notifications.customSuccess(
+                            "announceTestSuccess",
+                            "Test announcement sent to your account.",
+                        );
+                    }
+                });
+            };
+        }
         _get("/config/emails/Announcement", null, (req: XMLHttpRequest) => {
             if (req.readyState == 4) {
                 const preview = document.getElementById("announce-preview") as HTMLDivElement;

@@ -239,6 +239,7 @@ func (app *appContext) loadRoutes(router *gin.Engine) {
 		api.GET(p+"/users/count", app.GetUserCount)
 		api.POST(p+"/users", app.SearchUsers)
 		api.POST(p+"/users/count", app.GetFilteredUserCount)
+		api.POST(p+"/users/filter", app.FilterUsers)
 		api.GET(p+"/users/labels", app.GetLabels)
 		api.POST(p+"/user", app.NewUserFromAdmin)
 		api.POST(p+"/users/extend", app.ExtendExpiry)

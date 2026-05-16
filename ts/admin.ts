@@ -299,6 +299,58 @@ const renderActivityWidget = () => {
     );
 };
 
+// Render the Jellystat watch-stats widget using the same /users/announce-vars endpoint
+// the announcement editor uses, so the data is always consistent with what users will see in emails.
+const renderWatchWidget = () => {
+    const widget = document.getElementById("of-watch-widget");
+    const summary = document.getElementById("of-watch-widget-summary");
+    const usersEl = document.getElementById("of-watch-widget-users");
+    const titlesEl = document.getElementById("of-watch-widget-titles");
+    if (!widget || !summary || !usersEl || !titlesEl) return;
+    _get("/users/announce-vars", null, (req: XMLHttpRequest) => {
+        if (req.readyState != 4) return;
+        if (req.status != 200) {
+            widget.classList.add("ui-hidden");
+            return;
+        }
+        const vars = ((req.response as { vars: Record<string, string> })?.vars) || {};
+        // If none of the Jellystat keys are present, just hide the widget.
+        const hasStats = vars["watch_plays_30d"] || vars["watch_time_30d"] || vars["active_watchers_30d"] || vars["top_users_30d"];
+        if (!hasStats) {
+            widget.classList.add("ui-hidden");
+            return;
+        }
+        widget.classList.remove("ui-hidden");
+        const tile = (label: string, value: string, icon: string) => `
+            <div class="card ~neutral @low flex flex-col gap-1 p-3">
+                <span class="text-xs opacity-60 flex flex-row items-center gap-1"><i class="${icon}"></i>${label}</span>
+                <span class="text-lg font-semibold">${value || "—"}</span>
+            </div>`;
+        summary.innerHTML =
+            tile("Plays", vars["watch_plays_30d"] || "0", "ri-play-circle-line") +
+            tile("Watch time", vars["watch_time_30d"] || "0m", "ri-time-line") +
+            tile("Active watchers", vars["active_watchers_30d"] || "0", "ri-user-line") +
+            tile("Members", vars["user_count"] || "0", "ri-group-line");
+        // top_users_30d / top_titles_30d come back as markdown bullet lists; render as raw HTML
+        // (Marked-style passthrough — the server-side stats endpoint already escapes user content).
+        const mdToHTML = (md: string) => {
+            if (!md) return `<span class="opacity-60 italic">No data</span>`;
+            return md
+                .split("\n")
+                .map((line) => line.replace(/^[-*]\s*/, "").trim())
+                .filter(Boolean)
+                .map((line) => {
+                    // Bold the part inside **...**
+                    const html = line.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+                    return `<div class="truncate">• ${html}</div>`;
+                })
+                .join("");
+        };
+        usersEl.innerHTML = mdToHTML(vars["top_users_30d"] || "");
+        titlesEl.innerHTML = mdToHTML(vars["top_titles_30d"] || "");
+    });
+};
+
 const wireActivityWidgetLink = () => {
     const more = document.getElementById("of-activity-widget-more");
     if (more && !more.dataset.wired) {
@@ -322,6 +374,7 @@ login.onLogin = () => {
     reloadProfileNames();
     checkJellyfinStatus();
     renderActivityWidget();
+    renderWatchWidget();
     wireActivityWidgetLink();
     setInterval(() => {
         window.invites.reload();
@@ -329,6 +382,8 @@ login.onLogin = () => {
         checkJellyfinStatus();
         renderActivityWidget();
     }, 30 * 1000);
+    // Watch stats change slower; refresh on a longer interval to keep Jellystat load light.
+    setInterval(renderWatchWidget, 5 * 60 * 1000);
     // Triggers pre and post funcs, even though we're already on that page
     window.tabs.switch(window.tabs.current);
 };

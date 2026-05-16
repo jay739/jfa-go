@@ -203,6 +203,9 @@ INLINE_SRC = html/crash.html
 INLINE_TARGET = $(DATA)/crash.html
 $(INLINE_TARGET): $(CSS_FULLTARGET) $(INLINE_SRC)
 	cp html/crash.html $(DATA)/crash.html
+	# Rewrite the hardcoded CSS bundle reference so inline-source can find the file
+	# generated for the current tag (CSSVERSION). Idempotent on local builds.
+	sed -i.bak 's|web/css/v[0-9.]\+bundle\.css|web/css/$(CSSVERSION)bundle.css|g' $(DATA)/crash.html && rm -f $(DATA)/crash.html.bak
 	$(UNCSS) # generates $(DATA)/bundle.css for us
 	node scripts/inline.js root $(DATA) $(DATA)/crash.html $(DATA)/crash.html
 	rm $(DATA)/bundle.css

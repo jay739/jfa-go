@@ -121,19 +121,10 @@ archives:
       {{- if eq .Arch "amd64" }}x86_64
       {{- else }}{{ .Arch }}{{ end }}
 
-# macOS .dmg disk images built from the notray darwin binaries.
-# Goreleaser uses mkisofs/genisoimage internally on Linux, hdiutil on macOS.
-dmg:
-  - id: macos-dmg
-    ids:
-      - notray
-    name_template: >-
-      {{ .ProjectName }}_{{ .Version }}_macOS_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else }}{{ .Arch }}{{ end }}
-    extra_files:
-      - LICENSE
-      - README.md
+# macOS .dmg images are produced by a post-goreleaser step in the release
+# workflow (see .github/workflows/release.yml). The goreleaser version bundled
+# in the build container is older than the one that introduced the `dmg:`
+# block, so we build DMGs manually with mkisofs.
 checksum:
     name_template: 'checksums.txt'
 snapshot:

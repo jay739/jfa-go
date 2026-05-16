@@ -1,0 +1,52 @@
+name: Release desktop binaries
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed to create the GitHub Release and upload assets
+
+jobs:
+  # Builds everything goreleaser is currently configured for from a single Linux
+  # runner using the upstream prebuilt build container (which already has Go,
+  # Node, mingw, libolm, the ARM/ARM64 cross-compilers, etc.).
+  #
+  # Produced artifacts (per the .goreleaser.yml in this repo):
+  #   - omnifin_<ver>_Linux_x86_64.zip       (CLI / server binary)
+  #   - omnifin_<ver>_Linux_arm64.zip
+  #   - omnifin_<ver>_Linux_arm.zip
+  #   - omnifin_<ver>_Windows_x86_64.zip
+  #   - omnifin_<ver>_Windows_arm64.zip
+  #   - omnifin_<ver>_macOS_x86_64.zip
+  #   - omnifin_<ver>_macOS_arm64.zip
+  #   - omnifin_<ver>_TrayIcon_Linux_x86_64.zip
+  #   - omnifin_<ver>_TrayIcon_Windows_x86_64.zip
+  #   - omnifin_<ver>_MatrixE2EE_Linux_*.zip
+  #   - omnifin-tray_*.deb / .rpm / .apk
+  #   - omnifin_*.deb / .rpm / .apk
+  #   - checksums.txt
+  #
+  # macOS tray icon binary is NOT built here — needs the Cocoa SDK which only
+  # exists on macOS runners. Added in a follow-up release.
+  goreleaser:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/hrfee/jfa-go-build-docker:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Mark workspace safe for git inside container
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Run goreleaser
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JFA_GO_BUILT_BY: github-actions
+          INTERNAL: "off"
+          UPDATER: "off"
+        run: ./scripts/version.sh goreleaser release --clean --skip=validate

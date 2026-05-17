@@ -81,7 +81,7 @@ jobs:
         with:
           projectPath: desktop
           tauriScript: npm run tauri --
-          args: --target ${{ matrix.target }} --verbose
+          args: --target ${{ matrix.target }}
           # Reuse the GitHub Release created by the other release workflows
           # (release.yml + docker-publish.yml) instead of creating our own.
           tagName: ${{ github.ref_name }}

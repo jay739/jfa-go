@@ -38,13 +38,14 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
+          # Tauri 2.x uses libayatana-appindicator3-dev; the older
+          # libappindicator3-dev conflicts with it and must not be installed.
           sudo apt-get install -y \
             libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
+            libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev
+            libgtk-3-dev
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable

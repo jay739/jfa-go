@@ -74,13 +74,14 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUST_BACKTRACE: "1"
           # Tauri reads these env vars to set the version in the .app/.msi/.deb metadata.
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: desktop
           tauriScript: npm run tauri --
-          args: --target ${{ matrix.target }}
+          args: --target ${{ matrix.target }} --verbose
           # Reuse the GitHub Release created by the other release workflows
           # (release.yml + docker-publish.yml) instead of creating our own.
           tagName: ${{ github.ref_name }}

@@ -3,9 +3,10 @@ site/node_modules/
 site/out/
 site/tempts/
 mail/*.html
-dist/
-build/
-data/
+/dist/
+/build/
+/data/
+# Above paths are root-anchored. desktop/dist/ ships HTML in git, do not ignore it.
 version.go
 notes
 docs/*

@@ -3,6 +3,9 @@ node_modules/
 site/node_modules/
 site/out/
 
+# Desktop Tauri client lives alongside the server but is built separately
+desktop/
+
 # Test artifacts
 *_test.go
 testdata/

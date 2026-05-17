@@ -1,0 +1,24 @@
+[package]
+name = "omnifin-desktop"
+version = "0.1.0"
+description = "Native desktop client for an Omnifin server"
+authors = ["Jayakrishna Konda <contact@jay739.dev>"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/jay739/omnifin"
+
+[lib]
+name = "omnifin_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]

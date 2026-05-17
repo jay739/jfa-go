@@ -87,6 +87,20 @@ All transactional emails (welcome, invite, password reset, expiry reminder, acco
 
 ## Install
 
+### Desktop client (Tauri)
+
+A separate native desktop client is shipped alongside the server. It's **not** another server — it's a thin native window (built with Tauri + Rust) that points at an Omnifin server you've already deployed. Think of it like Discord Desktop or Notion Desktop: a native shell around the web UI.
+
+On first launch it asks for your server URL (e.g. `https://omnifin.example.com` or `http://192.168.1.10:8056`), saves it locally, and from then on it opens straight to that server.
+
+Downloads on every [GitHub Release](https://github.com/jay739/omnifin/releases):
+
+- macOS: `Omnifin_<ver>_aarch64.dmg` (Apple Silicon) / `Omnifin_<ver>_x64.dmg` (Intel)
+- Windows: `Omnifin_<ver>_x64-setup.exe` (NSIS installer) / `.msi`
+- Linux: `omnifin-desktop_<ver>_amd64.deb` / `.AppImage`
+
+Source lives in [`desktop/`](desktop/).
+
 ### Docker
 
 ```sh

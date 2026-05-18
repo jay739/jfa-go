@@ -37,7 +37,10 @@ func (app *appContext) GetBackup(gc *gin.Context) {
 		respondBool(400, false, gc)
 		return
 	}
-	// Hopefully this is enough to ensure the path isn't malicious. Hidden behind bearer auth anyway so shouldn't matter too much I guess.
+	// Defence in depth against path traversal: strip any directory components
+	// before we ever join against the backups dir. Belt-and-suspenders alongside
+	// Backup.FromString's format check below.
+	fname = filepath.Base(fname)
 	b := Backup{}
 	err = b.FromString(fname)
 	if err != nil || b.Date.IsZero() {
@@ -86,7 +89,10 @@ func (app *appContext) GetBackups(gc *gin.Context) {
 // @tags Backups
 func (app *appContext) RestoreLocalBackup(gc *gin.Context) {
 	fname := gc.Param("fname")
-	// Hopefully this is enough to ensure the path isn't malicious. Hidden behind bearer auth anyway so shouldn't matter too much I guess.
+	// Strip any directory components before validation so an attacker can't
+	// reach files outside the backups directory even if they bypass the format
+	// check below.
+	fname = filepath.Base(fname)
 	b := Backup{}
 	err := b.FromString(fname)
 	if err != nil || b.Date.IsZero() {

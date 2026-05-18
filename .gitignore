@@ -1,7 +1,4 @@
 node_modules/
-site/node_modules/
-site/out/
-site/tempts/
 mail/*.html
 /dist/
 /build/
@@ -48,3 +45,4 @@ js/
 # OS
 .DS_Store
 Thumbs.db
+omnifin

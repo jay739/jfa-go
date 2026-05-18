@@ -9,7 +9,7 @@
     "core:webview:default",
     "core:event:default",
     "core:app:default",
-    "shell:allow-open",
-    "notification:default"
+    "opener:default",
+    "opener:allow-open-url"
   ]
 }

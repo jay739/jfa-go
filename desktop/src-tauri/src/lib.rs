@@ -5,8 +5,18 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager, Url, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
-use tauri_plugin_notification::NotificationExt;
-use tauri_plugin_shell::ShellExt;
+use tauri_plugin_opener::OpenerExt;
+
+// URL of the bundled setup page (the local index.html shipped inside the
+// app). Tauri serves bundled assets under a custom scheme that differs by
+// platform.
+const fn setup_page_url() -> &'static str {
+    if cfg!(target_os = "windows") {
+        "http://tauri.localhost/index.html"
+    } else {
+        "tauri://localhost/index.html"
+    }
+}
 
 // ──────────────────────────────────────────────────────────────────────────
 //  Persistent app config
@@ -96,12 +106,22 @@ fn open_main_window(app: &AppHandle) -> tauri::Result<()> {
     Ok(())
 }
 
-// Recreate the main window pointed at the bundled setup HTML, leaving the
-// saved URL untouched so the setup form pre-fills with it.
+// Navigate the existing main window to the bundled setup HTML, leaving the
+// saved URL untouched so the setup form pre-fills with it. We navigate
+// in-place instead of close+recreate to avoid two pitfalls:
+//   1. WebviewWindowBuilder::new can't take a label that still exists, so
+//      a close-then-recreate races and sometimes errors silently.
+//   2. Tauri exits the app when the last window is destroyed, so if the
+//      close lands before the new window is built, the app dies.
 fn open_setup_window(app: &AppHandle) -> tauri::Result<()> {
-    if let Some(old) = app.get_webview_window("main") {
-        let _ = old.close();
+    if let Some(win) = app.get_webview_window("main") {
+        if let Ok(url) = Url::parse(setup_page_url()) {
+            let _ = win.set_title("Omnifin — Change Server");
+            return win.navigate(url);
+        }
     }
+    // Only fall through to creating a fresh window if none currently exists
+    // (first launch with no saved URL, or after every window was closed).
     open_window_for(app, "main".to_string(), None)?;
     Ok(())
 }
@@ -222,7 +242,7 @@ fn open_in_browser(app: &AppHandle) {
         .map(|u| u.to_string())
         .or_else(|| load_config(app).server_url);
     if let Some(url) = target {
-        let _ = app.shell().open(url, None);
+        let _ = app.opener().open_url(url, None::<&str>);
     }
 }
 
@@ -433,8 +453,7 @@ pub fn run() {
         }))
         // Persist window size/position between launches.
         .plugin(tauri_plugin_window_state::Builder::default().build())
-        .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             set_server_url,
             get_server_url,

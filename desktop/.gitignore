@@ -4,3 +4,4 @@ src-tauri/gen/
 src-tauri/.tauri/
 src-tauri/WixTools/
 package-lock.json
+src-tauri/Cargo.lock

@@ -1,0 +1,98 @@
+name: Desktop test build (manual)
+
+# A one-off Tauri build you can trigger manually from the Actions tab.
+# Builds for a single chosen platform and uploads the produced installer
+# as a workflow artifact (downloadable from the run page) — does NOT
+# touch GitHub Releases or git tags.
+#
+# Use this to validate changes before tagging a real release.
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Target platform"
+        required: true
+        default: "macos-apple-silicon"
+        type: choice
+        options:
+          - macos-apple-silicon
+          - macos-intel
+          - linux-x86_64
+          - windows-x86_64
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ inputs.platform }}
+    runs-on: >-
+      ${{
+        (inputs.platform == 'macos-apple-silicon' && 'macos-14') ||
+        (inputs.platform == 'macos-intel' && 'macos-13') ||
+        (inputs.platform == 'linux-x86_64' && 'ubuntu-22.04') ||
+        (inputs.platform == 'windows-x86_64' && 'windows-latest')
+      }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Install Linux build deps
+        if: inputs.platform == 'linux-x86_64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libgtk-3-dev
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            desktop/src-tauri/target
+          key: ${{ runner.os }}-${{ inputs.platform }}-cargo-${{ hashFiles('desktop/src-tauri/Cargo.toml') }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install npm deps
+        working-directory: desktop
+        run: npm install
+
+      - name: Build (no release upload)
+        working-directory: desktop
+        env:
+          RUST_BACKTRACE: "1"
+        run: npm run tauri -- build
+
+      - name: Collect installers
+        # Find every produced bundle (dmg, msi, exe, deb, AppImage, rpm) and
+        # stage them under dist/ so upload-artifact picks them up.
+        shell: bash
+        run: |
+          mkdir -p dist-artifacts
+          find desktop/src-tauri/target/release/bundle -type f \
+            \( -name "*.dmg" -o -name "*.msi" -o -name "*-setup.exe" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" -o -name "*.app.tar.gz" \) \
+            -exec cp {} dist-artifacts/ \;
+          ls -lh dist-artifacts/
+
+      - name: Upload installers as workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: omnifin-desktop-${{ inputs.platform }}
+          path: dist-artifacts/*
+          retention-days: 14
+          if-no-files-found: error

@@ -115,14 +115,13 @@
         <p class="sub">Enter the URL where you've self-hosted Omnifin. This app is a native window onto that server — you only need to do this once.</p>
         <label for="url">Server URL</label>
         <input id="url" type="url" placeholder="https://omnifin.example.com" autofocus />
-        <p class="hint">Examples: <code>https://jfaccounts.yourdomain.com</code>, <code>http://192.168.1.10:8056</code></p>
+        <p class="hint">Examples: <code>https://omnifin.yourdomain.com</code>, <code>http://192.168.1.10:8056</code></p>
         <button id="connect" type="button">Connect</button>
         <div class="error" id="error"></div>
         <p class="foot">Don't have an Omnifin server yet? <a href="https://github.com/jay739/omnifin" target="_blank">github.com/jay739/omnifin</a></p>
       </div>
     </div>
     <script>
-      const { invoke } = window.__TAURI__.core;
       const input = document.getElementById("url");
       const btn = document.getElementById("connect");
       const err = document.getElementById("error");
@@ -133,6 +132,28 @@
       }
       function clearError() {
         err.classList.remove("show");
+      }
+
+      // Surface any unexpected error visibly instead of failing silently.
+      window.addEventListener("error", (ev) => {
+        showError("Script error: " + (ev.error?.message || ev.message || ev));
+      });
+      window.addEventListener("unhandledrejection", (ev) => {
+        showError("Async error: " + (ev.reason?.message || ev.reason || "unknown"));
+      });
+
+      // Tauri 2.x exposes its API at window.__TAURI__.core only when
+      // app.withGlobalTauri is true in tauri.conf.json. Guard against the
+      // global being missing so the user gets a clear error, not silence.
+      function getInvoke() {
+        const t = window.__TAURI__;
+        if (!t || !t.core || typeof t.core.invoke !== "function") {
+          throw new Error(
+            "Tauri IPC not available (window.__TAURI__.core.invoke missing). " +
+            "If you built this app yourself, set app.withGlobalTauri = true in tauri.conf.json."
+          );
+        }
+        return t.core.invoke;
       }
 
       async function connect() {
@@ -147,19 +168,14 @@
         }
         btn.disabled = true;
         btn.textContent = "Checking…";
-        // Best-effort reachability check; some servers may block CORS so we tolerate failures.
         try {
-          await fetch(url, { method: "HEAD", mode: "no-cors" });
-        } catch (_) {
-          /* ignore — Tauri webview will surface real errors via the network */
-        }
-        try {
+          const invoke = getInvoke();
           await invoke("set_server_url", { url });
           // The Rust handler navigates the window; nothing else to do here.
         } catch (e) {
           btn.disabled = false;
           btn.textContent = "Connect";
-          showError(String(e));
+          showError(String(e?.message || e));
         }
       }
 
@@ -169,12 +185,15 @@
       });
 
       // If a URL is already saved (e.g. user reopened the setup page from menu),
-      // pre-fill the input.
+      // pre-fill the input. Skip silently if the IPC bridge isn't ready yet.
       (async () => {
         try {
+          const invoke = getInvoke();
           const saved = await invoke("get_server_url");
           if (saved) input.value = saved;
-        } catch (_) {}
+        } catch (_) {
+          /* not fatal — user can still type a URL */
+        }
       })();
     </script>
   </body>

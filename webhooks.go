@@ -50,19 +50,28 @@ func (ws *WebhookSender) Send(uri string, payload any) (int, error) {
 //   - expiry_extended  expiry daemon auto-extended a user's expiry
 //   - invite_used      a user successfully completed signup via invite
 //   - announcement_sent admin sent an announcement to one or more users
+// webhookSemaphore caps the number of in-flight outbound webhook requests so a
+// poorly-configured event burst (or a malicious config with many URIs) can't
+// exhaust goroutines or sockets. Sized for typical homelab usage; tune if
+// you wire dozens of integrations.
+var webhookSemaphore = make(chan struct{}, 16)
+
 func (app *appContext) fireWebhook(event string, payload any) {
 	uris := app.config.Section("webhooks").Key(event).StringsWithShadows("|")
 	if len(uris) == 0 {
 		return
 	}
+	body := map[string]any{
+		"event":   event,
+		"payload": payload,
+		"sent_at": time.Now().UTC().Format(time.RFC3339),
+	}
 	for _, uri := range uris {
 		uri := uri
 		go func() {
-			if _, err := app.webhooks.Send(uri, map[string]any{
-				"event":   event,
-				"payload": payload,
-				"sent_at": time.Now().UTC().Format(time.RFC3339),
-			}); err != nil {
+			webhookSemaphore <- struct{}{}
+			defer func() { <-webhookSemaphore }()
+			if _, err := app.webhooks.Send(uri, body); err != nil {
 				app.debug.Printf("webhook %s -> %s failed: %v", event, uri, err)
 			}
 		}()

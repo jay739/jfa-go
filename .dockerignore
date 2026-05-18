@@ -1,7 +1,5 @@
 # Dev dependencies — never needed in the image
 node_modules/
-site/node_modules/
-site/out/
 
 # Desktop Tauri client lives alongside the server but is built separately
 desktop/

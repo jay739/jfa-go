@@ -15,12 +15,12 @@ jobs:
       matrix:
         include:
           # Each runner builds for its own native architecture — Tauri's bundler
-          # doesn't handle cross-compile output paths correctly, so we use
-          # platform-native runners instead of --target.
+          # doesn't handle cross-compile output paths correctly. Intel Mac
+          # is intentionally NOT in this matrix: the Apple Silicon .dmg runs
+          # on Intel Macs transparently via Rosetta 2, and macos-13 is the
+          # scarce/queue-prone runner.
           - platform: macos-14            # Apple Silicon
             label: macOS (Apple Silicon)
-          - platform: macos-13            # Intel Mac
-            label: macOS (Intel)
           - platform: ubuntu-22.04
             label: Linux x86_64
           - platform: windows-latest

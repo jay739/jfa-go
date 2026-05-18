@@ -43,27 +43,6 @@ jobs:
       - name: Mark workspace safe for git inside container
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Install genisoimage (mkisofs) + gh CLI inside build container
-        run: |
-          # mkisofs/genisoimage: needed for DMG creation in the post-step below.
-          # gh CLI: needed to upload the produced DMGs back to the release —
-          #         the hrfee build container doesn't ship gh by default.
-          if command -v apt-get >/dev/null; then
-            apt-get update
-            apt-get install -y --no-install-recommends genisoimage ca-certificates curl gnupg
-            mkdir -p /etc/apt/keyrings
-            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
-              | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg
-            chmod a+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
-              > /etc/apt/sources.list.d/github-cli.list
-            apt-get update && apt-get install -y --no-install-recommends gh
-          elif command -v apk >/dev/null; then
-            apk add --no-cache cdrkit github-cli
-          fi
-          command -v mkisofs >/dev/null || command -v genisoimage >/dev/null || echo "mkisofs not available — DMG step may fail"
-          command -v gh >/dev/null || echo "gh not available — release upload will fail"
-
       - name: Run goreleaser
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -71,46 +50,3 @@ jobs:
           INTERNAL: "off"
           UPDATER: "off"
         run: ./scripts/version.sh goreleaser release --clean --skip=validate
-
-      # Bundle each macOS binary into a basic .dmg via mkisofs and attach to
-      # the GitHub Release that goreleaser just created. The DMG is read-only,
-      # contains the binary + LICENSE + README, and works with macOS's
-      # built-in Disk Utility / Finder. For a fancier installer (volume icon,
-      # background image, Applications drag-link) macOS-runner builds are
-      # needed; this is the cross-platform-friendly baseline.
-      - name: Package macOS binaries as .dmg and upload
-        # The hrfee build container's default shell is sh which doesn't have
-        # `shopt`. Force bash so `nullglob` and other modern features work.
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          MKISOFS="$(command -v mkisofs || command -v genisoimage || true)"
-          if [ -z "${MKISOFS}" ]; then
-            echo "mkisofs/genisoimage not found — skipping DMG creation"
-            exit 0
-          fi
-          TAG="${GITHUB_REF#refs/tags/}"
-          VERSION="${TAG#v}"
-          shopt -s nullglob
-          dirs=(dist/notray_darwin_*)
-          if [ ${#dirs[@]} -eq 0 ]; then
-            echo "no dist/notray_darwin_* directories — nothing to package"
-            exit 0
-          fi
-          for bin_dir in "${dirs[@]}"; do
-            ARCH=$(basename "$bin_dir" | sed 's/^notray_darwin_//')
-            STAGE="dmg-stage-${ARCH}"
-            DMG="dist/omnifin_${VERSION}_macOS_${ARCH}.dmg"
-            rm -rf "$STAGE" "$DMG"
-            mkdir -p "$STAGE/Omnifin"
-            cp "$bin_dir"/* "$STAGE/Omnifin/omnifin"
-            cp LICENSE "$STAGE/Omnifin/" 2>/dev/null || true
-            cp README.md "$STAGE/Omnifin/" 2>/dev/null || true
-            chmod +x "$STAGE/Omnifin/omnifin"
-            "$MKISOFS" -V "Omnifin ${VERSION}" -r -apple -no-pad -o "$DMG" "$STAGE"
-            echo "Built: $DMG"
-            gh release upload "$TAG" "$DMG" --clobber
-            rm -rf "$STAGE"
-          done

@@ -67,6 +67,22 @@ jobs:
         working-directory: desktop
         run: npm install
 
+      # Inject the git tag into the desktop client version so the .dmg/.exe
+      # filenames and Info.plist match the omnifin release version, without
+      # us having to remember to bump tauri.conf.json + Cargo.toml each time.
+      - name: Sync desktop version from tag
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Setting desktop version to ${VERSION}"
+          # -i.bak works on both GNU sed (Linux) and BSD sed (macOS).
+          sed -i.bak "s/\"version\": \"[^\"]*\"/\"version\": \"${VERSION}\"/" \
+            desktop/src-tauri/tauri.conf.json
+          sed -i.bak "0,/^version = \"[^\"]*\"$/{s/^version = \"[^\"]*\"$/version = \"${VERSION}\"/}" \
+            desktop/src-tauri/Cargo.toml
+          rm -f desktop/src-tauri/tauri.conf.json.bak desktop/src-tauri/Cargo.toml.bak
+
       - name: Build & upload to GitHub Release
         uses: tauri-apps/tauri-action@v0
         env:

@@ -1,4 +1,21 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+#
+# Slim goreleaser config — produces only the assets users actually pick up
+# from a GitHub Release. Docker Hub is the primary distribution channel for
+# the server; these archives + .deb/.rpm are fallbacks for bare-metal installs.
+#
+# Intentionally dropped (vs upstream jfa-go):
+#   - macOS/Windows server builds (Docker is the way; users running Mac/Win
+#     servers are vanishingly rare)
+#   - 32-bit ARM (Pi 1/2/Zero)
+#   - Tray-icon server variants (niche — the Tauri desktop client now covers
+#     "give me a windowed Omnifin" much better)
+#   - Matrix E2EE Linux builds (niche feature, special CGO toolchain)
+#   - .apk (Alpine) format from nfpm (collides with Android APK extension and
+#     confuses users)
+#   - macOS post-step DMGs (the Tauri release workflow ships proper .dmgs for
+#     the desktop client — server DMGs were just the binary in a disk image
+#     and added noise)
 version: 2
 project_name: omnifin
 release:
@@ -19,112 +36,18 @@ builds:
         - -X main.version={{.Env.JFA_GO_VERSION}} -X main.commit={{.ShortCommit}} -X main.updater={{.Env.JFA_GO_UPDATER}} {{.Env.JFA_GO_STRIP}} -X main.cssVersion={{.Env.JFA_GO_CSS_VERSION}} -X main.buildTimeUnix={{.Env.JFA_GO_BUILD_TIME}} -X main.builtBy="{{.Env.JFA_GO_BUILT_BY}}"
       goos:
         - linux
-        - darwin
-        - windows
       goarch:
-        - arm
+        - amd64
         - arm64
-        - amd64
-    - id: notray-e2ee
-      dir: ./
-      env:
-        - CGO_ENABLED=1
-        - CC={{ if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "arm64" }}aarch64{{ else }}{{ .Arch }}{{ end }}-linux-gnu{{ if eq .Arch "arm" }}eabihf{{ end }}-gcc
-        - CXX={{ if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "arm64" }}aarch64{{ else }}{{ .Arch }}{{ end }}-linux-gnu{{ if eq .Arch "arm" }}eabihf{{ end }}-gcc
-        - PKG_CONFIG_PATH=/usr/lib/{{ if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "arm64" }}aarch64{{ else }}{{ .Arch }}{{ end }}-linux-gnu{{ if eq .Arch "arm" }}eabihf{{ end }}/pkgconfig:$PKG_CONFIG_PATH
-        - GOARM={{ if eq .Arch "arm" }}7{{ end }}
-      flags:
-        - -tags=e2ee,goolm,{{ .Env.JFA_GO_TAG }}
-      ldflags:
-        - -X main.version={{.Env.JFA_GO_VERSION}} -X main.commit={{.ShortCommit}} -X main.updater={{.Env.JFA_GO_UPDATER}} {{.Env.JFA_GO_STRIP}} -X main.cssVersion={{.Env.JFA_GO_CSS_VERSION}} -X main.buildTimeUnix={{.Env.JFA_GO_BUILD_TIME}} -X main.builtBy="{{.Env.JFA_GO_BUILT_BY}}"
-      goos:
-        - linux
-      goarch:
-        - arm
-        - arm64
-        - amd64
-    - id: windows-tray
-      dir: ./
-      env:
-        - CGO_ENABLED=1
-        - CC=x86_64-w64-mingw32-gcc
-        - CXX=x86_64-w64-mingw32-g++
-      flags:
-        - -tags=tray,{{ .Env.JFA_GO_TAG }}
-      ldflags:
-        - -X main.version={{.Env.JFA_GO_VERSION}} -X main.commit={{.ShortCommit}} -X main.updater={{.Env.JFA_GO_UPDATER}} {{.Env.JFA_GO_STRIP}} -X main.cssVersion={{.Env.JFA_GO_CSS_VERSION}} -X main.buildTimeUnix={{.Env.JFA_GO_BUILD_TIME}} -X main.builtBy="{{.Env.JFA_GO_BUILT_BY}}" -H=windowsgui
-      goos:
-        - windows
-      goarch:
-        - amd64
-    - id: linux-tray
-      dir: ./
-      env:
-        - CGO_ENABLED=1
-        - CC=x86_64-linux-gnu-gcc
-        - CXX=x86_64-linux-gnu-gcc
-        - PKG_CONFIG_PATH=/usr/lib/{{ if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "arm64" }}aarch64{{ else }}{{ .Arch }}{{ end }}-linux-gnu{{ if eq .Arch "arm" }}eabihf{{ end }}/pkgconfig:$PKG_CONFIG_PATH
-      flags:
-        - -tags=tray,e2ee,goolm,{{ .Env.JFA_GO_TAG }}
-      ldflags:
-        - -X main.version={{.Env.JFA_GO_VERSION}} -X main.commit={{.ShortCommit}} -X main.updater={{.Env.JFA_GO_UPDATER}} {{.Env.JFA_GO_STRIP}} -X main.cssVersion={{.Env.JFA_GO_CSS_VERSION}} -X main.buildTimeUnix={{.Env.JFA_GO_BUILD_TIME}} -X main.builtBy="{{.Env.JFA_GO_BUILT_BY}}"
-      goos:
-        - linux
-      goarch:
-        - amd64
 archives:
-  # Windows binaries ship as raw .exe (no zip wrapper) — what users expect.
-  # The tray-icon variant is the recommended desktop install.
-  - id: windows-tray
-    ids:
-        - windows-tray
-    formats: [ "binary" ]
-    name_template: >-
-      {{ .ProjectName }}-tray_{{ .Version }}_windows_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else }}{{ .Arch }}{{ end }}
-  # Linux tray-icon variant: ship as tar.gz for users who don't use deb/rpm/apk
-  # (those package formats are produced by the nfpms block below).
-  - id: linux-tray
-    ids:
-        - linux-tray
-    formats: [ "tar.gz" ]
-    name_template: >-
-      {{ .ProjectName }}-tray_{{ .Version }}_linux_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else }}{{ .Arch }}{{ end }}
-  # Server-only builds (no tray):
-  #   - Windows: .exe
-  #   - macOS: tar.gz (DMG produced separately in the dmg block below)
-  #   - Linux: tar.gz (deb/rpm/apk via nfpms)
   - id: notray
     ids:
         - notray
     formats: [ "tar.gz" ]
-    format_overrides:
-      - goos: windows
-        formats: [ "binary" ]
     name_template: >-
-      {{ .ProjectName }}_{{ .Version }}_
-      {{- if eq .Os "darwin" }}macOS
-      {{- else }}{{- title .Os }}{{ end }}_
+      {{ .ProjectName }}_{{ .Version }}_Linux_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else }}{{ .Arch }}{{ end }}
-  - id: notray-e2ee
-    ids:
-        - notray-e2ee
-    formats: [ "tar.gz" ]
-    name_template: >-
-      {{ .ProjectName }}_{{ .Version }}_MatrixE2EE_
-      {{- if eq .Os "darwin" }}macOS
-      {{- else }}{{- title .Os }}{{ end }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else }}{{ .Arch }}{{ end }}
-
-# macOS .dmg images are produced by a post-goreleaser step in the release
-# workflow (see .github/workflows/release.yml). The goreleaser version bundled
-# in the build container is older than the one that introduced the `dmg:`
-# block, so we build DMGs manually with mkisofs.
 checksum:
     name_template: 'checksums.txt'
 snapshot:
@@ -137,62 +60,19 @@ changelog:
             - '^test:'
 nfpms:
   - id: notray
-    file_name_template: '{{ .ProjectName }}{{ if .IsSnapshot }}-git{{ end }}_{{ .Arch }}_{{ if .IsSnapshot }}{{ .ShortCommit }}{{ else }}v{{ .Version }}{{ end }}'
+    file_name_template: '{{ .ProjectName }}_{{ .Arch }}_{{ if .IsSnapshot }}{{ .ShortCommit }}{{ else }}v{{ .Version }}{{ end }}'
     package_name: omnifin
     homepage: https://github.com/jay739/omnifin
-    description: A web app for managing users on Jellyfin
+    description: A Jellyfin user management web app.
     maintainer: Jayakrishna Konda <contact@jay739.dev>
     license: MIT
     vendor: jay739.dev
     version_metadata: git
     ids:
-      - notray-e2ee
+      - notray
     contents:
       - src: ./LICENSE
         dst: /usr/share/licenses/omnifin
     formats:
-      - apk
       - deb
       - rpm
-    overrides:
-        deb:
-            dependencies:
-                - libolm-dev
-        rpm:
-            dependencies:
-                - libolm 
-        apk:
-            dependencies:
-                - olm
-  - id: tray
-    file_name_template: '{{ .ProjectName }}{{ if .IsSnapshot }}-git{{ end }}_TrayIcon_{{ .Arch }}_{{ if .IsSnapshot }}{{ .ShortCommit }}{{ else }}v{{ .Version }}{{ end }}'
-    package_name: omnifin-tray
-    homepage: https://github.com/jay739/omnifin
-    description: A web app for managing users on Jellyfin
-    maintainer: Jayakrishna Konda <contact@jay739.dev>
-    license: MIT
-    vendor: jay739.dev
-    version_metadata: git
-    ids:
-      - linux-tray
-    contents:
-      - src: ./LICENSE
-        dst: /usr/share/licenses/omnifin
-    formats:
-      - apk
-      - deb
-      - rpm
-    overrides:
-        deb:
-            conflicts:
-                - omnifin
-            replaces:
-                - omnifin
-            dependencies:
-                - libolm-dev
-        rpm:
-            dependencies:
-                - libolm 
-        apk:
-            dependencies:
-                - olm

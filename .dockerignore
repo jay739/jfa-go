@@ -51,8 +51,9 @@ cl.md
 *.swp
 *.swo
 
-# Compiled MJML output already copied via make; exclude source mjml
-mail/
+# mail/ MUST stay — the main Dockerfile's `make all` step compiles
+# mail/*.mjml → build/data/*.html inside the build container. Excluding it
+# would mean MJML "No input files found" at build time.
 
 # Build artifacts not needed at image build time
 dist/

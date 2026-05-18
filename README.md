@@ -12,7 +12,7 @@
 
 **Omnifin** is a unified Jellyfin user-management toolkit — invites, account lifecycle, password resets, multi-channel notifications, and deep Jellyfin integration, packaged into a single self-hosted binary.
 
-##### Quick links: [Docker](#docker) · [Build from source](#build-from-source) · [Migrate from jfa-go](#migration-from-jfa-go) · [Credits](#credits--acknowledgements)
+##### Quick links: [Desktop client](#desktop-client-tauri) · [Docker](#docker) · [Build from source](#build-from-source) · [Migrate from jfa-go](#migration-from-jfa-go) · [Credits](#credits--acknowledgements)
 
 ---
 
@@ -40,7 +40,58 @@ Announcement emails and markdown templates can embed live Jellyfin library data 
 | `{{date}}` / `{{weekday}}` / `{{month_year}}` | Formatted date strings |
 | `{{server_name}}` / `{{server_url}}` | Jellyfin server name and URL |
 
+Plus Jellystat-backed analytics (pulled from a sidecar `jellyfin-stats-api` service if you run one):
+
+| Variable | Output |
+|---|---|
+| `{{community_stats}}` | Pre-formatted "X plays · Y h watched · Z active watchers" line |
+| `{{top_titles_30d}}` | Markdown list of the most-watched titles in the last 30 days |
+| `{{top_users_30d}}` | Markdown list of the top watchers |
+| `{{top_clients_30d}}` | Most-used Jellyfin client apps |
+| `{{watch_plays_30d}}` / `{{watch_time_30d}}` / `{{active_watchers_30d}}` | Headline numbers |
+
 The **announcement preview** in the admin panel live-substitutes all variables — including poster images — so you see the final rendered result before sending.
+
+### Smart user selection
+
+"Smart select" dropdown on the accounts toolbar lets you select users by criterion with one click:
+
+- Inactive 7 / 30 / 90 days
+- Expiring in 7 / 30 days
+- Never logged in
+- Clear selection
+
+The selection then plugs into any existing bulk action — most useful for sending a targeted "we miss you" announcement to everyone inactive 30+ days, or extending expiries on everyone who's active.
+
+### Scheduled announcements
+
+The announce modal has a **"Send at"** datetime picker. Leave blank to send now (original behaviour); fill with a future time to queue the announcement. A background daemon polls every 60s, dispatches due items via the same multi-channel pipeline (email/Telegram/Discord/Matrix), and marks them sent. Queue persists across restarts.
+
+### Activity-based expiry auto-extension
+
+Opt-in via `[user_expiry] auto_extend_on_activity = true`. When a user with a stored expiry has logged into Jellyfin recently and their expiry is approaching, the user daemon automatically pushes it out. Tunable: `auto_extend_if_active_within_days` (default 7), `auto_extend_window_days` (default 14), `auto_extend_by_days` (default 30). Fires the `expiry_extended` webhook.
+
+### Generic webhook system
+
+`config.ini` under `[webhooks]` accepts pipe-separated URI lists per event:
+
+| Event | Fires when |
+|---|---|
+| `created` (legacy) | A user is created via invite |
+| `invite_used` | Same trigger, modern envelope |
+| `user_expired` | Daemon disabled or deleted an expired user |
+| `expiry_extended` | Auto-extension or admin push extended a user |
+| `announcement_sent` | An announcement was successfully dispatched |
+
+Payload format: `{event, payload, sent_at}`. Fan-out is goroutine-bounded (16-slot semaphore) so a misconfigured fan-out can't exhaust sockets. Plug straight into n8n / Home Assistant / Discord webhooks / Slack / etc.
+
+### Send-test-to-admin
+
+Every announce modal has a **"Send test to me"** button — delivers the exact email (with all `{{vars}}` substituted) only to the logged-in admin's own account, via every configured channel. Used to catch typos and broken layout before pushing to N users.
+
+### Dashboard Jellystat widget
+
+A "Watch stats (last 30 days)" card on the admin dashboard, showing total plays, watch time, active watchers, member count, top watchers, and top titles. Pulls from the same Jellystat endpoint the announcement variables use, so what you see on the dashboard matches what users see in emails. Refreshes every 5 minutes; hides itself if Jellystat is unreachable.
 
 ### Redesigned email templates
 
@@ -89,15 +140,31 @@ All transactional emails (welcome, invite, password reset, expiry reminder, acco
 
 ### Desktop client (Tauri)
 
-A separate native desktop client is shipped alongside the server. It's **not** another server — it's a thin native window (built with Tauri + Rust) that points at an Omnifin server you've already deployed. Think of it like Discord Desktop or Notion Desktop: a native shell around the web UI.
+A separate native desktop client is shipped alongside the server. It's **not** another server — it's a thin native window (built with Tauri 2.x + Rust) that points at an Omnifin server you've already deployed. Think of it like Discord Desktop or Notion Desktop: a native shell around the web UI.
 
 On first launch it asks for your server URL (e.g. `https://omnifin.example.com` or `http://192.168.1.10:8056`), saves it locally, and from then on it opens straight to that server.
 
-Downloads on every [GitHub Release](https://github.com/jay739/omnifin/releases):
+**Native features:**
+- System tray icon (left-click → show, right-click → quick menu)
+- Native menu bar: Change Server URL (⌘,), Reload (⌘R), Find in Page (⌘F), Open in Default Browser (⌘⇧O), Zoom (⌘+/-/0), Quit (⌘Q)
+- Recent Servers submenu (auto-populated, last 5)
+- New Window (⌘N) — open a second window pointed at a different Omnifin server
+- Window size + position persisted across launches
+- Single-instance enforced — second launch focuses the existing window
+- Window title shows the current server host
+- Standard Edit menu (Undo / Redo / Cut / Copy / Paste / Select All)
 
-- macOS: `Omnifin_<ver>_aarch64.dmg` (Apple Silicon) / `Omnifin_<ver>_x64.dmg` (Intel)
-- Windows: `Omnifin_<ver>_x64-setup.exe` (NSIS installer) / `.msi`
-- Linux: `omnifin-desktop_<ver>_amd64.deb` / `.AppImage`
+**Downloads on every [GitHub Release](https://github.com/jay739/omnifin/releases):**
+
+- **macOS:** `Omnifin_<ver>_aarch64.dmg` (Apple Silicon — runs on Intel via Rosetta 2)
+- **Windows:** `Omnifin_<ver>_x64-setup.exe` (NSIS installer)
+- **Linux:** `Omnifin_<ver>_amd64.deb` / `.AppImage` / `_x86_64.rpm`
+
+> macOS users: until the app is code-signed, the first launch needs:
+> ```sh
+> xattr -dr com.apple.quarantine /Applications/Omnifin.app
+> ```
+> to clear the Gatekeeper quarantine flag set by the browser when downloading the DMG.
 
 Source lives in [`desktop/`](desktop/).
 
@@ -243,12 +310,16 @@ Flags (excerpt):
 
 ## Roadmap
 
-- Jellystat integration — per-user watch time column on the accounts page
-- Bulk announcement filters — target by "expiring in N days" or "inactive N days"
-- Telegram broadcast alongside email announcements
-- Activity-based expiry auto-extension
-- Authentik OIDC login for the admin panel
-- Jellyseerr request-approval webhook notifications
+Open items I'd like to tackle in v1.4.0+:
+
+- Friendly error page when the configured server is unreachable (currently the webview shows the browser's default "can't connect")
+- Splash window on app launch + loading screen between Connect and remote render
+- Auto-refresh the desktop client when the system wakes from sleep
+- Native OS notification when long-running admin actions complete in the background
+- Authentik / OIDC login for the admin panel
+- Per-user watch-time column on the accounts page (the dashboard widget covers community totals; per-user is still TODO)
+- Jellyseerr request-approval webhook bridge
+- macOS code signing + notarization so the `xattr` step isn't needed
 
 ---
 

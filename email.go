@@ -124,7 +124,11 @@ func NewEmailer(config *Config, storage *Storage, logs LoggerSet) *Emailer {
 type DummyClient struct{}
 
 func (dc *DummyClient) Send(fromName, fromAddr string, email *Message, address ...string) error {
-	fmt.Printf("FROM: %s <%s>\nTO: %s\nTEXT: %s\n", fromName, fromAddr, strings.Join(address, ", "), email.Text)
+	// Intentionally don't log email.Text — even in "dummy" mode it may contain
+	// password reset links, invite codes, or PII. Logging metadata is enough
+	// to verify wiring without leaking content into stdout/journald.
+	fmt.Printf("FROM: %s <%s>\nTO: %s\nSUBJECT: %s\nBODY: <%d bytes, not logged>\n",
+		fromName, fromAddr, strings.Join(address, ", "), email.Subject, len(email.Text))
 	return nil
 }
 

@@ -76,12 +76,20 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           echo "Setting desktop version to ${VERSION}"
-          # -i.bak works on both GNU sed (Linux) and BSD sed (macOS).
+          # Portable across GNU sed (Linux/Windows runners) and BSD sed (macOS):
+          #  - no 0,/pattern/ address (BSD sed errors on it)
+          #  - the regex below is unique enough that matching all occurrences is safe:
+          #    tauri.conf.json has exactly one "version": "x.y.z"; Cargo.toml has
+          #    exactly one line that starts with `version = "..."` at column 0
+          #    (dependency versions use the inline `{ version = "..." }` form).
           sed -i.bak "s/\"version\": \"[^\"]*\"/\"version\": \"${VERSION}\"/" \
             desktop/src-tauri/tauri.conf.json
-          sed -i.bak "0,/^version = \"[^\"]*\"$/{s/^version = \"[^\"]*\"$/version = \"${VERSION}\"/}" \
+          sed -i.bak "s/^version = \"[^\"]*\"$/version = \"${VERSION}\"/" \
             desktop/src-tauri/Cargo.toml
           rm -f desktop/src-tauri/tauri.conf.json.bak desktop/src-tauri/Cargo.toml.bak
+          echo "After sync:"
+          grep '"version"' desktop/src-tauri/tauri.conf.json | head -1
+          grep '^version' desktop/src-tauri/Cargo.toml | head -1
 
       - name: Build & upload to GitHub Release
         uses: tauri-apps/tauri-action@v0

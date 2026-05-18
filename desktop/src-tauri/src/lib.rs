@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager, Url, WebviewUrl, WebviewWindowBuilder};
 
 #[derive(Serialize, Deserialize, Default, Clone)]
 struct AppConfig {
@@ -36,15 +36,21 @@ fn set_server_url(app: AppHandle, url: String) -> Result<(), String> {
     if trimmed.is_empty() {
         return Err("URL cannot be empty".into());
     }
+    // Validate parseable + http(s) before persisting and navigating.
+    let parsed = Url::parse(&trimmed).map_err(|e| format!("invalid URL: {}", e))?;
+    if !matches!(parsed.scheme(), "http" | "https") {
+        return Err(format!("only http and https URLs are supported (got {})", parsed.scheme()));
+    }
     save_config(
         &app,
         &AppConfig {
             server_url: Some(trimmed.clone()),
         },
     )?;
-    // Navigate the main window to the freshly saved URL.
+    // Navigate the main window to the freshly saved URL using Tauri's typed
+    // navigate API — no string interpolation into JavaScript.
     if let Some(win) = app.get_webview_window("main") {
-        let _ = win.eval(&format!("window.location.href = {:?};", trimmed));
+        win.navigate(parsed).map_err(|e| e.to_string())?;
     }
     Ok(())
 }
@@ -60,7 +66,10 @@ fn get_server_url(app: AppHandle) -> Option<String> {
 fn clear_server_url(app: AppHandle) -> Result<(), String> {
     save_config(&app, &AppConfig::default())?;
     if let Some(win) = app.get_webview_window("main") {
-        let _ = win.eval("window.location.href = 'index.html';");
+        // Navigate back to the bundled setup page.
+        if let Ok(setup) = Url::parse("tauri://localhost/index.html") {
+            let _ = win.navigate(setup);
+        }
     }
     Ok(())
 }
@@ -76,12 +85,15 @@ pub fn run() {
         .setup(|app| {
             let handle = app.handle().clone();
             let cfg = load_config(&handle);
-            // If a server URL was previously saved, jump straight to it.
-            // Otherwise the bundled index.html shows the setup form.
-            let target = match cfg.server_url {
-                Some(url) => WebviewUrl::External(url.parse().expect("invalid stored URL")),
-                None => WebviewUrl::App("index.html".into()),
-            };
+            // If a server URL was previously saved and still parses, jump
+            // straight to it. Otherwise (no URL, or stored URL is corrupted)
+            // fall back to the bundled setup page rather than panicking.
+            let target = cfg
+                .server_url
+                .as_deref()
+                .and_then(|s| Url::parse(s).ok())
+                .map(WebviewUrl::External)
+                .unwrap_or_else(|| WebviewUrl::App("index.html".into()));
             let _win = WebviewWindowBuilder::new(app, "main", target)
                 .title("Omnifin")
                 .inner_size(1280.0, 800.0)
